@@ -1,6 +1,7 @@
 @use 'app/css/base/variables' as *;
 
-html.js [data-reveal]:not([data-reveal^='scatter']) {
+html.js [data-reveal]:not([data-reveal^='scatter']),
+html[data-astro-transition] [data-reveal]:not([data-reveal^='scatter']) {
     opacity: 0.001;
     transform: translate3d(0, 16px, 0);
     transition:
@@ -12,6 +13,11 @@ html.js [data-reveal]:not([data-reveal^='scatter']) {
         transform: none;
     }
 
+    &.is-exploding {
+        transform: translate3d(0, -28px, 0);
+        transition-duration: 0.45s;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         opacity: 1;
         transform: none;
@@ -19,10 +25,17 @@ html.js [data-reveal]:not([data-reveal^='scatter']) {
     }
 }
 
-html.js [data-reveal^='scatter'] {
+html.js [data-reveal^='scatter'],
+html[data-astro-transition] [data-reveal^='scatter'] {
+    &:not([data-reveal-prepared]) {
+        opacity: 0.001;
+    }
+
     .reveal-word {
         display: inline-block;
+        overflow: visible;
         white-space: nowrap;
+        vertical-align: baseline;
     }
 
     .reveal-char {
@@ -34,17 +47,21 @@ html.js [data-reveal^='scatter'] {
             transform 0.65s $app-default-easing calc(var(--i, 0) * 18ms + 0.05s);
     }
 
-    .reveal-space {
-        width: 0.25em;
-        transform: none;
-    }
-
     &.is-revealed .reveal-char {
         opacity: 1;
         transform: none;
     }
 
+    &.is-exploding .reveal-char {
+        transition-duration: 0.5s;
+        transition-delay: calc((var(--n, 0) - var(--i, 0)) * 12ms);
+    }
+
     @media (prefers-reduced-motion: reduce) {
+        &:not([data-reveal-prepared]) {
+            opacity: 1;
+        }
+
         .reveal-char {
             opacity: 1;
             transform: none;

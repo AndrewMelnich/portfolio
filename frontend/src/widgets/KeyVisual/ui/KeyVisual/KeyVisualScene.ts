@@ -6,10 +6,20 @@ const LINK_ALPHA_IN = 40;
 const LINK_ALPHA_IN_STAGGER = 7;
 const LINK_ALPHA_OUT = 4;
 const LINK_ALPHA_EPS = 0.001;
-const LINK_NEON_R = 186;
-const LINK_NEON_G = 58;
-const LINK_NEON_B = 255;
-const LINK_BIRTH_MS = 520;
+const DEFAULT_LINK_NEON = { r: 168, g: 96, b: 214 };
+const LINK_DIE_TINT_SEC = 0.28;
+const LINK_DIE_PEAK_SEC = 0.15;
+const LINK_DIE_FADE_SEC = 0.31;
+const LINK_DIE_TOTAL_SEC = LINK_DIE_TINT_SEC + LINK_DIE_PEAK_SEC + LINK_DIE_FADE_SEC;
+const LINK_DIE_PEAK_BOOST = 1.22;
+const LINK_DIE_MIN_ALPHA = 0.28;
+const LINK_DIE_FADE_FLOOR = 0.2;
+const LINK_DIE_STAGGER_MIN_MS = 0;
+const LINK_DIE_STAGGER_MAX_MS = 360;
+const LINK_DIE_STAGGER_IDLE_MAX_MS = 200;
+const LINK_BREAK_RATIO = 1.5;
+const LINK_BREAK_MORPH_RATIO = 1.15;
+const LINK_BREAK_SNAP_RATIO = 2.5;
 const LINK_MAX_PER_PARTICLE = 6;
 const DRIFT_SPEED = 0.4;
 const BREATH_SPEED = 0.4;
@@ -87,8 +97,21 @@ type LinkState = {
     i: number;
     j: number;
     alpha: number;
-    age: number;
     dying: boolean;
+    dieAge: number;
+    dieHold: number;
+};
+
+type LinkDeathPhase = {
+    neon: number;
+    brightness: number;
+    alive: boolean;
+};
+
+type Rgb = {
+    r: number;
+    g: number;
+    b: number;
 };
 
 const DEFAULT_FIT_TOKENS: FitTokens = {
@@ -106,6 +129,29 @@ function readCssNumber(styles: CSSStyleDeclaration, name: string, fallback: numb
     const value = Number.parseFloat(styles.getPropertyValue(name).trim());
 
     return Number.isFinite(value) ? value : fallback;
+}
+
+function readLinkNeon(element: Element): Rgb {
+    const raw = getComputedStyle(element).getPropertyValue('--neon').trim();
+    const ctx = document.createElement('canvas').getContext('2d');
+
+    if (!ctx || !raw) {
+        return { ...DEFAULT_LINK_NEON };
+    }
+
+    ctx.fillStyle = '#000000';
+    ctx.fillStyle = raw;
+    const match = /^rgba?\((\d+),\s*(\d+),\s*(\d+)/i.exec(ctx.fillStyle);
+
+    if (!match) {
+        return { ...DEFAULT_LINK_NEON };
+    }
+
+    return {
+        r: Number(match[1]),
+        g: Number(match[2]),
+        b: Number(match[3]),
+    };
 }
 
 function readFitTokens(element: Element): FitTokens {
@@ -628,21 +674,49 @@ function easeOutCubic(t: number) {
     return 1 - (1 - t) ** 3;
 }
 
-function linkBirthNeon(ageMs: number) {
-    if (ageMs >= LINK_BIRTH_MS) {
-        return 0;
-    }
-
-    return 1 - easeOutCubic(ageMs / LINK_BIRTH_MS);
+function easeInOutCubic(t: number) {
+    return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
 
-function linkBirthRgb(ageMs: number) {
-    const t = linkBirthNeon(ageMs);
+function linkDeathPhase(dieAge: number): LinkDeathPhase {
+    if (dieAge >= LINK_DIE_TOTAL_SEC) {
+        return { neon: 1, brightness: 0, alive: false };
+    }
+
+    if (dieAge < LINK_DIE_TINT_SEC) {
+        const t = easeInOutCubic(dieAge / LINK_DIE_TINT_SEC);
+
+        return {
+            neon: t,
+            brightness: 1 + (LINK_DIE_PEAK_BOOST - 1) * t,
+            alive: true,
+        };
+    }
+
+    const afterTint = dieAge - LINK_DIE_TINT_SEC;
+
+    if (afterTint < LINK_DIE_PEAK_SEC) {
+        return {
+            neon: 1,
+            brightness: LINK_DIE_PEAK_BOOST,
+            alive: true,
+        };
+    }
+
+    const fadeT = easeInOutCubic((afterTint - LINK_DIE_PEAK_SEC) / LINK_DIE_FADE_SEC);
 
     return {
-        r: Math.round(255 + (LINK_NEON_R - 255) * t),
-        g: Math.round(255 + (LINK_NEON_G - 255) * t),
-        b: Math.round(255 + (LINK_NEON_B - 255) * t),
+        neon: 1,
+        brightness: LINK_DIE_PEAK_BOOST * (1 - fadeT),
+        alive: true,
+    };
+}
+
+function linkDeathRgb(neon: number, tint: Rgb) {
+    return {
+        r: Math.round(255 + (tint.r - 255) * neon),
+        g: Math.round(255 + (tint.g - 255) * neon),
+        b: Math.round(255 + (tint.b - 255) * neon),
     };
 }
 
@@ -655,6 +729,14 @@ function linkRevealDelayMs(a: Particle, b: Particle) {
     const u = (mixed >>> 0) / 4294967296;
 
     return MORPH_LINK_REVEAL_MIN_MS + u * (MORPH_LINK_REVEAL_MAX_MS - MORPH_LINK_REVEAL_MIN_MS);
+}
+
+function linkDieHoldSec(maxMs: number, minMs = LINK_DIE_STAGGER_MIN_MS) {
+    return (minMs + Math.random() * (maxMs - minMs)) / 1000;
+}
+
+function linkBreakDist(linkDistance: number, exploding: boolean) {
+    return linkDistance * (exploding ? LINK_BREAK_MORPH_RATIO : LINK_BREAK_RATIO);
 }
 
 function shiftLinkTargets(targets: Map<number, number>, indexBase: number) {
@@ -877,6 +959,7 @@ class KeyVisualScene {
     private pointerCurrent = { x: -9999, y: -9999 };
     private fit: FitBox = { left: 0, top: 0, width: 1, height: 1 };
     private fitTokens: FitTokens = { ...DEFAULT_FIT_TOKENS };
+    private linkNeon: Rgb = { ...DEFAULT_LINK_NEON };
     private morphing = false;
     private morphT = 0;
     private morphStart = 0;
@@ -932,6 +1015,7 @@ class KeyVisualScene {
 
     private refreshFitTokens() {
         this.fitTokens = readFitTokens(this.parent);
+        this.linkNeon = readLinkNeon(this.parent);
     }
 
     private resolveCurrentFit(aspect = this.aspect) {
@@ -1055,7 +1139,7 @@ class KeyVisualScene {
         const next = new Map<number, LinkState>();
 
         for (const state of this.linkStates.values()) {
-            if (state.i < outgoingCount || state.j < outgoingCount) {
+            if (state.dying || state.i < outgoingCount || state.j < outgoingCount) {
                 continue;
             }
 
@@ -1066,8 +1150,9 @@ class KeyVisualScene {
                 i,
                 j,
                 alpha: state.alpha,
-                age: Math.max(state.age, LINK_BIRTH_MS),
                 dying: false,
+                dieAge: 0,
+                dieHold: 0,
             });
         }
 
@@ -1127,9 +1212,10 @@ class KeyVisualScene {
     private rebuildLinkTargets() {
         const { cssWidth, linkDistance, morphOutgoingCount, morphing, particles } = this;
         const cols = Math.ceil(cssWidth / linkDistance) + 1;
+        const shape = particles.filter((particle) => !particle.ambient);
 
         if (morphing && morphOutgoingCount > 0) {
-            const incoming = particles.filter((particle) => !particle.ambient).slice(morphOutgoingCount);
+            const incoming = shape.slice(morphOutgoingCount);
             const grid = buildLinkGrid(incoming, linkDistance, cols);
             const local = collectLinkTargets(incoming, grid, cols, linkDistance);
 
@@ -1138,9 +1224,9 @@ class KeyVisualScene {
             return;
         }
 
-        const grid = buildLinkGrid(particles, linkDistance, cols);
+        const grid = buildLinkGrid(shape, linkDistance, cols);
 
-        this.cachedLinkTargets = collectLinkTargets(particles, grid, cols, linkDistance);
+        this.cachedLinkTargets = collectLinkTargets(shape, grid, cols, linkDistance);
     }
 
     private assignMorphBursts(particles: Particle[]) {
@@ -1167,7 +1253,13 @@ class KeyVisualScene {
         this.morphWasExploding = true;
 
         for (const state of this.linkStates.values()) {
+            if (state.dying) {
+                continue;
+            }
+
             state.dying = true;
+            state.dieAge = 0;
+            state.dieHold = linkDieHoldSec(LINK_DIE_STAGGER_MAX_MS);
         }
     }
 
@@ -1366,47 +1458,88 @@ class KeyVisualScene {
         const exploding = this.isMorphExploding();
         const outRate = exploding ? MORPH_LINK_OUT : LINK_ALPHA_OUT;
         const inRate = this.linkStaggerStart > 0 ? LINK_ALPHA_IN_STAGGER : LINK_ALPHA_IN;
-        const deltaMs = delta * 1000;
+        const breakDist = linkBreakDist(this.linkDistance, exploding);
+        const snapDist = this.linkDistance * LINK_BREAK_SNAP_RATIO;
 
         for (const [key, target] of targets) {
             const current = this.linkStates.get(key);
+
+            if (current?.dying) {
+                continue;
+            }
+
             const alpha = current?.alpha ?? 0;
             const rate = target > alpha ? inRate : outRate;
             const next = snap ? target : alpha + (target - alpha) * (1 - Math.exp(-rate * delta));
             const j = key % 65536;
             const i = (key - j) / 65536;
-            let age = 0;
-
-            if (snap) {
-                age = LINK_BIRTH_MS;
-            } else if (current) {
-                age = current.dying ? current.age : current.age + deltaMs;
-            }
 
             this.linkStates.set(key, {
                 i,
                 j,
                 alpha: next,
-                age,
                 dying: false,
+                dieAge: 0,
+                dieHold: 0,
             });
         }
 
         for (const [key, state] of this.linkStates) {
-            if (targets.has(key)) {
+            const particleA = this.particles[state.i];
+            const particleB = this.particles[state.j];
+
+            if (!particleA || !particleB) {
+                this.linkStates.delete(key);
+                continue;
+            }
+
+            const dist = Math.hypot(particleB.x - particleA.x, particleB.y - particleA.y);
+
+            if (dist > snapDist) {
+                this.linkStates.delete(key);
+                continue;
+            }
+
+            if (dist > breakDist) {
+                if (!state.dying) {
+                    state.dying = true;
+                    state.dieAge = 0;
+                }
+
+                state.dieHold = 0;
+            }
+
+            if (targets.has(key) && !state.dying) {
                 continue;
             }
 
             if (!state.dying) {
+                if (state.alpha <= LINK_ALPHA_EPS) {
+                    this.linkStates.delete(key);
+                    continue;
+                }
+
                 state.dying = true;
+                state.dieAge = 0;
+                state.dieHold = snap
+                    ? 0
+                    : linkDieHoldSec(exploding ? LINK_DIE_STAGGER_MAX_MS : LINK_DIE_STAGGER_IDLE_MAX_MS);
             }
 
-            const next = snap ? 0 : state.alpha * Math.exp(-outRate * delta);
-
-            if (next <= LINK_ALPHA_EPS) {
+            if (snap) {
                 this.linkStates.delete(key);
-            } else {
-                state.alpha = next;
+                continue;
+            }
+
+            if (state.dieHold > 0) {
+                state.dieHold = Math.max(0, state.dieHold - delta);
+                continue;
+            }
+
+            state.dieAge += delta;
+
+            if (!linkDeathPhase(state.dieAge).alive) {
+                this.linkStates.delete(key);
             }
         }
     }
@@ -1414,8 +1547,69 @@ class KeyVisualScene {
     // fallow-ignore-next-line complexity
     private strokeLinkStates(ctx: CanvasRenderingContext2D) {
         ctx.lineCap = 'round';
+        const breakDist = linkBreakDist(this.linkDistance, this.isMorphExploding());
 
-        for (const { i, j, alpha, age, dying } of this.linkStates.values()) {
+        for (const { i, j, alpha, dying, dieAge, dieHold } of this.linkStates.values()) {
+            if (!dying || dieHold > 0) {
+                continue;
+            }
+
+            const { neon, brightness, alive } = linkDeathPhase(dieAge);
+
+            if (!alive) {
+                continue;
+            }
+
+            const drawAlpha = Math.max(alpha, LINK_DIE_MIN_ALPHA) * brightness;
+
+            if (drawAlpha <= LINK_ALPHA_EPS) {
+                continue;
+            }
+
+            const particleA = this.particles[i];
+            const particleB = this.particles[j];
+
+            if (!particleA || !particleB) {
+                continue;
+            }
+
+            if (Math.hypot(particleB.x - particleA.x, particleB.y - particleA.y) > breakDist) {
+                continue;
+            }
+
+            const fade = Math.max(particleA.fade * particleB.fade, LINK_DIE_FADE_FLOOR * neon);
+
+            if (fade <= LINK_ALPHA_EPS) {
+                continue;
+            }
+
+            const { r, g, b: blue } = linkDeathRgb(neon, this.linkNeon);
+            const strength = Math.min(1, drawAlpha * fade);
+
+            ctx.strokeStyle = `rgb(${r},${g},${blue})`;
+            ctx.lineWidth = 1 + 0.25 * neon;
+            ctx.globalAlpha = strength * 0.12;
+            ctx.beginPath();
+            ctx.moveTo(particleA.x, particleA.y);
+            ctx.lineTo(particleB.x, particleB.y);
+            ctx.stroke();
+
+            ctx.lineWidth = 0.8 + 0.15 * neon;
+            ctx.globalAlpha = strength * 0.72;
+            ctx.beginPath();
+            ctx.moveTo(particleA.x, particleA.y);
+            ctx.lineTo(particleB.x, particleB.y);
+            ctx.stroke();
+        }
+
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 0.85;
+
+        for (const { i, j, alpha, dying, dieHold } of this.linkStates.values()) {
+            if (dying && dieHold <= 0) {
+                continue;
+            }
+
             if (alpha <= LINK_ALPHA_EPS) {
                 continue;
             }
@@ -1427,29 +1621,17 @@ class KeyVisualScene {
                 continue;
             }
 
+            if (Math.hypot(particleB.x - particleA.x, particleB.y - particleA.y) > breakDist) {
+                continue;
+            }
+
             const fade = particleA.fade * particleB.fade;
 
             if (fade <= LINK_ALPHA_EPS) {
                 continue;
             }
 
-            const neon = dying ? 0 : linkBirthNeon(age);
-            const { r, g, b: blue } = linkBirthRgb(dying ? LINK_BIRTH_MS : age);
-            const strength = Math.min(1, alpha * fade);
-
-            ctx.strokeStyle = `rgb(${r},${g},${blue})`;
-
-            if (neon > 0) {
-                ctx.lineWidth = 1.1 + 0.5 * neon;
-                ctx.globalAlpha = strength * 0.2;
-                ctx.beginPath();
-                ctx.moveTo(particleA.x, particleA.y);
-                ctx.lineTo(particleB.x, particleB.y);
-                ctx.stroke();
-            }
-
-            ctx.lineWidth = 0.85 + 0.25 * neon;
-            ctx.globalAlpha = strength;
+            ctx.globalAlpha = alpha * fade;
             ctx.beginPath();
             ctx.moveTo(particleA.x, particleA.y);
             ctx.lineTo(particleB.x, particleB.y);

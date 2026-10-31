@@ -35,7 +35,7 @@ const supportTitle = locale === 'en' ? 'Support & updates' : 'Поддержка
         </h2>
         <ul class="cases-view__grid list-unstyled">
             {BUILT_CASES.map((item) => (
-                <li class="cases-view__item" data-reveal>
+                <li class="cases-view__item">
                     <CaseCard item={item} locale={locale} />
                 </li>
             ))}
@@ -48,7 +48,7 @@ const supportTitle = locale === 'en' ? 'Support & updates' : 'Поддержка
         </h2>
         <ul class="cases-view__grid list-unstyled">
             {SUPPORT_CASES.map((item) => (
-                <li class="cases-view__item" data-reveal>
+                <li class="cases-view__item">
                     <CaseCard item={item} locale={locale} />
                 </li>
             ))}

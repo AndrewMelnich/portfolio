@@ -50,13 +50,17 @@
     }
 }
 
-.header__logo {
+.header__logo-reveal {
     display: grid;
     flex-shrink: 0;
+    pointer-events: auto;
+}
+
+.header__logo {
+    display: grid;
     place-items: center;
     width: 36px;
     height: 36px;
-    pointer-events: auto;
     color: #fff;
     opacity: 0.82;
     transition: opacity $app-default-duration $app-default-easing;

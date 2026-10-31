@@ -50,26 +50,34 @@ const defaultLogoFile = '07-signal.svg';
 
 <header class:list={['header', 'js-header', className]} {...props}>
     <div class="header__inner wrapper">
-        <a
-            class="header__logo header__logo--wide js-header-logo"
-            href={homeHref}
-            aria-label={locale === 'en' ? 'Home' : 'Главная'}
-            data-default-logo={defaultLogoId}
-        >
-            <img
-                class="header__logo-mark js-header-logo-mark"
-                src={`/static/img/logos/${defaultLogoFile}`}
-                alt=""
-                width="148"
-                height="36"
-            />
-        </a>
+        <span class="header__logo-reveal" data-reveal="instant" data-reveal-sticky>
+            <a
+                class="header__logo header__logo--wide js-header-logo"
+                href={homeHref}
+                aria-label={locale === 'en' ? 'Home' : 'Главная'}
+                data-default-logo={defaultLogoId}
+            >
+                <img
+                    class="header__logo-mark js-header-logo-mark"
+                    src={`/static/img/logos/${defaultLogoFile}`}
+                    alt=""
+                    width="148"
+                    height="36"
+                />
+            </a>
+        </span>
         <div class="header__end">
             <nav class="header__nav" aria-label="Primary">
                 <ul class="header__list list-unstyled">
-                    {navItems.map((item) => (
+                    {navItems.map((item, index) => (
                         <li>
-                            <a class="header__link" href={item.href}>
+                            <a
+                                class="header__link"
+                                href={item.href}
+                                data-reveal="scatter-instant"
+                                data-reveal-sticky
+                                data-reveal-delay={0.06 + index * 0.05}
+                            >
                                 {tp(item.label, locale)}
                             </a>
                         </li>
@@ -78,14 +86,28 @@ const defaultLogoFile = '07-signal.svg';
             </nav>
             <nav class="header__langs" aria-label={locale === 'en' ? 'Language' : 'Язык'}>
                 <ul class="header__langs-list list-unstyled">
-                    {LOCALES.map((item) => (
+                    {LOCALES.map((item, index) => (
                         <li>
                             {item === locale ? (
-                                <span class="header__link header__link--current" aria-current="true">
+                                <span
+                                    class="header__link header__link--current"
+                                    aria-current="true"
+                                    data-reveal="scatter-instant"
+                                    data-reveal-sticky
+                                    data-reveal-delay={0.06 + navItems.length * 0.05 + index * 0.05}
+                                >
                                     {localeLabels[item]}
                                 </span>
                             ) : (
-                                <a class="header__link" href={localeHref(item)} hreflang={item} lang={item}>
+                                <a
+                                    class="header__link"
+                                    href={localeHref(item)}
+                                    hreflang={item}
+                                    lang={item}
+                                    data-reveal="scatter-instant"
+                                    data-reveal-sticky
+                                    data-reveal-delay={0.06 + navItems.length * 0.05 + index * 0.05}
+                                >
                                     {localeLabels[item]}
                                 </a>
                             )}

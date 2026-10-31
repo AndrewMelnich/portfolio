@@ -1,7 +1,10 @@
+@use 'app/css/base/variables' as *;
 @use 'app/css/utils/mixins' as *;
 
 @layer {
     :root {
+        --neon: #{$neon};
+
         // Боковые оффсеты страницы
         --base-offset-x: 48px;
         --offset-x: calc(var(--base-offset-x) + env(safe-area-inset-left));

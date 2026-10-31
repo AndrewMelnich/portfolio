@@ -36,7 +36,7 @@ const casesHref = getRelativeLocaleUrl(locale, '/cases');
     </div>
     <ul class="featured-cases__list list-unstyled">
         {FEATURED_CASES.map((item) => (
-            <li class="featured-cases__item" data-reveal>
+            <li class="featured-cases__item">
                 <CaseCard item={item} locale={locale} />
             </li>
         ))}
