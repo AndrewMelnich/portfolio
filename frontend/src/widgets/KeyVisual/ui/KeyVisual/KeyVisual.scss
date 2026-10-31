@@ -1,10 +1,8 @@
 .key-visual {
-    --kv-fit-gap-inline: 32px;
-    --kv-fit-gap-block: 28px;
     --kv-fit-bleed: 1.08;
     --kv-fit-frame-inline: 0.5;
     --kv-fit-frame-aspect: 1.7778;
-    --kv-morph-ms: 520ms;
+    --kv-morph-ms: 900ms;
 
     position: fixed;
     z-index: -1;

@@ -21,11 +21,19 @@ const copy = {
 }[locale];
 ---
 
-<section class:list={['about', 'wrapper', props.class]} {...props} id="about" aria-labelledby="about-title">
-    <h2 class="about__title" id="about-title">
+<section
+    class:list={['about', 'wrapper', props.class]}
+    id="about"
+    data-key-visual-shape="/static/img/key-visual-hands.jpg"
+    aria-labelledby="about-title"
+    {...props}
+>
+    <h2 class="about__title" id="about-title" data-reveal="scatter">
         {tp(copy.title, locale)}
     </h2>
-    <p class="about__text">{tp(copy.text, locale)}</p>
+    <p class="about__text" data-reveal>
+        {tp(copy.text, locale)}
+    </p>
 </section>
 
 <style lang="scss" is:global>

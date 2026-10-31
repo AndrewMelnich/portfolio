@@ -6,6 +6,18 @@
         --base-offset-x: 48px;
         --offset-x: calc(var(--base-offset-x) + env(safe-area-inset-left));
 
+        @include laptop {
+            --base-offset-x: 32px;
+        }
+
+        @include tablet {
+            --base-offset-x: 24px;
+        }
+
+        @include mobile {
+            --base-offset-x: 16px;
+        }
+
         // Максимальная ширина .wrapper
         --wrapper-max-width: 3840px;
 

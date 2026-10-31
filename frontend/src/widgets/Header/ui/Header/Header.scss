@@ -8,9 +8,32 @@
     z-index: 20;
     width: 100%;
     pointer-events: none;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 0;
+        height: calc(var(--header-height) + 48px);
+        pointer-events: none;
+        background: linear-gradient(to bottom, rgb(0 0 0 / 28%) 0%, rgb(0 0 0 / 0%) 100%);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
+
+        @media (prefers-reduced-transparency: reduce) {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+    }
 }
 
 .header__inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;

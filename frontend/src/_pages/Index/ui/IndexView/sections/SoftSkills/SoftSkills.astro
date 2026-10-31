@@ -31,13 +31,20 @@ const copy = {
 }[locale];
 ---
 
-<section class:list={['soft-skills', 'wrapper', props.class]} {...props} aria-labelledby="soft-skills-title">
-    <h2 class="soft-skills__title" id="soft-skills-title">
+<section
+    class:list={['soft-skills', 'wrapper', props.class]}
+    data-key-visual-shape="/static/img/key-visual-about.jpg"
+    {...props}
+    aria-labelledby="soft-skills-title"
+>
+    <h2 class="soft-skills__title" id="soft-skills-title" data-reveal="scatter">
         {tp(copy.title, locale)}
     </h2>
     <ul class="soft-skills__list list-unstyled">
-        {copy.items.map((item) => (
-            <li class="soft-skills__item">{tp(item, locale)}</li>
+        {copy.items.map((item, index) => (
+            <li class="soft-skills__item" data-reveal data-reveal-delay={index * 0.06}>
+                {tp(item, locale)}
+            </li>
         ))}
     </ul>
 </section>

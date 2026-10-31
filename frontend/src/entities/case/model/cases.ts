@@ -112,7 +112,48 @@ export const CASES: ICase[] = [
             alt: 'Composit — главная страница сайта',
         },
     },
-
+    {
+        slug: 'sgk-epp',
+        title: { ru: 'СГК · ЕПП', en: 'SGK · EPP' },
+        teaser: {
+            ru: 'Кабинетный и платёжный контур СГК (ЕПП). Формы, кабинеты, доработки интерфейса.',
+            en: 'SGK account and payment UI (EPP). Forms and cabinet updates.',
+        },
+        description: {
+            ru: ['Кабинетный и платёжный контур СГК (ЕПП).', 'Формы, кабинеты, доработки интерфейса.'],
+            en: ['SGK account and payment UI (EPP).', 'Forms and cabinet updates.'],
+        },
+        role: 'support',
+        tags: ['cabinet', 'forms', 'payments'],
+        liveUrl: 'https://sibgenco.ru',
+        image: {
+            src: '/static/img/cases/sgk-epp/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'СГК — главная страница сайта',
+        },
+    },
+    {
+        slug: 'gtenergo',
+        title: { ru: 'GT Energo', en: 'GT Energo' },
+        teaser: {
+            ru: 'Корпоративный сайт GT Energo. Поддержка интерфейса.',
+            en: 'GT Energo corporate site — UI support.',
+        },
+        description: {
+            ru: ['Корпоративный сайт GT Energo.', 'Поддержка интерфейса.'],
+            en: ['GT Energo corporate site.', 'UI support.'],
+        },
+        role: 'support',
+        tags: ['corporate', 'energy'],
+        liveUrl: 'https://www.gtenergo.ru',
+        image: {
+            src: '/static/img/cases/gtenergo/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'GT Energo — главная страница сайта',
+        },
+    },
     {
         slug: 'artlife',
         title: { ru: 'Artlife', en: 'Artlife' },
@@ -136,23 +177,23 @@ export const CASES: ICase[] = [
     },
     {
         slug: 'october',
-        title: { ru: 'October', en: 'October' },
+        title: { ru: 'КДЦ Октябрь', en: 'KDC October' },
         teaser: {
-            ru: 'Сайт клиники / медицинского центра. Поддержка фронта.',
-            en: 'Clinic / medical center site — frontend support.',
+            ru: 'Сайт культурного центра: афиша, билеты, сервисы. Поддержка фронта.',
+            en: 'Cultural center site — programme, tickets, services. Frontend support.',
         },
         description: {
-            ru: ['Сайт клиники / медицинского центра.', 'Поддержка фронта.'],
-            en: ['Clinic / medical center site.', 'Frontend support.'],
+            ru: ['Сайт культурного центра: афиша, билеты, сервисы.', 'Поддержка фронта.'],
+            en: ['Cultural center site — programme, tickets, services.', 'Frontend support.'],
         },
         role: 'support',
-        tags: ['medicine', 'corporate'],
+        tags: ['culture', 'events'],
         liveUrl: 'https://kdc-hm.ru/',
         image: {
             src: '/static/img/cases/october/cover.jpg',
             width: 1440,
             height: 900,
-            alt: 'October — главная страница сайта',
+            alt: 'КДЦ Октябрь — главная страница сайта',
         },
     },
     {

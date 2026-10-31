@@ -1,0 +1,54 @@
+@use 'app/css/base/variables' as *;
+
+html.js [data-reveal]:not([data-reveal^='scatter']) {
+    opacity: 0.001;
+    transform: translate3d(0, 16px, 0);
+    transition:
+        opacity 0.75s $app-default-easing 0.05s,
+        transform 0.75s $app-default-easing 0.05s;
+
+    &.is-revealed {
+        opacity: 1;
+        transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+html.js [data-reveal^='scatter'] {
+    .reveal-word {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .reveal-char {
+        display: inline-block;
+        opacity: 0.001;
+        transform: translate3d(var(--rx, 0), var(--ry, 0), 0) rotate(var(--rr, 0deg));
+        transition:
+            opacity 0.65s $app-default-easing calc(var(--i, 0) * 18ms + 0.05s),
+            transform 0.65s $app-default-easing calc(var(--i, 0) * 18ms + 0.05s);
+    }
+
+    .reveal-space {
+        width: 0.25em;
+        transform: none;
+    }
+
+    &.is-revealed .reveal-char {
+        opacity: 1;
+        transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .reveal-char {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+    }
+}

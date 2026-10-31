@@ -1,28 +1,47 @@
 import debounce from 'lodash.debounce';
 
 const RESIZE_DEBOUNCE_MS = 100;
-const POINTER_LERP = 0.12;
-const LINK_ALPHA_IN = 10;
-const LINK_ALPHA_OUT = 3.5;
-const LINK_ALPHA_EPS = 0.004;
-const LINK_MAX_PER_PARTICLE = 5;
+const POINTER_LERP = 0.09;
+const LINK_ALPHA_IN = 40;
+const LINK_ALPHA_IN_STAGGER = 7;
+const LINK_ALPHA_OUT = 4;
+const LINK_ALPHA_EPS = 0.001;
+const LINK_NEON_R = 186;
+const LINK_NEON_G = 58;
+const LINK_NEON_B = 255;
+const LINK_BIRTH_MS = 520;
+const LINK_MAX_PER_PARTICLE = 6;
 const DRIFT_SPEED = 0.4;
-const BREATH_SPEED = 0.42;
+const BREATH_SPEED = 0.4;
 const BREATH_AMOUNT = 0.022;
-const FIT_EDGE_PAD = 8;
-const SHAPE_BRIGHTNESS_MIN = 22;
-const SHAPE_PARTICLE_SHARE = 0.7;
-const AMBIENT_KEEP = 0.11;
-const AMBIENT_BRIGHTNESS = 128;
+const MORPH_BURST_PEAK = 0.38;
+const MORPH_BURST_MIN = 42;
+const MORPH_BURST_SPAN = 110;
+const MORPH_RECONNECT_AT = 0.48;
+const MORPH_LINK_OUT = 1.6;
+const MORPH_PARTICLE_SHARE = 0.4;
+const MORPH_LINK_REVEAL_MIN_MS = 40;
+const MORPH_LINK_REVEAL_MAX_MS = 1400;
+const LINK_REBUILD_FRAMES = 2;
+const LINK_REBUILD_FRAMES_MORPH = 8;
+const EMPTY_LINK_TARGETS = new Map<number, number>();
+
+const FIT_EDGE_PAD = 3;
+const SHAPE_BRIGHTNESS_MIN = 15;
+const SHAPE_PARTICLE_SHARE = 0.8;
+const AMBIENT_KEEP = 0.8;
+const AMBIENT_BRIGHTNESS = 90;
 const HOVER_QUERY = '(any-hover: hover), (hover: hover) and (pointer: fine)';
 const MOBILE_QUERY = '(max-width: 1024px)';
 const MAX_PARTICLES_DESKTOP = 4000;
-const MAX_PARTICLES_MOBILE = 1000;
+const MAX_PARTICLES_MOBILE = 700;
 const MIN_INK_SHAPE_DESKTOP = 1400;
 const MIN_INK_SHAPE_MOBILE = 420;
-const IMAGE_URL = '/static/img/key-visual-hands.jpg';
+const IMAGE_URL = '/static/img/key-visual-hero.jpg';
 const ANCHOR_SELECTOR = '.js-key-visual-anchor';
-const REMOTE_SHAPE_TIMEOUT_MS = 900;
+const SHAPE_MARKER = '[data-key-visual-shape]';
+const REMOTE_SHAPE_TIMEOUT_MS = 200;
+const SECTION_SHAPE_ROOT_MARGIN = '-42% 0px -42% 0px';
 
 type Particle = {
     ox: number;
@@ -36,6 +55,8 @@ type Particle = {
     brightness: number;
     ambient: boolean;
     fade: number;
+    burstX: number;
+    burstY: number;
 };
 
 type SampleMode = 'photo' | 'ink';
@@ -56,8 +77,6 @@ type FitBox = {
 };
 
 type FitTokens = {
-    gapInline: number;
-    gapBlock: number;
     bleed: number;
     frameInline: number;
     frameAspect: number;
@@ -68,15 +87,15 @@ type LinkState = {
     i: number;
     j: number;
     alpha: number;
+    age: number;
+    dying: boolean;
 };
 
 const DEFAULT_FIT_TOKENS: FitTokens = {
-    gapInline: 32,
-    gapBlock: 28,
     bleed: 1.08,
     frameInline: 0.5,
     frameAspect: 16 / 9,
-    morphMs: 520,
+    morphMs: 900,
 };
 
 function readDpr(isMobile: boolean) {
@@ -95,8 +114,6 @@ function readFitTokens(element: Element): FitTokens {
     const frameAspect = readCssNumber(styles, '--kv-fit-frame-aspect', DEFAULT_FIT_TOKENS.frameAspect);
 
     return {
-        gapInline: readCssNumber(styles, '--kv-fit-gap-inline', DEFAULT_FIT_TOKENS.gapInline),
-        gapBlock: readCssNumber(styles, '--kv-fit-gap-block', DEFAULT_FIT_TOKENS.gapBlock),
         bleed: readCssNumber(styles, '--kv-fit-bleed', DEFAULT_FIT_TOKENS.bleed),
         frameInline: Math.min(1, Math.max(0.15, frameInline)),
         frameAspect: Math.max(frameAspect, 0.25),
@@ -117,6 +134,8 @@ function createParticle(ox: number, oy: number, brightness: number, ambient = fa
         brightness,
         ambient,
         fade: 1,
+        burstX: 0,
+        burstY: 0,
     };
 }
 
@@ -429,7 +448,7 @@ function particleBudget(isMobile: boolean) {
         maxShape,
         minInkShape,
         maxAmbient: maxParticles - maxShape,
-        shapeStep: isMobile ? 3 : 2,
+        shapeStep: isMobile ? 4 : 3,
         ambientCols: isMobile ? 28 : 42,
         ambientRows: isMobile ? 18 : 26,
     };
@@ -475,7 +494,7 @@ function shapeSourceKey(url: string | null) {
 }
 
 export function resolvePageShapeSource(container: ParentNode = document): string | null {
-    const marker = container.querySelector<HTMLElement>('[data-key-visual-shape]');
+    const marker = container.querySelector<HTMLElement>(SHAPE_MARKER);
 
     if (!marker) {
         return null;
@@ -484,8 +503,24 @@ export function resolvePageShapeSource(container: ParentNode = document): string
     return marker.getAttribute('data-key-visual-shape') ?? '';
 }
 
+function listShapeMarkers(container: ParentNode = document) {
+    return [...container.querySelectorAll<HTMLElement>(SHAPE_MARKER)];
+}
+
+function shapeTimeoutMs(sourceKey: string) {
+    if (sourceKey === DEFAULT_SHAPE_KEY || sourceKey.startsWith('/static/')) {
+        return 0;
+    }
+
+    return REMOTE_SHAPE_TIMEOUT_MS;
+}
+
 function sampleModeForSource(sourceKey: string): SampleMode {
-    return sourceKey === DEFAULT_SHAPE_KEY ? 'photo' : 'ink';
+    if (sourceKey === DEFAULT_SHAPE_KEY || sourceKey.startsWith('/static/img/key-visual')) {
+        return 'photo';
+    }
+
+    return 'ink';
 }
 
 function clampFit(box: FitBox, viewportW: number, viewportH: number): FitBox {
@@ -539,11 +574,12 @@ function computeFitInFrame(
 function resolveFrameBox(viewportW: number, anchor: DOMRect, tokens: FitTokens, isMobile: boolean) {
     const frameWidth = viewportW * tokens.frameInline;
     const frameHeight = frameWidth / tokens.frameAspect;
+    const top = anchor.top + window.scrollY + anchor.height * 0.5 - frameHeight * 0.5;
 
     if (isMobile) {
         return {
             left: (viewportW - frameWidth) * 0.5,
-            top: anchor.bottom + tokens.gapBlock,
+            top,
             width: frameWidth,
             height: frameHeight,
         };
@@ -551,7 +587,7 @@ function resolveFrameBox(viewportW: number, anchor: DOMRect, tokens: FitTokens, 
 
     return {
         left: viewportW - frameWidth,
-        top: anchor.top + anchor.height * 0.5 - frameHeight * 0.5,
+        top,
         width: frameWidth,
         height: frameHeight,
     };
@@ -592,6 +628,64 @@ function easeOutCubic(t: number) {
     return 1 - (1 - t) ** 3;
 }
 
+function linkBirthNeon(ageMs: number) {
+    if (ageMs >= LINK_BIRTH_MS) {
+        return 0;
+    }
+
+    return 1 - easeOutCubic(ageMs / LINK_BIRTH_MS);
+}
+
+function linkBirthRgb(ageMs: number) {
+    const t = linkBirthNeon(ageMs);
+
+    return {
+        r: Math.round(255 + (LINK_NEON_R - 255) * t),
+        g: Math.round(255 + (LINK_NEON_G - 255) * t),
+        b: Math.round(255 + (LINK_NEON_B - 255) * t),
+    };
+}
+
+function linkRevealDelayMs(a: Particle, b: Particle) {
+    const mixed =
+        Math.imul(Math.round(a.ox * 1e6), 374761393) ^
+        Math.imul(Math.round(a.oy * 1e6), 668265263) ^
+        Math.imul(Math.round(b.ox * 1e6), 1274126177) ^
+        Math.imul(Math.round(b.oy * 1e6), 1103515245);
+    const u = (mixed >>> 0) / 4294967296;
+
+    return MORPH_LINK_REVEAL_MIN_MS + u * (MORPH_LINK_REVEAL_MAX_MS - MORPH_LINK_REVEAL_MIN_MS);
+}
+
+function shiftLinkTargets(targets: Map<number, number>, indexBase: number) {
+    if (indexBase === 0) {
+        return targets;
+    }
+
+    const shifted = new Map<number, number>();
+
+    for (const [key, alpha] of targets) {
+        const j = key % 65536;
+        const i = (key - j) / 65536;
+
+        shifted.set(packLinkKey(i + indexBase, j + indexBase), alpha);
+    }
+
+    return shifted;
+}
+
+function morphBurstAmount(t: number) {
+    if (t <= 0 || t >= 1) {
+        return 0;
+    }
+
+    if (t < MORPH_BURST_PEAK) {
+        return easeOutCubic(t / MORPH_BURST_PEAK);
+    }
+
+    return 1 - easeOutCubic((t - MORPH_BURST_PEAK) / (1 - MORPH_BURST_PEAK));
+}
+
 function pushFromPointer(x: number, y: number, pointerX: number, pointerY: number, cursorRadius: number) {
     const dx = x - pointerX;
     const dy = y - pointerY;
@@ -609,10 +703,17 @@ function pushFromPointer(x: number, y: number, pointerX: number, pointerY: numbe
     };
 }
 
-function buildGrid(particles: Particle[], cell: number, cols: number) {
+// fallow-ignore-next-line complexity
+function buildLinkGrid(particles: Particle[], cell: number, cols: number) {
     const grid = new Map<number, number[]>();
 
-    particles.forEach((particle, index) => {
+    for (let index = 0; index < particles.length; index++) {
+        const particle = particles[index]!;
+
+        if (particle.ambient || particle.fade <= LINK_ALPHA_EPS) {
+            continue;
+        }
+
         const key = Math.floor(particle.y / cell) * cols + Math.floor(particle.x / cell);
         const bucket = grid.get(key);
 
@@ -621,7 +722,7 @@ function buildGrid(particles: Particle[], cell: number, cols: number) {
         } else {
             grid.set(key, [index]);
         }
-    });
+    }
 
     return grid;
 }
@@ -664,10 +765,19 @@ function linkTargetAlpha(a: Particle, b: Particle, linkDistance: number) {
 function collectLinkTargets(particles: Particle[], grid: Map<number, number[]>, cols: number, linkDistance: number) {
     const targets = new Map<number, number>();
     const cell = linkDistance;
+    const topKeys = new Array<number>(LINK_MAX_PER_PARTICLE);
+    const topAlphas = new Array<number>(LINK_MAX_PER_PARTICLE);
 
     for (let i = 0; i < particles.length; i++) {
         const a = particles[i]!;
-        const candidates: { key: number; alpha: number }[] = [];
+
+        if (a.ambient || a.fade <= LINK_ALPHA_EPS) {
+            continue;
+        }
+
+        topKeys.fill(-1);
+        topAlphas.fill(0);
+        let filled = 0;
 
         for (const bucket of neighborBuckets(grid, cols, Math.floor(a.x / cell), Math.floor(a.y / cell))) {
             for (const j of bucket) {
@@ -675,22 +785,47 @@ function collectLinkTargets(particles: Particle[], grid: Map<number, number[]>, 
                     continue;
                 }
 
-                const alpha = linkTargetAlpha(a, particles[j]!, linkDistance);
+                const other = particles[j]!;
 
-                if (alpha > LINK_ALPHA_EPS) {
-                    candidates.push({ key: packLinkKey(i, j), alpha });
+                if (other.ambient || other.fade <= LINK_ALPHA_EPS) {
+                    continue;
+                }
+
+                const alpha = linkTargetAlpha(a, other, linkDistance);
+
+                if (alpha <= LINK_ALPHA_EPS) {
+                    continue;
+                }
+
+                if (filled < LINK_MAX_PER_PARTICLE) {
+                    topKeys[filled] = packLinkKey(i, j);
+                    topAlphas[filled] = alpha;
+                    filled += 1;
+                    continue;
+                }
+
+                let worst = 0;
+
+                for (let n = 1; n < LINK_MAX_PER_PARTICLE; n++) {
+                    if (topAlphas[n]! < topAlphas[worst]!) {
+                        worst = n;
+                    }
+                }
+
+                if (alpha > topAlphas[worst]!) {
+                    topKeys[worst] = packLinkKey(i, j);
+                    topAlphas[worst] = alpha;
                 }
             }
         }
 
-        candidates.sort((left, right) => right.alpha - left.alpha);
+        for (let n = 0; n < filled; n++) {
+            const key = topKeys[n]!;
+            const alpha = topAlphas[n]!;
+            const prev = targets.get(key) ?? 0;
 
-        for (let n = 0; n < candidates.length && n < LINK_MAX_PER_PARTICLE; n++) {
-            const candidate = candidates[n]!;
-            const prev = targets.get(candidate.key) ?? 0;
-
-            if (candidate.alpha > prev) {
-                targets.set(candidate.key, candidate.alpha);
+            if (alpha > prev) {
+                targets.set(key, alpha);
             }
         }
     }
@@ -699,18 +834,20 @@ function collectLinkTargets(particles: Particle[], grid: Map<number, number[]>, 
 }
 
 function drawDots(ctx: CanvasRenderingContext2D, particles: Particle[]) {
+    ctx.fillStyle = '#fff';
+
     for (const particle of particles) {
         if (particle.fade <= LINK_ALPHA_EPS) {
             continue;
         }
 
-        const alpha = (0.25 + (particle.brightness / 255) * 0.75) * particle.fade;
-
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.globalAlpha = (0.25 + (particle.brightness / 255) * 0.75) * particle.fade;
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size * 0.7, 0, Math.PI * 2);
         ctx.fill();
     }
+
+    ctx.globalAlpha = 1;
 }
 
 class KeyVisualScene {
@@ -728,7 +865,6 @@ class KeyVisualScene {
     private shapeKey = '';
     private shapeEpoch = 0;
     private rafId = 0;
-    private fitRafId = 0;
     private running = false;
     private destroyed = false;
     private ready = false;
@@ -742,11 +878,15 @@ class KeyVisualScene {
     private fit: FitBox = { left: 0, top: 0, width: 1, height: 1 };
     private fitTokens: FitTokens = { ...DEFAULT_FIT_TOKENS };
     private morphing = false;
+    private morphT = 0;
     private morphStart = 0;
     private morphOutgoingCount = 0;
     private fitFrom: FitBox = { left: 0, top: 0, width: 1, height: 1 };
     private fitTo: FitBox = { left: 0, top: 0, width: 1, height: 1 };
-    private anchorScrollBound = false;
+    private linkRebuildCooldown = 0;
+    private cachedLinkTargets = EMPTY_LINK_TARGETS;
+    private linkStaggerStart = 0;
+    private morphWasExploding = false;
 
     private readonly onPointerMove = (event: PointerEvent) => {
         if (!this.isHover || this.destroyed || event.pointerType === 'touch') {
@@ -778,17 +918,6 @@ class KeyVisualScene {
         }
     };
 
-    private readonly onScroll = () => {
-        if (this.fitRafId || this.destroyed) {
-            return;
-        }
-
-        this.fitRafId = requestAnimationFrame(() => {
-            this.fitRafId = 0;
-            this.refreshFitFromAnchor();
-        });
-    };
-
     private redrawStatic() {
         this.layoutParticles(0);
         this.drawFrame(1 / 60, true);
@@ -797,7 +926,7 @@ class KeyVisualScene {
 
     private syncMobileFlags() {
         this.isMobile = matchMedia(MOBILE_QUERY).matches;
-        this.linkDistance = this.isMobile ? 32 : 42;
+        this.linkDistance = this.isMobile ? 26 : 34;
         this.cursorRadius = this.isMobile ? 70 : 110;
     }
 
@@ -830,22 +959,6 @@ class KeyVisualScene {
         }
     }
 
-    private syncAnchorScroll() {
-        const hasAnchor = Boolean(document.querySelector(ANCHOR_SELECTOR));
-
-        if (hasAnchor === this.anchorScrollBound) {
-            return;
-        }
-
-        if (hasAnchor) {
-            window.addEventListener('scroll', this.onScroll, { passive: true });
-            this.anchorScrollBound = true;
-        } else {
-            window.removeEventListener('scroll', this.onScroll);
-            this.anchorScrollBound = false;
-        }
-    }
-
     // fallow-ignore-next-line complexity
     private readonly onResize = (force = false) => {
         const width = Math.max(this.parent.clientWidth, 1);
@@ -873,7 +986,7 @@ class KeyVisualScene {
         this.animateAllowed = animate;
         this.isMobile = matchMedia(MOBILE_QUERY).matches;
         this.isHover = matchMedia(HOVER_QUERY).matches;
-        this.linkDistance = this.isMobile ? 32 : 42;
+        this.linkDistance = this.isMobile ? 26 : 34;
         this.cursorRadius = this.isMobile ? 70 : 110;
         this.refreshFitTokens();
         this.onResize(true);
@@ -918,30 +1031,158 @@ class KeyVisualScene {
     }
 
     private finishMorph() {
+        const outgoingCount = this.morphOutgoingCount;
         const ambient = this.particles.filter((particle) => particle.ambient);
-        const shapes = this.particles.filter((particle) => !particle.ambient);
-        const incoming = shapes.slice(this.morphOutgoingCount);
+        const incoming = this.particles.filter((particle) => !particle.ambient).slice(outgoingCount);
 
         for (const particle of incoming) {
             particle.fade = 1;
+            particle.burstX = 0;
+            particle.burstY = 0;
         }
 
+        this.reindexLinksAfterMorph(outgoingCount);
         this.morphing = false;
+        this.morphT = 0;
         this.morphOutgoingCount = 0;
+        this.morphWasExploding = false;
         this.fit = this.fitTo;
         this.particles = [...incoming, ...ambient];
+    }
+
+    // fallow-ignore-next-line complexity
+    private reindexLinksAfterMorph(outgoingCount: number) {
+        const next = new Map<number, LinkState>();
+
+        for (const state of this.linkStates.values()) {
+            if (state.i < outgoingCount || state.j < outgoingCount) {
+                continue;
+            }
+
+            const i = state.i - outgoingCount;
+            const j = state.j - outgoingCount;
+
+            next.set(packLinkKey(i, j), {
+                i,
+                j,
+                alpha: state.alpha,
+                age: Math.max(state.age, LINK_BIRTH_MS),
+                dying: false,
+            });
+        }
+
         this.linkStates.clear();
-        this.syncAnchorScroll();
+
+        for (const [key, state] of next) {
+            this.linkStates.set(key, state);
+        }
+
+        this.linkRebuildCooldown = 0;
+        this.cachedLinkTargets = EMPTY_LINK_TARGETS;
+    }
+
+    private beginLinkStagger(now = performance.now()) {
+        this.linkStaggerStart = now;
+    }
+
+    // fallow-ignore-next-line complexity
+    private gateLinkTargets(targets: Map<number, number>, now: number) {
+        if (this.linkStaggerStart <= 0) {
+            return targets;
+        }
+
+        const elapsed = now - this.linkStaggerStart;
+
+        if (elapsed >= MORPH_LINK_REVEAL_MAX_MS) {
+            this.linkStaggerStart = 0;
+
+            return targets;
+        }
+
+        const gated = new Map<number, number>();
+
+        for (const [key, alpha] of targets) {
+            if (this.linkStates.has(key)) {
+                gated.set(key, alpha);
+                continue;
+            }
+
+            const j = key % 65536;
+            const i = (key - j) / 65536;
+            const a = this.particles[i];
+            const b = this.particles[j];
+
+            if (!a || !b) {
+                continue;
+            }
+
+            if (elapsed >= linkRevealDelayMs(a, b)) {
+                gated.set(key, alpha);
+            }
+        }
+
+        return gated;
+    }
+
+    private rebuildLinkTargets() {
+        const { cssWidth, linkDistance, morphOutgoingCount, morphing, particles } = this;
+        const cols = Math.ceil(cssWidth / linkDistance) + 1;
+
+        if (morphing && morphOutgoingCount > 0) {
+            const incoming = particles.filter((particle) => !particle.ambient).slice(morphOutgoingCount);
+            const grid = buildLinkGrid(incoming, linkDistance, cols);
+            const local = collectLinkTargets(incoming, grid, cols, linkDistance);
+
+            this.cachedLinkTargets = shiftLinkTargets(local, morphOutgoingCount);
+
+            return;
+        }
+
+        const grid = buildLinkGrid(particles, linkDistance, cols);
+
+        this.cachedLinkTargets = collectLinkTargets(particles, grid, cols, linkDistance);
+    }
+
+    private assignMorphBursts(particles: Particle[]) {
+        const cx = this.fit.left + this.fit.width * 0.5;
+        const cy = this.fit.top + this.fit.height * 0.5;
+
+        for (const particle of particles) {
+            const dx = particle.x - cx;
+            const dy = particle.y - cy;
+            const len = Math.hypot(dx, dy);
+            const ux = len > 0.001 ? dx / len : Math.cos(particle.phase);
+            const uy = len > 0.001 ? dy / len : Math.sin(particle.phase);
+            const power = MORPH_BURST_MIN + Math.random() * MORPH_BURST_SPAN;
+
+            particle.burstX = ux * power + (Math.random() - 0.5) * 28;
+            particle.burstY = uy * power + (Math.random() - 0.5) * 28;
+        }
+    }
+
+    private seedMorphExplosion() {
+        this.cachedLinkTargets = EMPTY_LINK_TARGETS;
+        this.linkRebuildCooldown = 0;
+        this.linkStaggerStart = 0;
+        this.morphWasExploding = true;
+
+        for (const state of this.linkStates.values()) {
+            state.dying = true;
+        }
+    }
+
+    private isMorphExploding() {
+        return this.morphing && this.morphT < MORPH_RECONNECT_AT;
     }
 
     private beginMorph(shape: Particle[], aspect: number) {
         const ambient = this.ensureAmbient();
-        const morphBudget = Math.round(particleBudget(this.isMobile).maxShape * 0.55);
+        const outgoingBudget = Math.round(particleBudget(this.isMobile).maxShape * MORPH_PARTICLE_SHARE);
         const outgoing = trimParticles(
             this.particles.filter((particle) => !particle.ambient),
-            morphBudget,
+            outgoingBudget,
         );
-        const incoming = trimParticles(shape, morphBudget);
+        const incoming = shape;
 
         for (const particle of outgoing) {
             particle.fade = 1;
@@ -958,17 +1199,20 @@ class KeyVisualScene {
         this.fitTo = this.resolveCurrentFit(aspect);
         this.morphOutgoingCount = outgoing.length;
         this.morphStart = performance.now();
+        this.morphT = 0;
         this.morphing = true;
         this.particles = [...outgoing, ...incoming, ...ambient];
-        this.linkStates.clear();
+        this.layoutParticles(this.running ? (performance.now() - this.startTime) / 1000 : 0);
+        this.assignMorphBursts([...outgoing, ...incoming]);
+        this.seedMorphExplosion();
         this.ready = true;
         this.parent.hidden = false;
-        this.syncAnchorScroll();
         this.resume();
     }
 
     private commitParticles(shape: Particle[], aspect: number) {
         this.morphing = false;
+        this.morphT = 0;
         this.morphOutgoingCount = 0;
         this.particles = [...shape, ...this.ensureAmbient()];
         this.aspect = aspect;
@@ -979,7 +1223,6 @@ class KeyVisualScene {
         this.syncMobileFlags();
         this.fit = this.resolveCurrentFit(aspect);
         this.layoutParticles(this.running ? (performance.now() - this.startTime) / 1000 : 0);
-        this.syncAnchorScroll();
 
         if (this.animateAllowed) {
             this.resume();
@@ -1004,7 +1247,6 @@ class KeyVisualScene {
         const nextKey = shapeSourceKey(url);
 
         if (nextKey === this.shapeKey && this.ready) {
-            this.syncAnchorScroll();
             this.refreshFitFromAnchor();
 
             return;
@@ -1031,7 +1273,7 @@ class KeyVisualScene {
                 imageUrl,
                 this.isMobile,
                 sampleModeForSource(nextKey),
-                nextKey === DEFAULT_SHAPE_KEY ? 0 : REMOTE_SHAPE_TIMEOUT_MS,
+                shapeTimeoutMs(nextKey),
             );
 
             if (this.destroyed || epoch !== this.shapeEpoch) {
@@ -1063,6 +1305,7 @@ class KeyVisualScene {
         const t = Math.min(1, (now - this.morphStart) / duration);
         const eased = easeOutCubic(t);
 
+        this.morphT = t;
         this.fit = lerpFit(this.fitFrom, this.fitTo, eased);
 
         let shapeIndex = 0;
@@ -1087,6 +1330,7 @@ class KeyVisualScene {
         const pointerActive = this.pointerCurrent.x > -9000;
         const t = time * DRIFT_SPEED;
         const breath = 1 + Math.sin(time * BREATH_SPEED) * BREATH_AMOUNT;
+        const burst = this.morphing ? morphBurstAmount(this.morphT) : 0;
         const shapeAnchorX = left + width * 0.5;
         const shapeAnchorY = top + height * 0.5;
         const viewAnchorX = this.cssWidth * 0.5;
@@ -1112,22 +1356,40 @@ class KeyVisualScene {
                 ? pushFromPointer(baseX, baseY, this.pointerCurrent.x, this.pointerCurrent.y, this.cursorRadius)
                 : { x: baseX, y: baseY };
 
-            particle.x = next.x;
-            particle.y = next.y;
+            particle.x = next.x + particle.burstX * burst;
+            particle.y = next.y + particle.burstY * burst;
         }
     }
 
     // fallow-ignore-next-line complexity
     private syncLinkStates(targets: Map<number, number>, delta: number, snap: boolean) {
+        const exploding = this.isMorphExploding();
+        const outRate = exploding ? MORPH_LINK_OUT : LINK_ALPHA_OUT;
+        const inRate = this.linkStaggerStart > 0 ? LINK_ALPHA_IN_STAGGER : LINK_ALPHA_IN;
+        const deltaMs = delta * 1000;
+
         for (const [key, target] of targets) {
             const current = this.linkStates.get(key);
             const alpha = current?.alpha ?? 0;
-            const rate = target > alpha ? LINK_ALPHA_IN : LINK_ALPHA_OUT;
+            const rate = target > alpha ? inRate : outRate;
             const next = snap ? target : alpha + (target - alpha) * (1 - Math.exp(-rate * delta));
             const j = key % 65536;
             const i = (key - j) / 65536;
+            let age = 0;
 
-            this.linkStates.set(key, { i, j, alpha: next });
+            if (snap) {
+                age = LINK_BIRTH_MS;
+            } else if (current) {
+                age = current.dying ? current.age : current.age + deltaMs;
+            }
+
+            this.linkStates.set(key, {
+                i,
+                j,
+                alpha: next,
+                age,
+                dying: false,
+            });
         }
 
         for (const [key, state] of this.linkStates) {
@@ -1135,7 +1397,11 @@ class KeyVisualScene {
                 continue;
             }
 
-            const next = snap ? 0 : state.alpha * Math.exp(-LINK_ALPHA_OUT * delta);
+            if (!state.dying) {
+                state.dying = true;
+            }
+
+            const next = snap ? 0 : state.alpha * Math.exp(-outRate * delta);
 
             if (next <= LINK_ALPHA_EPS) {
                 this.linkStates.delete(key);
@@ -1147,51 +1413,85 @@ class KeyVisualScene {
 
     // fallow-ignore-next-line complexity
     private strokeLinkStates(ctx: CanvasRenderingContext2D) {
-        ctx.lineWidth = 0.85;
         ctx.lineCap = 'round';
 
-        for (const { i, j, alpha } of this.linkStates.values()) {
+        for (const { i, j, alpha, age, dying } of this.linkStates.values()) {
             if (alpha <= LINK_ALPHA_EPS) {
                 continue;
             }
 
-            const a = this.particles[i];
-            const b = this.particles[j];
+            const particleA = this.particles[i];
+            const particleB = this.particles[j];
 
-            if (!a || !b) {
+            if (!particleA || !particleB) {
                 continue;
             }
 
-            const fade = a.fade * b.fade;
+            const fade = particleA.fade * particleB.fade;
 
             if (fade <= LINK_ALPHA_EPS) {
                 continue;
             }
 
-            ctx.strokeStyle = `rgba(255,255,255,${alpha * fade})`;
+            const neon = dying ? 0 : linkBirthNeon(age);
+            const { r, g, b: blue } = linkBirthRgb(dying ? LINK_BIRTH_MS : age);
+            const strength = Math.min(1, alpha * fade);
+
+            ctx.strokeStyle = `rgb(${r},${g},${blue})`;
+
+            if (neon > 0) {
+                ctx.lineWidth = 1.1 + 0.5 * neon;
+                ctx.globalAlpha = strength * 0.2;
+                ctx.beginPath();
+                ctx.moveTo(particleA.x, particleA.y);
+                ctx.lineTo(particleB.x, particleB.y);
+                ctx.stroke();
+            }
+
+            ctx.lineWidth = 0.85 + 0.25 * neon;
+            ctx.globalAlpha = strength;
             ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
+            ctx.moveTo(particleA.x, particleA.y);
+            ctx.lineTo(particleB.x, particleB.y);
             ctx.stroke();
         }
+
+        ctx.globalAlpha = 1;
     }
 
-    private drawFrame(delta = 1 / 60, snap = false) {
-        const { ctx, cssWidth, cssHeight, particles, linkDistance } = this;
+    // fallow-ignore-next-line complexity
+    private drawFrame(delta = 1 / 60, snap = false, now = performance.now()) {
+        const { ctx, cssWidth, cssHeight, particles } = this;
 
         ctx.clearRect(0, 0, cssWidth, cssHeight);
 
-        if (this.morphing) {
-            drawDots(ctx, particles);
+        const exploding = this.isMorphExploding();
 
-            return;
+        if (this.morphWasExploding && !exploding) {
+            this.beginLinkStagger(now);
         }
 
-        const cols = Math.ceil(cssWidth / linkDistance) + 1;
-        const grid = buildGrid(particles, linkDistance, cols);
-        const targets = collectLinkTargets(particles, grid, cols, linkDistance);
+        this.morphWasExploding = exploding;
 
-        this.syncLinkStates(targets, delta, snap);
+        if (exploding) {
+            this.syncLinkStates(EMPTY_LINK_TARGETS, delta, snap);
+        } else {
+            this.linkRebuildCooldown -= 1;
+
+            if (snap || this.linkRebuildCooldown <= 0) {
+                this.linkRebuildCooldown =
+                    this.morphing || this.linkStaggerStart > 0 ? LINK_REBUILD_FRAMES_MORPH : LINK_REBUILD_FRAMES;
+                this.rebuildLinkTargets();
+            }
+
+            const targets =
+                snap || this.linkStaggerStart <= 0
+                    ? this.cachedLinkTargets
+                    : this.gateLinkTargets(this.cachedLinkTargets, now);
+
+            this.syncLinkStates(targets, delta, snap);
+        }
+
         this.strokeLinkStates(ctx);
         drawDots(ctx, particles);
     }
@@ -1221,14 +1521,7 @@ class KeyVisualScene {
         document.removeEventListener('pointermove', this.onPointerMove);
         document.documentElement.removeEventListener('pointerleave', this.onPointerReset);
         window.removeEventListener('blur', this.onPointerReset);
-        window.removeEventListener('scroll', this.onScroll);
-        this.anchorScrollBound = false;
         this.debouncedResize.cancel();
-
-        if (this.fitRafId) {
-            cancelAnimationFrame(this.fitRafId);
-            this.fitRafId = 0;
-        }
     }
 
     private tick = (now: number) => {
@@ -1251,7 +1544,7 @@ class KeyVisualScene {
             (this.pointerTarget.y - this.pointerCurrent.y) * (1 - Math.exp(-POINTER_LERP * 60 * delta));
         this.updateMorph(now);
         this.layoutParticles((now - this.startTime) / 1000);
-        this.drawFrame(delta);
+        this.drawFrame(delta, false, now);
         this.reveal();
         this.rafId = requestAnimationFrame(this.tick);
     };
@@ -1304,6 +1597,82 @@ class KeyVisualScene {
 
 const scenes = new WeakMap<HTMLElement, KeyVisualScene>();
 
+let sectionShapeObserver: IntersectionObserver | null = null;
+
+function stopSectionShapeSync() {
+    sectionShapeObserver?.disconnect();
+    sectionShapeObserver = null;
+}
+
+async function applyShapeToScenes(source: string | null, container: ParentNode = document) {
+    const roots = [...container.querySelectorAll<HTMLElement>('.js-key-visual')];
+
+    await Promise.all(
+        roots.map(async (root) => {
+            const scene = scenes.get(root);
+
+            if (!scene) {
+                return;
+            }
+
+            try {
+                await scene.setShapeSource(source);
+            } catch {
+                root.hidden = true;
+            }
+        }),
+    );
+}
+
+function startSectionShapeSync(markers: HTMLElement[], container: ParentNode = document) {
+    stopSectionShapeSync();
+
+    let activeSource = markers[0]?.getAttribute('data-key-visual-shape') ?? '';
+    const ratios = new Map<Element, number>();
+
+    // fallow-ignore-next-line complexity
+    const onSectionShapeIntersect = (entries: IntersectionObserverEntry[]) => {
+        for (const entry of entries) {
+            ratios.set(entry.target, entry.isIntersecting ? entry.intersectionRatio : 0);
+        }
+
+        let best: HTMLElement | null = null;
+        let bestRatio = 0;
+
+        for (const marker of markers) {
+            const ratio = ratios.get(marker) ?? 0;
+
+            if (ratio > bestRatio) {
+                bestRatio = ratio;
+                best = marker;
+            }
+        }
+
+        if (!best || bestRatio <= 0) {
+            return;
+        }
+
+        const nextSource = best.getAttribute('data-key-visual-shape') ?? '';
+
+        if (nextSource === activeSource) {
+            return;
+        }
+
+        activeSource = nextSource;
+        void applyShapeToScenes(nextSource, container);
+    };
+
+    sectionShapeObserver = new IntersectionObserver(onSectionShapeIntersect, {
+        rootMargin: SECTION_SHAPE_ROOT_MARGIN,
+        threshold: [0, 0.15, 0.35, 0.55, 0.75, 1],
+    });
+
+    for (const marker of markers) {
+        ratios.set(marker, 0);
+        sectionShapeObserver.observe(marker);
+    }
+}
+
 export function init(container: Element | Document = document) {
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const roots = container.querySelectorAll<HTMLElement>('.js-key-visual');
@@ -1344,22 +1713,16 @@ export function init(container: Element | Document = document) {
 }
 
 export async function syncFromPage(container: ParentNode = document) {
-    const source = resolvePageShapeSource(container);
-    const roots = [...container.querySelectorAll<HTMLElement>('.js-key-visual')];
+    stopSectionShapeSync();
 
-    await Promise.all(
-        roots.map(async (root) => {
-            const scene = scenes.get(root);
+    const markers = listShapeMarkers(container);
 
-            if (!scene) {
-                return;
-            }
+    if (markers.length > 1) {
+        startSectionShapeSync(markers, container);
+        await applyShapeToScenes(markers[0]?.getAttribute('data-key-visual-shape') ?? '', container);
 
-            try {
-                await scene.setShapeSource(source);
-            } catch {
-                root.hidden = true;
-            }
-        }),
-    );
+        return;
+    }
+
+    await applyShapeToScenes(resolvePageShapeSource(container), container);
 }

@@ -30,14 +30,17 @@ const socials = SOCIALS.filter((item) => item.id === 'telegram' || item.id === '
 ---
 
 <section class:list={['contact', 'wrapper', className]} {...props} id="contact">
-    <h2 class="contact__title" id="contact-title">
+    <h2 class="contact__title" id="contact-title" data-reveal="scatter">
         {tp(title, locale)}
     </h2>
-    <p class="contact__text">{tp(text, locale)}</p>
+    <p class="contact__text" data-reveal>
+        {tp(text, locale)}
+    </p>
 
     <form
         class="contact__form js-contact-form"
         novalidate
+        data-reveal
         data-status-success={statusSuccess}
         data-status-invalid={statusInvalid}
     >
@@ -50,7 +53,7 @@ const socials = SOCIALS.filter((item) => item.id === 'telegram' || item.id === '
         <p class="contact__status js-contact-status" aria-live="polite"></p>
     </form>
 
-    <div class="contact__socials">
+    <div class="contact__socials" data-reveal>
         <p class="contact__socials-note">{tp(socialsNote, locale)}</p>
         <ul class="contact__socials-list list-unstyled">
             {socials.map((item) => (

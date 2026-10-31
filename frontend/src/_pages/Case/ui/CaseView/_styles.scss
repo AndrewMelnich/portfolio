@@ -103,11 +103,15 @@
     text-transform: uppercase;
 }
 
+.case-view__live-wrap,
+.case-view__cta-wrap {
+    margin-top: 8px;
+}
+
 .case-view__live,
 .case-view__cta {
     @extend %text-m;
 
-    margin-top: 8px;
     color: #fff;
     line-height: 1.4;
 }

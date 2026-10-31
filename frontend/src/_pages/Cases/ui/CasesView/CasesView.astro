@@ -21,17 +21,21 @@ const supportTitle = locale === 'en' ? 'Support & updates' : 'Поддержка
 
 <div class:list={['cases-view', className]} {...props}>
     <header class="cases-view__intro wrapper">
-        <h1 class="cases-view__title">{tp(title, locale)}</h1>
-        <p class="cases-view__lead">{tp(intro, locale)}</p>
+        <h1 class="cases-view__title" data-reveal="scatter-instant">
+            {tp(title, locale)}
+        </h1>
+        <p class="cases-view__lead" data-reveal="instant" data-reveal-delay="0.08">
+            {tp(intro, locale)}
+        </p>
     </header>
 
     <section class="cases-view__group wrapper" aria-labelledby="cases-built-title">
-        <h2 id="cases-built-title" class="cases-view__group-title">
+        <h2 id="cases-built-title" class="cases-view__group-title" data-reveal="scatter">
             {tp(builtTitle, locale)}
         </h2>
         <ul class="cases-view__grid list-unstyled">
             {BUILT_CASES.map((item) => (
-                <li class="cases-view__item">
+                <li class="cases-view__item" data-reveal>
                     <CaseCard item={item} locale={locale} />
                 </li>
             ))}
@@ -39,12 +43,12 @@ const supportTitle = locale === 'en' ? 'Support & updates' : 'Поддержка
     </section>
 
     <section class="cases-view__group wrapper" aria-labelledby="cases-support-title">
-        <h2 id="cases-support-title" class="cases-view__group-title">
+        <h2 id="cases-support-title" class="cases-view__group-title" data-reveal="scatter">
             {tp(supportTitle, locale)}
         </h2>
         <ul class="cases-view__grid list-unstyled">
             {SUPPORT_CASES.map((item) => (
-                <li class="cases-view__item">
+                <li class="cases-view__item" data-reveal>
                     <CaseCard item={item} locale={locale} />
                 </li>
             ))}

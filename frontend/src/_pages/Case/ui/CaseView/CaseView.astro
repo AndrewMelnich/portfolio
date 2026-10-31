@@ -59,12 +59,14 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
 
         <div class="case-view__description">
             {item.description[locale].map((paragraph) => (
-                <p class="case-view__text">{tp(paragraph, locale)}</p>
+                <p class="case-view__text" data-reveal>
+                    {tp(paragraph, locale)}
+                </p>
             ))}
         </div>
 
         {item.tags.length > 0 && (
-            <ul class="case-view__tags list-unstyled">
+            <ul class="case-view__tags list-unstyled" data-reveal>
                 {item.tags.map((tag) => (
                     <li class="case-view__tag">{tp(tag, locale)}</li>
                 ))}
@@ -72,19 +74,23 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
         )}
 
         {item.liveUrl && (
-            <a
-                class="case-view__live link link--underlined"
-                href={item.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                {tp(liveLabel, locale)}
-            </a>
+            <p class="case-view__live-wrap" data-reveal>
+                <a
+                    class="case-view__live link link--underlined"
+                    href={item.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {tp(liveLabel, locale)}
+                </a>
+            </p>
         )}
 
-        <a class="case-view__cta link link--underlined" href={contactHref}>
-            {tp(ctaLabel, locale)}
-        </a>
+        <p class="case-view__cta-wrap" data-reveal>
+            <a class="case-view__cta link link--underlined" href={contactHref}>
+                {tp(ctaLabel, locale)}
+            </a>
+        </p>
     </div>
 </article>
 

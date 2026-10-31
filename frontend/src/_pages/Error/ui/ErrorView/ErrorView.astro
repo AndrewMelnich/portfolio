@@ -10,8 +10,10 @@ const { code, message, ...props } = Astro.props;
 
 <section class:list={['error-page-section', props.class]} {...props} aria-labelledby="error-page-title">
     <div class="wrapper error-page-section__inner">
-        <p class="error-page-section__code">{tp(code)}</p>
-        <h1 id="error-page-title" class="error-page-section__message">
+        <p class="error-page-section__code" data-reveal="instant">
+            {tp(code)}
+        </p>
+        <h1 id="error-page-title" class="error-page-section__message" data-reveal="scatter-instant">
             {tp(message)}
         </h1>
     </div>

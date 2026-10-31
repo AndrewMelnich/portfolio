@@ -28,12 +28,25 @@ const copy = {
 const casesHref = getRelativeLocaleUrl(locale, '/cases');
 ---
 
-<section class:list={['hero', 'wrapper', props.class]} {...props} aria-label="Intro">
-    <p class="hero__eyebrow">{tp('Portfolio', locale)}</p>
-    <h1 class="hero__title">{tp('Andrew Melnichenko', locale)}</h1>
-    <p class="hero__lead">{tp(copy.lead, locale)}</p>
-    <p class="hero__subline">{tp(copy.subline, locale)}</p>
-    <div class="hero__actions">
+<section
+    class:list={['hero', 'wrapper', props.class]}
+    data-key-visual-shape="/static/img/key-visual-hero.jpg"
+    aria-label="Intro"
+    {...props}
+>
+    <p class="hero__eyebrow" data-reveal="instant">
+        {tp('Portfolio', locale)}
+    </p>
+    <h1 class="hero__title" data-reveal="scatter-instant">
+        {tp('Andrew Melnichenko', locale)}
+    </h1>
+    <p class="hero__lead" data-reveal="instant" data-reveal-delay="0.08">
+        {tp(copy.lead, locale)}
+    </p>
+    <p class="hero__subline" data-reveal="instant" data-reveal-delay="0.16">
+        {tp(copy.subline, locale)}
+    </p>
+    <div class="hero__actions" data-reveal="instant" data-reveal-delay="0.24">
         <a class="hero__cta link" href={casesHref}>
             {tp(copy.cases, locale)}
         </a>

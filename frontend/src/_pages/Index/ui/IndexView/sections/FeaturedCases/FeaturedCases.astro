@@ -27,7 +27,7 @@ const casesHref = getRelativeLocaleUrl(locale, '/cases');
 
 <section class:list={['featured-cases', props.class]} {...props} id="work" aria-labelledby="featured-cases-title">
     <div class="featured-cases__head wrapper">
-        <h2 class="featured-cases__title" id="featured-cases-title">
+        <h2 class="featured-cases__title" id="featured-cases-title" data-reveal="scatter">
             {tp(copy.title, locale)}
         </h2>
         <a class="featured-cases__all link" href={casesHref}>
@@ -36,7 +36,7 @@ const casesHref = getRelativeLocaleUrl(locale, '/cases');
     </div>
     <ul class="featured-cases__list list-unstyled">
         {FEATURED_CASES.map((item) => (
-            <li class="featured-cases__item">
+            <li class="featured-cases__item" data-reveal>
                 <CaseCard item={item} locale={locale} />
             </li>
         ))}
