@@ -1,0 +1,57 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { BUILT_CASES, CaseCard, SUPPORT_CASES } from '@/entities/case';
+import type { AppLocale } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'div'> & RawProps;
+
+const { class: className, ...props } = Astro.props;
+const locale = Astro.currentLocale as AppLocale;
+
+const title = locale === 'en' ? 'Cases' : 'Кейсы';
+const intro =
+    locale === 'en'
+        ? 'Projects built from scratch, and projects I support.'
+        : 'Проекты, которые собирал с нуля, и проекты на поддержке.';
+const builtTitle = locale === 'en' ? 'Built from scratch' : 'Собрал с нуля';
+const supportTitle = locale === 'en' ? 'Support & updates' : 'Поддержка и доработки';
+---
+
+<div class:list={['cases-view', className]} {...props}>
+    <header class="cases-view__intro wrapper">
+        <h1 class="cases-view__title">{tp(title, locale)}</h1>
+        <p class="cases-view__lead">{tp(intro, locale)}</p>
+    </header>
+
+    <section class="cases-view__group wrapper" aria-labelledby="cases-built-title">
+        <h2 id="cases-built-title" class="cases-view__group-title">
+            {tp(builtTitle, locale)}
+        </h2>
+        <ul class="cases-view__grid list-unstyled">
+            {BUILT_CASES.map((item) => (
+                <li class="cases-view__item">
+                    <CaseCard item={item} locale={locale} />
+                </li>
+            ))}
+        </ul>
+    </section>
+
+    <section class="cases-view__group wrapper" aria-labelledby="cases-support-title">
+        <h2 id="cases-support-title" class="cases-view__group-title">
+            {tp(supportTitle, locale)}
+        </h2>
+        <ul class="cases-view__grid list-unstyled">
+            {SUPPORT_CASES.map((item) => (
+                <li class="cases-view__item">
+                    <CaseCard item={item} locale={locale} />
+                </li>
+            ))}
+        </ul>
+    </section>
+</div>
+
+<style lang="scss" is:global>
+    @use './styles';
+</style>

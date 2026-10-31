@@ -6,3 +6,7 @@ document.documentElement.classList.add('js-ready');
 calculateScrollbarWidth();
 vhMobileFix();
 reveal.init();
+
+document.addEventListener('astro:page-load', () => {
+    reveal.init();
+});

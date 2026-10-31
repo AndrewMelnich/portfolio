@@ -1,0 +1,48 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { CaseCard, FEATURED_CASES } from '@/entities/case';
+import type { AppLocale } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'section'> & RawProps;
+
+const { ...props } = Astro.props;
+const locale = Astro.currentLocale as AppLocale;
+
+const copy = {
+    ru: {
+        title: 'Избранные кейсы',
+        all: 'Все кейсы',
+    },
+    en: {
+        title: 'Selected work',
+        all: 'All cases',
+    },
+}[locale];
+
+const casesHref = getRelativeLocaleUrl(locale, '/cases');
+---
+
+<section class:list={['featured-cases', props.class]} {...props} id="work" aria-labelledby="featured-cases-title">
+    <div class="featured-cases__head wrapper">
+        <h2 class="featured-cases__title" id="featured-cases-title">
+            {tp(copy.title, locale)}
+        </h2>
+        <a class="featured-cases__all link" href={casesHref}>
+            {tp(copy.all, locale)}
+        </a>
+    </div>
+    <ul class="featured-cases__list list-unstyled">
+        {FEATURED_CASES.map((item) => (
+            <li class="featured-cases__item">
+                <CaseCard item={item} locale={locale} />
+            </li>
+        ))}
+    </ul>
+</section>
+
+<style lang="scss" is:global>
+    @use './FeaturedCases';
+</style>

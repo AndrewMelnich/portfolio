@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { AppLocale } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'section'> & RawProps;
+
+const { ...props } = Astro.props;
+const locale = Astro.currentLocale as AppLocale;
+
+const copy = {
+    ru: {
+        title: 'О себе',
+        text: 'Верстаю и собираю интерфейсы по макету: адаптив, состояния, анимации, формы. Довожу до рабочего фронта без сюрпризов на сдаче — удобно, когда уже есть Figma и нужно сделать как в макете.',
+    },
+    en: {
+        title: 'About',
+        text: 'I build interfaces from design files: responsive layout, states, motion, forms. Shipped as working frontend, no surprises at handoff — best fit when you already have a Figma file.',
+    },
+}[locale];
+---
+
+<section class:list={['about', 'wrapper', props.class]} {...props} id="about" aria-labelledby="about-title">
+    <h2 class="about__title" id="about-title">
+        {tp(copy.title, locale)}
+    </h2>
+    <p class="about__text">{tp(copy.text, locale)}</p>
+</section>
+
+<style lang="scss" is:global>
+    @use './About';
+</style>

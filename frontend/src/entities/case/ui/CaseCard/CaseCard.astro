@@ -1,0 +1,46 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { AppLocale } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+import type { ICase } from '../../model';
+
+type Props = {
+    item: ICase;
+    locale: AppLocale;
+} & HTMLAttributes<'a'>;
+
+const { item, locale, class: className, ...props } = Astro.props;
+
+const title = item.title[locale];
+const href = getRelativeLocaleUrl(locale, `cases/${item.slug}`);
+const imageTransition = `case-image-${item.slug}`;
+const titleTransition = `case-title-${item.slug}`;
+---
+
+<a class:list={['case-card', className]} href={href} {...props}>
+    <span class="case-card__media" aria-hidden="true">
+        {item.image && (
+            <img
+                class="case-card__image"
+                src={item.image.src}
+                alt=""
+                width={item.image.width ?? 1440}
+                height={item.image.height ?? 900}
+                loading="lazy"
+                decoding="async"
+                transition:name={imageTransition}
+            />
+        )}
+    </span>
+    <span class="case-card__content">
+        <span class="case-card__title" transition:name={titleTransition}>
+            {tp(title, locale)}
+        </span>
+        <span class="case-card__teaser">{tp(item.teaser[locale], locale)}</span>
+    </span>
+</a>
+
+<style lang="scss" is:global>
+    @use './CaseCard';
+</style>

@@ -1,0 +1,87 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { AppLocale } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+import Image from '@/shared/ui/Image';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'article'> & RawProps;
+
+const { item, class: className, ...props } = Astro.props;
+const locale = Astro.currentLocale as AppLocale;
+
+const title = item.title[locale];
+const casesHref = getRelativeLocaleUrl(locale, 'cases');
+const contactHref = `${getRelativeLocaleUrl(locale, '')}#contact`;
+const backLabel = locale === 'en' ? 'All cases' : 'Все кейсы';
+const roleLabel =
+    item.role === 'built' ? (locale === 'en' ? 'From scratch' : 'С нуля') : locale === 'en' ? 'Support' : 'Поддержка';
+const liveLabel = locale === 'en' ? 'Visit site' : 'Смотреть сайт';
+const ctaLabel = locale === 'en' ? 'Discuss a similar project' : 'Обсудить похожий проект';
+const imageTransition = `case-image-${item.slug}`;
+const titleTransition = `case-title-${item.slug}`;
+---
+
+<article class:list={['case-view', className]} {...props}>
+    <div class="case-view__inner wrapper">
+        <a class="case-view__back link" href={casesHref}>
+            {tp(backLabel, locale)}
+        </a>
+
+        {item.image && (
+            <div class="case-view__media">
+                <Image
+                    class="case-view__image"
+                    src={item.image.src}
+                    alt={item.image.alt ?? title}
+                    width={item.image.width ?? 800}
+                    height={item.image.height ?? 600}
+                    title={item.image.title}
+                    sizes="(max-width: 767px) 100vw, 66vw"
+                    priority
+                    transition:name={imageTransition}
+                />
+            </div>
+        )}
+
+        <p class="case-view__role">{tp(roleLabel, locale)}</p>
+        <h1 class="case-view__title" transition:name={titleTransition}>
+            {tp(title, locale)}
+        </h1>
+        <p class="case-view__lead">{tp(item.teaser[locale], locale)}</p>
+
+        <div class="case-view__description">
+            {item.description[locale].map((paragraph) => (
+                <p class="case-view__text">{tp(paragraph, locale)}</p>
+            ))}
+        </div>
+
+        {item.tags.length > 0 && (
+            <ul class="case-view__tags list-unstyled">
+                {item.tags.map((tag) => (
+                    <li class="case-view__tag">{tp(tag, locale)}</li>
+                ))}
+            </ul>
+        )}
+
+        {item.liveUrl && (
+            <a
+                class="case-view__live link link--underlined"
+                href={item.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                {tp(liveLabel, locale)}
+            </a>
+        )}
+
+        <a class="case-view__cta link link--underlined" href={contactHref}>
+            {tp(ctaLabel, locale)}
+        </a>
+    </div>
+</article>
+
+<style lang="scss" is:global>
+    @use './styles';
+</style>

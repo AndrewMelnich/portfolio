@@ -27,11 +27,16 @@ const { class: className, ...props } = Astro.props;
         init();
     };
 
-    if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => {
+    const scheduleBoot = () => {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                void boot();
+            });
+        } else {
             void boot();
-        });
-    } else {
-        void boot();
-    }
+        }
+    };
+
+    scheduleBoot();
+    document.addEventListener('astro:page-load', scheduleBoot);
 </script>

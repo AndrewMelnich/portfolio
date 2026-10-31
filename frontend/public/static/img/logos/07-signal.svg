@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 228 58" aria-hidden="true">
+    <g
+        stroke="#fff"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        transform="translate(-28 -36)"
+    >
+        <path d="M31 94.5H72L105.5 63.5L122 44.5L129 40H154L162 46.5L169 59.5L172 60.5L173 57.5L186 44.5" />
+        <path d="M106 66L125 88.5L132.5 93H135L163 69.5L175 68.5L185 70" />
+        <path d="M169 70H247" />
+        <path d="M181 76L188.5 86.5L199 94H256" />
+    </g>
+</svg>

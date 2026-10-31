@@ -1,12 +1,14 @@
 ---
 import '@/app/css/app.scss';
 import { PUBLIC_FIGMA_FILE_ID, PUBLIC_FIGMA_TOKEN, PUBLIC_HOST } from 'astro:env/client';
+import { ClientRouter } from 'astro:transitions';
 import { DEFAULT_LOCALE, LOCALES, WEBSITE_METADATA, type AppLocale } from '@/shared/config';
 import { getPathWithoutFilter } from '@/shared/lib/chpu';
 import type { PageMeta } from '@/shared/model';
 import InlineScript from '@/shared/ui/InlineScript';
 import LayoutGrid from '@/shared/ui/LayoutGrid';
 import SkipLink from '@/shared/ui/SkipLink';
+import Footer from '@/widgets/Footer';
 import Header from '@/widgets/Header';
 import KeyVisual from '@/widgets/KeyVisual';
 
@@ -115,6 +117,7 @@ const speculationRules = JSON.stringify({
             crossorigin="anonymous"
         /> -->
 
+        <ClientRouter />
         <InlineScript code={noJsScript} />
         <script>
             import '@/app/app.ts';
@@ -124,11 +127,12 @@ const speculationRules = JSON.stringify({
     </head>
     <body>
         <SkipLink />
-        {showKeyVisual && <KeyVisual />}
-        {!htmlClass?.includes('error-page') && <Header />}
+        {showKeyVisual && <KeyVisual transition:persist="key-visual" />}
+        {!htmlClass?.includes('error-page') && <Header transition:persist="site-header" />}
         <main id="main" class="main" tabindex="-1">
             <slot />
         </main>
+        {!htmlClass?.includes('error-page') && <Footer transition:persist="site-footer" />}
         {import.meta.env.DEV && (
             <>
                 <LayoutGrid />

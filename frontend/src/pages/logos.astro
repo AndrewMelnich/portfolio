@@ -1,0 +1,388 @@
+---
+import RootLayout from '@/app/layouts/RootLayout';
+import { getCommonPageProps } from '@/shared/api/get-common-page-props';
+
+Astro.cache.set({
+    maxAge: 60,
+    swr: 30,
+});
+
+const commonPageProps = await getCommonPageProps();
+const meta = {
+    ...commonPageProps.meta,
+    title: 'Logo variants',
+};
+
+const logos = [
+    {
+        id: '07-signal',
+        title: '0 · Signal AM',
+        note: 'Твой mark — waveform / AM',
+        file: '07-signal.svg',
+        wide: true,
+    },
+    {
+        id: '01-framed-square',
+        title: '1 · Framed square',
+        note: 'Рамка с разрывом — эволюция текущего плейсхолдера',
+        file: '01-framed-square.svg',
+        wide: false,
+    },
+    {
+        id: '02-am-monogram',
+        title: '2 · AM monogram',
+        note: 'Монограмма инициалов',
+        file: '02-am-monogram.svg',
+        wide: false,
+    },
+    {
+        id: '03-touch-nodes',
+        title: '3 · Touch nodes',
+        note: 'Отсылка к key visual — почти касание',
+        file: '03-touch-nodes.svg',
+        wide: false,
+    },
+    {
+        id: '04-wordmark',
+        title: '4 · Wordmark',
+        note: 'MELNICHENKO — для футера / крупных мест',
+        file: '04-wordmark.svg',
+        wide: true,
+    },
+    {
+        id: '05-letter-m',
+        title: '5 · Letter M',
+        note: 'Одна буква — сильный favicon',
+        file: '05-letter-m.svg',
+        wide: false,
+    },
+    {
+        id: '06-focus-square',
+        title: '6 · Focus square',
+        note: 'Квадрат + точка-фокус / курсор',
+        file: '06-focus-square.svg',
+        wide: false,
+    },
+] as const;
+---
+
+<RootLayout htmlClass="logos-page" meta={meta} withKeyVisual={false}>
+    <div class="logos-preview wrapper">
+        <header class="logos-preview__intro">
+            <p class="logos-preview__eyebrow">Logo review</p>
+            <h1 class="logos-preview__title">Варианты логотипа</h1>
+            <p class="logos-preview__lead">
+                Кликни карточку — лого появится в хедере на главной. Размеры: как в хедере (36), средний, крупный.
+            </p>
+            <a class="logos-preview__home" href="/">
+                ← На главную
+            </a>
+        </header>
+
+        <ul class="logos-preview__grid list-unstyled">
+            {logos.map((logo) => (
+                <li class:list={['logos-preview__item', { 'logos-preview__item--wide': logo.wide }]}>
+                    <button
+                        class="logos-preview__card js-logo-pick"
+                        type="button"
+                        data-logo={logo.id}
+                        data-logo-file={logo.file}
+                        aria-pressed="false"
+                    >
+                        <span class="logos-preview__meta">
+                            <span class="logos-preview__name">{logo.title}</span>
+                            <span class="logos-preview__note">{logo.note}</span>
+                        </span>
+                        <span class="logos-preview__sizes">
+                            <span
+                                class:list={[
+                                    'logos-preview__swatch',
+                                    'logos-preview__swatch--sm',
+                                    { 'logos-preview__swatch--wide': logo.wide },
+                                ]}
+                            >
+                                <img
+                                    class="logos-preview__mark"
+                                    src={`/static/img/logos/${logo.file}`}
+                                    alt=""
+                                    width={logo.wide ? 180 : 36}
+                                    height="36"
+                                />
+                            </span>
+                            <span
+                                class:list={[
+                                    'logos-preview__swatch',
+                                    'logos-preview__swatch--md',
+                                    { 'logos-preview__swatch--wide': logo.wide },
+                                ]}
+                            >
+                                <img
+                                    class="logos-preview__mark"
+                                    src={`/static/img/logos/${logo.file}`}
+                                    alt=""
+                                    width={logo.wide ? 280 : 64}
+                                    height="64"
+                                />
+                            </span>
+                            <span
+                                class:list={[
+                                    'logos-preview__swatch',
+                                    'logos-preview__swatch--lg',
+                                    { 'logos-preview__swatch--wide': logo.wide },
+                                ]}
+                            >
+                                <img
+                                    class="logos-preview__mark"
+                                    src={`/static/img/logos/${logo.file}`}
+                                    alt=""
+                                    width={logo.wide ? 420 : 120}
+                                    height="120"
+                                />
+                            </span>
+                        </span>
+                    </button>
+                </li>
+            ))}
+        </ul>
+    </div>
+</RootLayout>
+
+<style lang="scss" is:global>
+    @use 'app/css/base/variables' as *;
+    @use 'app/css/utils/mixins' as *;
+
+    .logos-preview {
+        padding-top: 96px;
+        padding-bottom: 96px;
+    }
+
+    .logos-preview__intro {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 48px;
+        max-width: 52ch;
+    }
+
+    .logos-preview__eyebrow {
+        color: rgb(255 255 255 / 48%);
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .logos-preview__title {
+        color: #fff;
+        font-size: clamp(32px, 4vw, 48px);
+        font-weight: 400;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+    }
+
+    .logos-preview__lead {
+        color: rgb(255 255 255 / 62%);
+        font-size: 16px;
+        line-height: 1.45;
+    }
+
+    .logos-preview__home {
+        width: fit-content;
+        margin-top: 8px;
+        color: rgb(255 255 255 / 72%);
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        transition: color $app-default-duration $app-default-easing;
+
+        @include hover() {
+            color: #fff;
+        }
+    }
+
+    .logos-preview__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .logos-preview__item--wide {
+        grid-column: 1 / -1;
+    }
+
+    .logos-preview__card {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        width: 100%;
+        padding: 24px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        background: rgb(255 255 255 / 2%);
+        text-align: left;
+        cursor: pointer;
+        transition:
+            border-color $app-default-duration $app-default-easing,
+            background-color $app-default-duration $app-default-easing;
+
+        @include hover() {
+            border-color: rgb(255 255 255 / 28%);
+            background: rgb(255 255 255 / 4%);
+        }
+
+        &[aria-pressed='true'] {
+            border-color: rgb(255 255 255 / 55%);
+            background: rgb(255 255 255 / 6%);
+        }
+    }
+
+    .logos-preview__meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .logos-preview__name {
+        color: #fff;
+        font-size: 15px;
+        letter-spacing: 0.02em;
+    }
+
+    .logos-preview__note {
+        color: rgb(255 255 255 / 48%);
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .logos-preview__sizes {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 20px 28px;
+    }
+
+    .logos-preview__swatch {
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background:
+            linear-gradient(45deg, rgb(255 255 255 / 4%) 25%, transparent 25%),
+            linear-gradient(-45deg, rgb(255 255 255 / 4%) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, rgb(255 255 255 / 4%) 75%),
+            linear-gradient(-45deg, transparent 75%, rgb(255 255 255 / 4%) 75%);
+        background-position:
+            0 0,
+            0 6px,
+            6px -6px,
+            -6px 0;
+        background-size: 12px 12px;
+        background-color: #050505;
+    }
+
+    .logos-preview__swatch--sm {
+        width: 56px;
+        height: 56px;
+    }
+
+    .logos-preview__swatch--md {
+        width: 96px;
+        height: 96px;
+    }
+
+    .logos-preview__swatch--lg {
+        width: 160px;
+        height: 160px;
+    }
+
+    .logos-preview__swatch--wide.logos-preview__swatch--sm {
+        width: 200px;
+    }
+
+    .logos-preview__swatch--wide.logos-preview__swatch--md {
+        width: 300px;
+    }
+
+    .logos-preview__swatch--wide.logos-preview__swatch--lg {
+        width: 100%;
+        max-width: 460px;
+        height: 160px;
+    }
+
+    .logos-preview__mark {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 92%;
+        max-height: 92%;
+        color: #fff;
+    }
+
+    @include mobile() {
+        .logos-preview {
+            padding-top: 80px;
+            padding-bottom: 64px;
+        }
+
+        .logos-preview__grid {
+            grid-template-columns: 1fr;
+        }
+
+        .logos-preview__swatch--lg {
+            width: 120px;
+            height: 120px;
+        }
+
+        .logos-preview__swatch--wide.logos-preview__swatch--lg {
+            width: 100%;
+            height: 120px;
+        }
+    }
+</style>
+
+<script>
+    const STORAGE_KEY = 'portfolio-logo-id-v2';
+    const WIDE_LOGOS = new Set(['04-wordmark', '07-signal']);
+    const LOGO_FILES: Record<string, string> = {
+        '01-framed-square': '01-framed-square.svg',
+        '02-am-monogram': '02-am-monogram.svg',
+        '03-touch-nodes': '03-touch-nodes.svg',
+        '04-wordmark': '04-wordmark.svg',
+        '05-letter-m': '05-letter-m.svg',
+        '06-focus-square': '06-focus-square.svg',
+        '07-signal': '07-signal.svg',
+    };
+
+    const syncPressed = () => {
+        const active = localStorage.getItem(STORAGE_KEY);
+
+        document.querySelectorAll<HTMLButtonElement>('.js-logo-pick').forEach((button) => {
+            button.setAttribute('aria-pressed', String(button.dataset.logo === active));
+        });
+    };
+
+    const applyHeaderLogo = (id: string) => {
+        const link = document.querySelector<HTMLAnchorElement>('.js-header-logo');
+        const mark = document.querySelector<HTMLImageElement>('.js-header-logo-mark');
+
+        if (!link || !mark) return;
+
+        const wide = WIDE_LOGOS.has(id);
+        const file = LOGO_FILES[id] ?? `${id}.svg`;
+
+        mark.src = `/static/img/logos/${file}`;
+        mark.width = wide ? 148 : 36;
+        mark.height = 36;
+        link.classList.toggle('header__logo--wide', wide);
+    };
+
+    document.querySelectorAll<HTMLButtonElement>('.js-logo-pick').forEach((button) => {
+        button.addEventListener('click', () => {
+            const id = button.dataset.logo;
+
+            if (!id) return;
+            localStorage.setItem(STORAGE_KEY, id);
+            applyHeaderLogo(id);
+            syncPressed();
+        });
+    });
+
+    syncPressed();
+</script>

@@ -1,0 +1,36 @@
+@use 'app/css/base/variables' as *;
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 280ms;
+    animation-timing-function: $app-default-easing;
+}
+
+::view-transition-old(root) {
+    animation-name: vt-root-out;
+}
+
+::view-transition-new(root) {
+    animation-name: vt-root-in;
+}
+
+@keyframes vt-root-out {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes vt-root-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation-duration: 0.001ms;
+        animation-delay: 0ms;
+    }
+}

@@ -1,0 +1,67 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+@use 'app/css/layout/typography-placeholders' as *;
+
+.featured-cases {
+    width: 100%;
+    padding-top: 96px;
+    scroll-margin-top: 96px;
+
+    @include mobile() {
+        padding-top: 72px;
+        scroll-margin-top: 80px;
+    }
+}
+
+.featured-cases__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px 32px;
+    margin-bottom: 40px;
+}
+
+.featured-cases__title {
+    @extend %h2;
+
+    color: #fff;
+}
+
+.featured-cases__all {
+    @extend %text-lead;
+
+    color: #fff;
+    transition: opacity $app-default-duration $app-default-easing;
+
+    @include hover() {
+        opacity: 0.72;
+    }
+
+    &:active,
+    &:focus-visible {
+        opacity: 0.72;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+.featured-cases__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    padding-right: var(--offset-x);
+    padding-left: var(--offset-x);
+
+    @include mobile() {
+        grid-template-columns: 1fr;
+    }
+}
+
+.featured-cases__item {
+    display: flex;
+    min-width: 0;
+}

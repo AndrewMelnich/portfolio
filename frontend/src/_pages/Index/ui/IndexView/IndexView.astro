@@ -1,48 +1,25 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import type { AppLocale } from '@/shared/config';
+import About from './sections/About';
+import Contact from './sections/Contact';
+import FeaturedCases from './sections/FeaturedCases';
+import Hero from './sections/Hero';
+import SoftSkills from './sections/SoftSkills';
 import type { RawProps } from './types';
 
 type Props = HTMLAttributes<'div'> & RawProps;
 
 const { class: className, ...props } = Astro.props;
-
-const sections = [
-    {
-        id: 'work',
-        title: 'Work',
-        text: 'Selected projects and collaborations. Placeholder copy for layout.',
-    },
-    {
-        id: 'approach',
-        title: 'Approach',
-        text: 'Process notes and principles. Fish text until real content lands.',
-    },
-    {
-        id: 'studio',
-        title: 'Studio',
-        text: 'About the practice, tools, and ways of working.',
-    },
-    {
-        id: 'contact',
-        title: 'Contact',
-        text: 'Say hello — email and socials go here later.',
-    },
-] as const;
+const locale = Astro.currentLocale as AppLocale;
 ---
 
 <div class:list={['index-view', className]} {...props}>
-    <section class="index-view__hero wrapper" aria-label="Intro">
-        <p class="index-view__eyebrow">Portfolio</p>
-        <h1 class="index-view__title">Andrew Melnichenko</h1>
-        <p class="index-view__lead">Digital product &amp; interface work. Scroll the anchors above.</p>
-    </section>
-
-    {sections.map((section) => (
-        <section class="index-view__section wrapper" id={section.id}>
-            <h2 class="index-view__section-title">{section.title}</h2>
-            <p class="index-view__section-text">{section.text}</p>
-        </section>
-    ))}
+    <Hero />
+    <About />
+    <SoftSkills />
+    <FeaturedCases />
+    <Contact locale={locale} />
 </div>
 
 <style lang="scss" is:global>

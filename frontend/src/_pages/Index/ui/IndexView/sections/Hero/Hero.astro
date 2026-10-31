@@ -1,0 +1,48 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { AppLocale } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'section'> & RawProps;
+
+const { ...props } = Astro.props;
+const locale = Astro.currentLocale as AppLocale;
+
+const copy = {
+    ru: {
+        lead: 'Цифровые продукты и интерфейсы — от макета до кода',
+        subline: 'Frontend-разработка по макету: лендинги, многостраничники, сложные экраны.',
+        cases: 'Кейсы',
+        contact: 'Написать',
+    },
+    en: {
+        lead: 'Digital products and interfaces — from mockup to code',
+        subline: 'Frontend built from your mockup: landing pages, multi-page sites, denser UI.',
+        cases: 'Cases',
+        contact: 'Get in touch',
+    },
+}[locale];
+
+const casesHref = getRelativeLocaleUrl(locale, '/cases');
+---
+
+<section class:list={['hero', 'wrapper', props.class]} {...props} aria-label="Intro">
+    <p class="hero__eyebrow">{tp('Portfolio', locale)}</p>
+    <h1 class="hero__title">{tp('Andrew Melnichenko', locale)}</h1>
+    <p class="hero__lead">{tp(copy.lead, locale)}</p>
+    <p class="hero__subline">{tp(copy.subline, locale)}</p>
+    <div class="hero__actions">
+        <a class="hero__cta link" href={casesHref}>
+            {tp(copy.cases, locale)}
+        </a>
+        <a class="hero__cta link" href="#contact">
+            {tp(copy.contact, locale)}
+        </a>
+    </div>
+</section>
+
+<style lang="scss" is:global>
+    @use './Hero';
+</style>

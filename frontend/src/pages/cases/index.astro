@@ -1,0 +1,21 @@
+---
+import CasesView from '@/_pages/Cases';
+import RootLayout from '@/app/layouts/RootLayout';
+import { getCommonPageProps } from '@/shared/api/get-common-page-props';
+
+Astro.cache.set({
+    maxAge: 60,
+    swr: 30,
+});
+
+const htmlClass = 'cases-page';
+const commonPageProps = await getCommonPageProps();
+const meta = {
+    ...commonPageProps.meta,
+    title: 'Кейсы — Андрей Мельниченко',
+};
+---
+
+<RootLayout htmlClass={htmlClass} meta={meta}>
+    <CasesView />
+</RootLayout>

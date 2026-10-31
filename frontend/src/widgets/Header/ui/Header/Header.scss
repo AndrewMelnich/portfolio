@@ -19,26 +19,67 @@
     padding-top: 20px;
     padding-bottom: 20px;
     pointer-events: none;
+
+    @include mobile() {
+        min-height: 64px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
 }
 
 .header__logo {
-    display: block;
+    display: grid;
     flex-shrink: 0;
+    place-items: center;
     width: 36px;
     height: 36px;
     pointer-events: auto;
-    border: 1px solid rgb(255 255 255 / 28%);
-    background: transparent;
-    transition:
-        border-color $app-default-duration $app-default-easing,
-        opacity $app-default-duration $app-default-easing;
+    color: #fff;
+    opacity: 0.82;
+    transition: opacity $app-default-duration $app-default-easing;
 
     @include hover() {
-        border-color: rgb(255 255 255 / 72%);
+        opacity: 1;
     }
 
     &:focus-visible {
         opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+.header__logo--wide {
+    width: auto;
+    min-width: 36px;
+    height: 36px;
+
+    .header__logo-mark {
+        width: auto;
+        max-width: 148px;
+        height: 100%;
+    }
+}
+
+.header__logo-mark {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.header__end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px 28px;
+    pointer-events: auto;
+
+    @include mobile() {
+        gap: 6px 16px;
     }
 }
 
@@ -52,6 +93,25 @@
     align-items: center;
     justify-content: flex-end;
     gap: 8px 28px;
+
+    @include mobile() {
+        gap: 6px 16px;
+    }
+}
+
+.header__langs {
+    pointer-events: auto;
+}
+
+.header__langs-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+
+    @include mobile() {
+        gap: 6px 10px;
+    }
 }
 
 .header__link {
@@ -62,7 +122,6 @@
     font-size: 13px;
     letter-spacing: 0.08em;
     line-height: 1.2;
-    text-decoration: none;
     text-transform: uppercase;
     transition: color $app-default-duration $app-default-easing;
 
@@ -77,6 +136,10 @@
         transform: scaleX(0);
         transform-origin: right center;
         transition: transform $app-default-duration $app-default-easing;
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
     }
 
     @include hover() {
@@ -91,21 +154,23 @@
     &:focus-visible {
         color: #fff;
     }
-}
 
-@include mobile() {
-    .header__inner {
-        min-height: 64px;
-        padding-top: 14px;
-        padding-bottom: 14px;
+    &.header__link--current {
+        color: #fff;
+        pointer-events: none;
+
+        &::after {
+            transform: scaleX(1);
+            transform-origin: left center;
+        }
     }
 
-    .header__list {
-        gap: 6px 16px;
-    }
-
-    .header__link {
+    @include mobile() {
         font-size: 11px;
         letter-spacing: 0.06em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
     }
 }

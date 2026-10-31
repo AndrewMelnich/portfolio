@@ -1,0 +1,23 @@
+---
+import IndexView from '@/_pages/Index';
+import RootLayout from '@/app/layouts/RootLayout';
+import { getCommonPageProps } from '@/shared/api/get-common-page-props';
+
+Astro.cache.set({
+    maxAge: 60,
+    swr: 30,
+});
+
+const htmlClass = 'index-page';
+const commonPageProps = await getCommonPageProps();
+const meta = {
+    ...commonPageProps.meta,
+    title: 'Andrew Melnichenko — frontend development from mockups',
+    description:
+        'Digital products and interfaces — from mockup to code. Selected cases: Ren, TNF, Vileda Professional.',
+};
+---
+
+<RootLayout htmlClass={htmlClass} meta={meta}>
+    <IndexView />
+</RootLayout>

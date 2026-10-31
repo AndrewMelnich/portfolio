@@ -1,0 +1,38 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { AppLocale } from '@/shared/config';
+import { SOCIALS } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+
+type Props = HTMLAttributes<'footer'>;
+
+const { class: className, ...props } = Astro.props;
+const locale = Astro.currentLocale as AppLocale;
+const year = new Date().getFullYear();
+
+const tagline =
+    locale === 'en'
+        ? 'Digital products and interfaces — from mockup to code'
+        : 'Цифровые продукты и интерфейсы — от макета до кода';
+---
+
+<footer class:list={['footer', className]} {...props}>
+    <div class="footer__inner wrapper">
+        <p class="footer__name">{tp('Andrew Melnichenko', locale)}</p>
+        <p class="footer__tagline">{tp(tagline, locale)}</p>
+        <ul class="footer__socials list-unstyled">
+            {SOCIALS.map((item) => (
+                <li>
+                    <a class="footer__social" href={item.href} target="_blank" rel="noopener noreferrer">
+                        {tp(item.label, locale)}
+                    </a>
+                </li>
+            ))}
+        </ul>
+        <p class="footer__copy">{tp(`© ${year} Andrew Melnichenko.`, locale)}</p>
+    </div>
+</footer>
+
+<style lang="scss" is:global>
+    @use './Footer';
+</style>

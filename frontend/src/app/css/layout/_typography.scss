@@ -1,5 +1,5 @@
-@use 'app/css/utils/mixins' as *;
 @use 'app/css/base/variables' as *;
+@use 'app/css/layout/typography-placeholders' as *;
 
 html {
     font-family: $font-fallback;
@@ -13,10 +13,46 @@ body {
     @extend %text-default;
 }
 
-%text-default {
-    @include responsive-font-size(15px, 18px, 1280px, 1920px);
-}
-
 .text-default {
     @extend %text-default;
+}
+
+.h1 {
+    @extend %h1;
+}
+
+.h2 {
+    @extend %h2;
+}
+
+.h3 {
+    @extend %h3;
+}
+
+.h4 {
+    @extend %h4;
+}
+
+.text-lead {
+    @extend %text-lead;
+}
+
+.text-lead-l {
+    @extend %text-lead-l;
+}
+
+.text-m {
+    @extend %text-m;
+}
+
+.text-s {
+    @extend %text-s;
+}
+
+.label {
+    @extend %label;
+}
+
+.label-m {
+    @extend %label-m;
 }

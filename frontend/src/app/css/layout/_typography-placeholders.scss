@@ -1,0 +1,82 @@
+@use 'app/css/utils/mixins' as *;
+
+%text-default {
+    @include responsive-font-size(15px, 18px, 1280px, 1920px);
+
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+%h1 {
+    @include responsive-font-size(40px, 72px, 1280px, 1920px);
+
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+}
+
+%h2 {
+    @include responsive-font-size(28px, 42px, 1280px, 1920px);
+
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+%h3 {
+    @include responsive-font-size(24px, 36px, 1280px, 1920px);
+
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+%h4 {
+    @include responsive-font-size(22px, 32px, 1280px, 1920px);
+
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+%text-lead {
+    @include responsive-font-size(15px, 18px, 1280px, 1920px);
+
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+%text-lead-l {
+    @include responsive-font-size(16px, 20px, 1280px, 1920px);
+
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+%text-m {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+%text-s {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+%label {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+%label-m {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}

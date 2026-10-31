@@ -1,0 +1,35 @@
+---
+import CaseView from '@/_pages/Case';
+import ErrorView from '@/_pages/Error';
+import RootLayout from '@/app/layouts/RootLayout';
+import { CASES, getCaseBySlug } from '@/entities/case';
+import { getCommonPageProps } from '@/shared/api/get-common-page-props';
+import { DICT, type AppLocale } from '@/shared/config';
+
+export const getStaticPaths = () => CASES.map((item) => ({ params: { slug: item.slug } }));
+
+const locale = Astro.currentLocale as AppLocale;
+const { slug } = Astro.params;
+const item = slug ? getCaseBySlug(slug) : undefined;
+
+if (!item) {
+    Astro.response.status = 404;
+}
+
+Astro.cache.set({
+    maxAge: 60,
+    swr: 30,
+});
+
+const commonPageProps = await getCommonPageProps();
+const brandName = locale === 'en' ? 'Andrew Melnichenko' : 'Андрей Мельниченко';
+const htmlClass = item ? 'case-page' : 'error-page';
+const meta = {
+    ...commonPageProps.meta,
+    title: item ? `${item.title[locale]} — ${brandName}` : DICT.PAGE_NOT_FOUND[locale],
+};
+---
+
+<RootLayout htmlClass={htmlClass} meta={meta} withKeyVisual={Boolean(item)}>
+    {item ? <CaseView item={item} /> : <ErrorView code="404" message={DICT.PAGE_NOT_FOUND[locale]} />}
+</RootLayout>
