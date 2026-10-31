@@ -21,16 +21,22 @@ const liveLabel = locale === 'en' ? 'Visit site' : 'Смотреть сайт';
 const ctaLabel = locale === 'en' ? 'Discuss a similar project' : 'Обсудить похожий проект';
 const imageTransition = `case-image-${item.slug}`;
 const titleTransition = `case-title-${item.slug}`;
+const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURIComponent(item.liveUrl)}` : '';
 ---
 
-<article class:list={['case-view', className]} {...props}>
+<article
+    class:list={['case-view', className]}
+    {...props}
+    data-key-visual-shape={keyVisualShape}
+    data-key-visual-shape-fallback={item.image?.src}
+>
     <div class="case-view__inner wrapper">
         <a class="case-view__back link" href={casesHref}>
             {tp(backLabel, locale)}
         </a>
 
         {item.image && (
-            <div class="case-view__media">
+            <div class="case-view__media js-key-visual-anchor">
                 <Image
                     class="case-view__image"
                     src={item.image.src}

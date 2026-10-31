@@ -1,4 +1,11 @@
 .key-visual {
+    --kv-fit-gap-inline: 32px;
+    --kv-fit-gap-block: 28px;
+    --kv-fit-bleed: 1.08;
+    --kv-fit-frame-inline: 0.5;
+    --kv-fit-frame-aspect: 1.7778;
+    --kv-morph-ms: 520ms;
+
     position: fixed;
     z-index: -1;
     inset: 0;
@@ -10,6 +17,10 @@
     user-select: none;
     opacity: 0;
     transition: opacity 0.6s ease;
+
+    @media (max-width: 1024px) {
+        --kv-fit-frame-inline: 1;
+    }
 
     @media (prefers-reduced-motion: reduce) {
         transition: none;

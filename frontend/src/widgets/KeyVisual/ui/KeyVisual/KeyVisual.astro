@@ -22,21 +22,14 @@ const { class: className, ...props } = Astro.props;
             });
         }
 
-        const { init } = await import('./KeyVisualScene');
+        const { init, syncFromPage } = await import('./KeyVisualScene');
 
         init();
+        await syncFromPage();
     };
 
-    const scheduleBoot = () => {
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(() => {
-                void boot();
-            });
-        } else {
-            void boot();
-        }
-    };
-
-    scheduleBoot();
-    document.addEventListener('astro:page-load', scheduleBoot);
+    void boot();
+    document.addEventListener('astro:page-load', () => {
+        void boot();
+    });
 </script>

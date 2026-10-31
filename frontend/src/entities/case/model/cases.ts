@@ -83,6 +83,13 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['product', 'corporate'],
+        liveUrl: 'https://iiko.ru/',
+        image: {
+            src: '/static/img/cases/iiko/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'iiko — главная страница сайта',
+        },
     },
     {
         slug: 'composit',
@@ -97,43 +104,15 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['catalog', 'corporate'],
-    },
-    {
-        slug: 'sgk-epp',
-        title: { ru: 'СГК · ЕПП', en: 'SGK · EPP' },
-        teaser: {
-            ru: 'Кабинетный и платёжный контур СГК (ЕПП). Формы, кабинеты, доработки интерфейса.',
-            en: 'SGK account and payment UI (EPP). Forms and cabinet updates.',
-        },
-        description: {
-            ru: ['Кабинетный и платёжный контур СГК (ЕПП).', 'Формы, кабинеты, доработки интерфейса.'],
-            en: ['SGK account and payment UI (EPP).', 'Forms and cabinet updates.'],
-        },
-        role: 'support',
-        tags: ['cabinet', 'forms', 'payments'],
-        liveUrl: 'https://sibgenco.ru',
+        liveUrl: 'https://kompozit.online',
         image: {
-            src: '/static/img/cases/sgk-epp/cover.jpg',
+            src: '/static/img/cases/composit/cover.jpg',
             width: 1440,
             height: 900,
-            alt: 'СГК — главная страница сайта',
+            alt: 'Composit — главная страница сайта',
         },
     },
-    {
-        slug: 'gtenergo',
-        title: { ru: 'GT Energo', en: 'GT Energo' },
-        teaser: {
-            ru: 'Корпоративный сайт GT Energo. Поддержка интерфейса.',
-            en: 'GT Energo corporate site — UI support.',
-        },
-        description: {
-            ru: ['Корпоративный сайт GT Energo.', 'Поддержка интерфейса.'],
-            en: ['GT Energo corporate site.', 'UI support.'],
-        },
-        role: 'support',
-        tags: ['corporate', 'energy'],
-        liveUrl: 'https://gtenergo.ru',
-    },
+
     {
         slug: 'artlife',
         title: { ru: 'Artlife', en: 'Artlife' },
@@ -147,6 +126,34 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['biotech', 'corporate'],
+        liveUrl: 'https://biotech.artlife.ru/',
+        image: {
+            src: '/static/img/cases/artlife/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'Artlife — главная страница сайта',
+        },
+    },
+    {
+        slug: 'october',
+        title: { ru: 'October', en: 'October' },
+        teaser: {
+            ru: 'Сайт клиники / медицинского центра. Поддержка фронта.',
+            en: 'Clinic / medical center site — frontend support.',
+        },
+        description: {
+            ru: ['Сайт клиники / медицинского центра.', 'Поддержка фронта.'],
+            en: ['Clinic / medical center site.', 'Frontend support.'],
+        },
+        role: 'support',
+        tags: ['medicine', 'corporate'],
+        liveUrl: 'https://kdc-hm.ru/',
+        image: {
+            src: '/static/img/cases/october/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'October — главная страница сайта',
+        },
     },
     {
         slug: 'daigo',
@@ -161,6 +168,13 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['media', 'content'],
+        liveUrl: 'https://daigo.chipsa.design',
+        image: {
+            src: '/static/img/cases/daigo/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'Daigo — главная страница сайта',
+        },
     },
     {
         slug: 'dvizh',
@@ -175,6 +189,13 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['education', 'forms'],
+        liveUrl: 'https://dvizhenie.school',
+        image: {
+            src: '/static/img/cases/dvizh/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'Dvizh Online School — главная страница сайта',
+        },
     },
     {
         slug: 'eldis',
@@ -189,6 +210,13 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['corporate'],
+        liveUrl: 'https://eldis24.ru',
+        image: {
+            src: '/static/img/cases/eldis/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'Eldis — главная страница сайта',
+        },
     },
     {
         slug: 'zagranitsa',
@@ -203,6 +231,55 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['media', 'content'],
+        liveUrl: 'https://zagranitsa.pro/',
+        image: {
+            src: '/static/img/cases/zagranitsa/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'Заграница — главная страница сайта',
+        },
+    },
+    {
+        slug: 'chillbase',
+        title: { ru: 'Chillbase', en: 'Chillbase' },
+        teaser: {
+            ru: 'Продуктовый сайт Chillbase. Поддержка и доработки UI.',
+            en: 'Chillbase product site — UI support.',
+        },
+        description: {
+            ru: ['Продуктовый сайт Chillbase.', 'Поддержка и доработки UI.'],
+            en: ['Chillbase product site.', 'UI support.'],
+        },
+        role: 'support',
+        tags: ['product', 'corporate'],
+        liveUrl: 'https://chillbase.net/',
+        image: {
+            src: '/static/img/cases/chillbase/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'Chillbase — главная страница сайта',
+        },
+    },
+    {
+        slug: 'chipsa',
+        title: { ru: 'Chipsa', en: 'Chipsa' },
+        teaser: {
+            ru: 'Сайт агентства Chipsa. Поддержка и правки интерфейса.',
+            en: 'Chipsa agency site — UI support.',
+        },
+        description: {
+            ru: ['Сайт агентства Chipsa.', 'Поддержка и правки интерфейса.'],
+            en: ['Chipsa agency site.', 'UI support.'],
+        },
+        role: 'support',
+        tags: ['agency', 'corporate'],
+        liveUrl: 'https://chipsa.ru/',
+        image: {
+            src: '/static/img/cases/chipsa/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'Chipsa — главная страница сайта',
+        },
     },
     {
         slug: 'vki',
@@ -217,20 +294,13 @@ export const CASES: ICase[] = [
         },
         role: 'support',
         tags: ['corporate'],
-    },
-    {
-        slug: 'visa',
-        title: { ru: 'Visa', en: 'Visa' },
-        teaser: {
-            ru: 'Промо и посадочные страницы Visa. Поддержка и правки UI.',
-            en: 'Visa promo and landing pages — UI support.',
+        liveUrl: 'https://vk-ing.ru/',
+        image: {
+            src: '/static/img/cases/vki/cover.jpg',
+            width: 1440,
+            height: 900,
+            alt: 'VKI — главная страница сайта',
         },
-        description: {
-            ru: ['Промо и посадочные страницы Visa.', 'Поддержка и правки UI.'],
-            en: ['Visa promo and landing pages.', 'UI support.'],
-        },
-        role: 'support',
-        tags: ['promo', 'landing'],
     },
 ];
 
