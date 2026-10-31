@@ -1,22 +1,17 @@
-## Development
+# Monorepo
 
-When starting the dev server, use background mode:
+Read `ROLE.md` at the repo root if it exists. First line is the local role: `frontend` or `backend`.
 
-```
-astro dev --background
-```
+- `frontend` → [`frontend/AGENTS.md`](frontend/AGENTS.md).
+- `backend` → `backend/AGENTS.md`.
+- Missing → follow files in context. Do not assume a role.
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+## Project passport
 
-## Documentation
+Before a task, read [`docs/project.md`](docs/project.md): external ids — Figma page roles, Planfix, environments, Rollbar. Repo-local tools (Storybook, CMS) are not in the passport.
 
-Full documentation: https://docs.astro.build
-
-Consult these guides before working on related tasks:
-
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+- Dynamic data (mockup, task text, Rollbar items): fetch through MCP with the passport ids. Storybook MCP when the process is up — see [`docs/mcp.md`](docs/mcp.md).
+- GitLab (MRs, diffs, pipelines, repository files): `glab` CLI, see [`gitlab-glab`](.agents/skills/gitlab-glab/SKILL.md). MCP only for services without a CLI.
+- A field the task needs is empty: ask the user and wait. Ids come from the passport or the user only. `нет` means the project does not use it.
+- The passport holds links and ids only; tokens stay in environment variables.
+- Empty template on a new project: the user runs `/project-init`.

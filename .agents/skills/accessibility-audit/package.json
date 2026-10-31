@@ -1,0 +1,31 @@
+{
+  "name": "a11y-audit-agent-skill",
+  "version": "2.0.0",
+  "description": "AgentSkill for structured accessibility audits with route discovery, normalized findings, reporting, and validation.",
+  "license": "MIT",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "audit": "node scripts/audit.js",
+    "audit:browser": "node scripts/audit-browser.js",
+    "crawl": "node scripts/crawler.js",
+    "crawl:browser": "node scripts/crawler-browser.js",
+    "report": "node scripts/generate-html-report.js",
+    "aggregate": "node scripts/aggregate-runs.js",
+    "validate:session": "node scripts/validate-session-config.js examples/session-config.example.json",
+    "validate:results": "node scripts/validate-results.js examples/sample-audit-results.json",
+    "validate:skill": "node scripts/validate-skill.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "@axe-core/cli": "^4.10.2",
+    "axe-core": "^4.10.3",
+    "axios": "^1.11.0",
+    "lighthouse": "^12.8.2",
+    "pa11y": "^9.0.1",
+    "playwright": "^1.54.2"
+  }
+}

@@ -1,0 +1,15 @@
+---
+import { CSP_ENABLED_INTEGRATIONS } from '@/shared/config';
+import InlineScript from '@/shared/ui/InlineScript';
+import { calltouchSnippet, requireCspIntegration } from './snippets';
+
+type Props = {
+    id: string;
+};
+
+const { id } = Astro.props;
+
+requireCspIntegration('calltouch', 'Calltouch', CSP_ENABLED_INTEGRATIONS);
+---
+
+<InlineScript code={calltouchSnippet(id)} />

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "node .cursor/hooks/guard-main-checkout.mjs",
+        "matcher": "Write|StrReplace|Delete|CallDynamicTool|MCP:.*download_figma_images",
+        "timeout": 10
+      },
+      {
+        "command": "node .cursor/hooks/guard-verify-ui.mjs",
+        "matcher": "Write|StrReplace|Delete",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/record-edit.mjs",
+        "timeout": 10
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/stop.mjs",
+        "timeout": 360,
+        "loop_limit": 3,
+        "failClosed": true
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "node .cursor/hooks/record-edit.mjs",
+        "timeout": 10
+      },
+      {
+        "command": "node .cursor/hooks/stop.mjs",
+        "timeout": 360,
+        "loop_limit": 3,
+        "failClosed": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+---
+description: Laziness protocol — smallest working diff, deletion over abstraction. Replaces ponytail.
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Laziness Protocol
+
+Aim for the most result with the least code and complexity. Full skill: `.agents/skills/principle-laziness-protocol`.
+
+Before writing any code, stop at the first rung that holds:
+
+1. Does this need to be built at all? (YAGNI)
+2. Does it already exist in this codebase? Reuse — don't rewrite.
+3. Does the standard library already do this? Use it.
+4. Does a native platform feature cover it? Use it.
+5. Does an already-installed dependency solve it? Use it.
+6. Can this be one line? Make it one line.
+7. Only then: write the minimum code that works.
+
+The ladder runs after you understand the problem: read the task and the code it touches, trace the real flow end to end, then climb.
+
+- **Prefer deletion.** Removals before additions.
+- **Flat call hierarchy.** If answering a question needs tracing >3 files/layers, flatten it.
+- **Consolidate decisions.** One source of truth; pass a simple flag.
+- **Minimize the diff.** Fewest lines that solve the problem.
+- **Question the threading.** New signal through types/schemas/pipelines → look for a direct path.
+- **Sweat small leaks.** Pass-throughs, representation leaks, duplicated choices — remove before they spread.
+- Bug fix = root cause, not symptom. Fix the shared function once.
+
+Encode an intentional shortcut in a name (or a type). If it has a known ceiling, track the ceiling and the upgrade path in an issue — not in a `laziness:` / `ponytail:` comment.
+
+Not lazy about: understanding the problem, trust-boundary validation, data-loss error handling, security, accessibility, anything explicitly requested.
+
+**The test:** If a human developer would find the code exhausting to maintain, it is a bad solution.

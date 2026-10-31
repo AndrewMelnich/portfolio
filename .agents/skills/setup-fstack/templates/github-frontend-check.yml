@@ -1,0 +1,64 @@
+# Copy to .github/workflows/frontend_check.yml and replace APP_DIR with config.app.
+name: Frontend Check
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/frontend_check.yml"
+      - ".cursor/fstack/config.json"
+      - "APP_DIR/**"
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: APP_DIR
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: APP_DIR/package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: APP_DIR/.nvmrc
+          cache: "pnpm"
+          cache-dependency-path: APP_DIR/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Project setup goes here: copy the app .env (ports and the database URL live there).
+      # Do not hardcode a port. The e2e webServer empties verify.dataDir, runs verify.prepare
+      # (migrations and seeds), then builds and serves. Ready means the seeded page, not an open port.
+
+      - name: Types and lint
+        run: pnpm lint # the project's lint + typecheck script
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      # playwright.e2e.config.ts builds and serves the verify origin itself (webServer).
+      - name: E2E
+        run: pnpm test:e2e
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: APP_DIR/test-results
+          retention-days: 7

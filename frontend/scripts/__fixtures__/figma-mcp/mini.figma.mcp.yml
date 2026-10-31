@@ -1,0 +1,73 @@
+# Raw Framelink MCP get_figma_data dump (verbatim tool result text).
+# Written by stdio client — not LLM-retyped.
+# fileKey: testFileKey123
+# fetchedAt: 2026-09-27
+# source: figma-developer-mcp via stdio
+
+# =============================================================================
+# frame: desktop
+# nodeId: 1:100
+# url: https://www.figma.com/design/testFileKey123/Demo?node-id=1-100
+# =============================================================================
+
+NAME: "Demo File"
+
+GLOBAL_VARS:
+Black:
+  - '#282828'
+White BG:
+  - '#F3F3F3'
+layout_abc:
+  mode: none
+  sizing:
+    horizontal: fill
+    vertical: hug
+Desktop/Txt/Body:
+  fontFamily: Inter Tight
+  fontWeight: 400
+  fontSize: 17
+  lineHeight: 1.1em
+  letterSpacing: '-0.02em'
+
+NODES:
+[FRAME] "Root" #1:100 layout={"mode":"none","sizing":{"horizontal":"contextual","vertical":"contextual"},"designedWidth":"963px","designedHeight":"850px"} fills=Black
+  [FRAME] "Intro" #1:200 layout={"mode":"column","alignItems":"stretch","gap":"10px","sizing":{"horizontal":"hug","vertical":"hug"},"locationRelativeToParent":{"x":568,"y":143}}
+    [TEXT] #1:201 layout=layout_abc fills="White BG" opacity=0.4000000059604645 textStyle=Desktop/Txt/Body text="Label:"
+    [TEXT] #1:202 layout=layout_abc fills="White BG" opacity=0.800000011920929 textStyle=Desktop/Txt/Body text="Line one\r\\nline two"
+
+# =============================================================================
+# frame: tablet
+# nodeId: 2:100
+# url: https://www.figma.com/design/testFileKey123/Demo?node-id=2-100
+# =============================================================================
+
+NAME: "Demo File"
+
+GLOBAL_VARS:
+Black:
+  - '#282828'
+layout_tpl:
+  mode: none
+  sizing: {}
+  locationRelativeToParent:
+    x: 0
+    y: 0
+  dimensions:
+    width: 390
+    height: 308
+
+ELEMENTS:
+EL-aaaa:
+  type: RECTANGLE
+  layout:
+    mode: none
+    sizing: {}
+    dimensions:
+      width: 100
+      height: 50
+  fills: Black
+
+NODES:
+[FRAME] "Root" #2:100 layout={"mode":"none","sizing":{"horizontal":"fill","vertical":"contextual"},"designedHeight":"1423px"} fills=Black
+  [RECTANGLE] "Photo" #2:200 layout=layout_tpl fills=Black
+  [RECTANGLE] "Tpl" #2:201 template=EL-aaaa

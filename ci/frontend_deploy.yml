@@ -1,0 +1,55 @@
+.frontend_deploy:
+  stage: deploy
+  interruptible: false
+  tags:
+    - deploy
+  variables: !reference [.variables, common]
+  before_script:
+    - !reference [.scripts, script]
+  script:
+    - !reference [.scripts, install_deploy_deps]
+    # Убеждаемся, что на сервере установлен dotenv-cli
+    - ssh -p $SSH_PORT $PROJECT_HOST "cd $PROJECT_PATH/$FRONTEND_PATH && (npm list -g dotenv-cli || npm install -g dotenv-cli)"
+    # Копируем билд фронтенда с сервера gitlab ci
+    - rsync -arvh --delete-after --filter='protect .images_cache' -e "ssh -p $SSH_PORT" $FRONTEND_PATH/build $PROJECT_HOST:$PROJECT_PATH/$FRONTEND_PATH
+    # SSG: sitemap at build/*.xml. SSR: under build/client/, already in the rsync above.
+    - |
+      if ls "$FRONTEND_PATH"/build/sitemap*.xml >/dev/null 2>&1; then
+        rsync -arvh -e "ssh -p $SSH_PORT" $FRONTEND_PATH/build/sitemap*.xml $PROJECT_HOST:$PROJECT_PATH/$FRONTEND_PATH/build
+      else
+        echo "no $FRONTEND_PATH/build/sitemap*.xml — skip (SSR sitemap lives under build/client)"
+      fi
+    # Копируем robots.txt с сервера gitlab ci
+    # - |
+    #   if [ -f "$FRONTEND_PATH/public/robots.txt" ]; then
+    #     rsync -arvh -e "ssh -p $SSH_PORT" "$FRONTEND_PATH/public/robots.txt" "$PROJECT_HOST:$PROJECT_PATH/$FRONTEND_PATH/public"
+    #   else
+    #     echo "no robots.txt"
+    #   fi
+    # Пуллим изменения репозитория
+    - !reference [.scripts, git_pull]
+    - !reference [.scripts, install_frontend_on_server]
+    # PM2 только для SSR (есть build/server/entry.mjs); static — скрипт удалит старый процесс и выйдет
+    - ssh -p $SSH_PORT $PROJECT_HOST "cd $PROJECT_PATH/$FRONTEND_PATH && bash pm2.sh $PM2_PROCESS_NAME"
+
+frontend_deploy_dev:
+  extends: .frontend_deploy
+  variables: !reference [.variables, dev]
+  dependencies:
+    - frontend_build_dev
+  environment:
+    name: dev
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+      changes: !reference [.changes, frontend_build]
+
+frontend_deploy_prod:
+  extends: .frontend_deploy
+  variables: !reference [.variables, prod]
+  dependencies:
+    - frontend_build_prod
+  environment:
+    name: prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" && $ENABLE_PROD_JOBS == "true"
+      changes: !reference [.changes, frontend_build]

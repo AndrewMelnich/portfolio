@@ -1,0 +1,11 @@
+frontend_diff_in_slice:
+  image: $IMAGE_FRONTEND
+  stage: test
+  variables: !reference [.variables, common]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /_section$/
+  before_script:
+    - git fetch --unshallow origin || true
+    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+  script:
+    - node .agents/skills/verify-ui/scripts/diff-in-slice.mjs --section "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" --assembly "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" --base "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"

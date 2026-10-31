@@ -1,0 +1,24 @@
+---
+import { CSP_ENABLED_INTEGRATIONS } from '@/shared/config';
+import InlineScript from '@/shared/ui/InlineScript';
+import { requireCspIntegration, vkPixelSnippet } from './snippets';
+
+type Props = {
+    id: string;
+};
+
+const { id } = Astro.props;
+
+requireCspIntegration('vkPixel', 'VkPixel', CSP_ENABLED_INTEGRATIONS);
+---
+
+<InlineScript code={vkPixelSnippet(id)} />
+<noscript>
+    <div>
+        <img
+            src={`https://top-fwz1.mail.ru/counter?id=${encodeURIComponent(id)};js=na`}
+            style="position:absolute;left:-9999px;"
+            alt="Top.Mail.Ru"
+        />
+    </div>
+</noscript>

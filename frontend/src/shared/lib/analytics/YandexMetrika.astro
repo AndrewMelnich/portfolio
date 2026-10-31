@@ -1,0 +1,20 @@
+---
+import { CSP_ENABLED_INTEGRATIONS } from '@/shared/config';
+import InlineScript from '@/shared/ui/InlineScript';
+import { requireCspIntegration, yandexMetrikaSnippet, type YandexMetrikaOptions } from './snippets';
+
+type Props = YandexMetrikaOptions & {
+    id: number;
+};
+
+const { id, ...options } = Astro.props;
+
+requireCspIntegration('yandexMetrica', 'YandexMetrika', CSP_ENABLED_INTEGRATIONS);
+---
+
+<InlineScript code={yandexMetrikaSnippet(id, options)} />
+<noscript>
+    <div>
+        <img src={`https://mc.yandex.ru/watch/${id}`} style="position:absolute; left:-9999px;" alt="" />
+    </div>
+</noscript>

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/a11y-audit.schema.json",
+  "title": "Accessibility Audit Envelope",
+  "type": "object",
+  "required": ["schemaVersion", "metadata", "summary", "findings"],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["url", "tool", "standard", "generatedAt"],
+      "properties": {
+        "url": { "type": "string" },
+        "tool": { "type": "string" },
+        "standard": { "type": "string" },
+        "waitMs": { "type": "number" },
+        "generatedAt": { "type": "string" },
+        "runId": { "type": ["string", "null"] },
+        "runLabel": { "type": ["string", "null"] },
+        "mode": { "type": "string" },
+        "session": { "type": ["object", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "byImpact", "byStatus"],
+      "properties": {
+        "total": { "type": "number" },
+        "byImpact": { "type": "object" },
+        "byStatus": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "status", "impact", "ruleId", "summary"],
+        "properties": {
+          "source": { "type": "string" },
+          "tool": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["violation", "needs-review", "pass"]
+          },
+          "impact": {
+            "type": "string",
+            "enum": ["critical", "serious", "moderate", "minor"]
+          },
+          "pageUrl": { "type": "string" },
+          "ruleId": { "type": "string" },
+          "wcag": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "selector": { "type": "string" },
+          "html": { "type": "string" },
+          "summary": { "type": "string" },
+          "evidence": { "type": "string" },
+          "remediation": { "type": "string" },
+          "helpUrl": { "type": "string" },
+          "screenshot": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

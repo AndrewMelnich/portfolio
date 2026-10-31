@@ -1,0 +1,12 @@
+---
+import type { Thing, WithContext } from 'schema-dts';
+import { sanitizeHtml } from '@/shared/lib/utils';
+
+export type Props<T extends Thing> = {
+    data: WithContext<T>;
+};
+
+const { data } = Astro.props;
+---
+
+<script is:inline type="application/ld+json" set:html={sanitizeHtml(JSON.stringify(data))} />

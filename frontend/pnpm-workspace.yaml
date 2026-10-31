@@ -1,0 +1,19 @@
+overrides:
+    axios: '>=0.32.0 <1'
+    handlebars: '>=4.7.10 <5'
+
+nodeVersion: 24.22.1
+
+allowBuilds:
+    '@parcel/watcher': true
+    esbuild: true
+    sharp: true
+    unrs-resolver: true
+onlyBuiltDependencies:
+    - '@parcel/watcher'
+    - esbuild
+    - sharp
+    - unrs-resolver
+permissions:
+  fallow:
+    skills: false

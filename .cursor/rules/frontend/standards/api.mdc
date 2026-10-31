@@ -1,0 +1,24 @@
+---
+description: Backend API — SSR vs nextapi, Api*/App*
+globs: frontend/src/**/api/**,frontend/src/**/nextapi/**,frontend/src/**/generated/**
+alwaysApply: false
+---
+
+# Backend API
+
+New or updated endpoint — skill `.agents/skills/backend-api-integration`.
+
+## Two channels
+
+- **SSR** (Astro pages, `getCommonPageProps`, `entities/*/api`): `axiosAPI` → `PUBLIC_API_HOST/api`.
+- **Browser:** `fetch('/nextapi/...')` only. BFF on the Astro server. Do not call `PUBLIC_API_HOST` / `v1/*` from client JS.
+
+**Allowed in the browser:** same-origin `/nextapi/*`, or public endpoints with no auth.
+
+## Typing
+
+- **`Api*`** — `components` / `operations` from generated OpenAPI.
+- **`App*`** — domain: entity `I*` or `ViewRawProps` / section `*RawProps`, not `components['schemas']`. Page pipeline: `page-sections.mdc`.
+- Media: map to `ImageShape` / `VideoShape` in `transformer.ts`.
+
+Scaffold: `pnpm run mkar` (see skill).

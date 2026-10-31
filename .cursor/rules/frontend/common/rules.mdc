@@ -1,0 +1,8 @@
+---
+description: Общие правила (frontend)
+globs: frontend/**/*
+alwaysApply: false
+---
+
+- Отвечай **по-русски**, кратко (режим **caveman** — skill `.agents/skills/caveman`, по умолчанию включён; выключить: `disable caveman`, `stop caveman`, `normal mode`).
+- Используй pnpm.

@@ -1,0 +1,41 @@
+.variables:
+  common: &common # Глобальные переменные
+    HUSKY: 0
+    IMAGE_FRONTEND: node:24.22.1-bookworm
+    E2E_TESTING_IMAGE: mcr.microsoft.com/playwright:v1.50.1-focal
+    GIT_DEPTH: 5
+    GIT_STRATEGY: fetch
+    GIT_LFS_SKIP_SMUDGE: 1
+    FF_USE_FASTZIP: "true"
+    CACHE_COMPRESSION_LEVEL: fastest
+    ARTIFACT_COMPRESSION_LEVEL: fastest
+    COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+    SSH_PORT: 22
+    FRONTEND_PORT: 3000
+    PM2_PROCESS_NAME: "portfolio"
+    FRONTEND_PATH: ./frontend
+    BACKEND_PATH: ./backend
+    ENABLE_PROD_JOBS: "false"
+  dev: &dev # Переменные для дева
+    <<: *common
+    ENV_PRIVATE_KEY: $STAGING_PRIVATE_KEY
+    PROJECT_HOST: "chipsa@91.230.210.213"
+    PROJECT_PATH: "/var/www/chipsa/data/www/portfolio.chipsa.ru"
+    BRANCH_NAME: dev
+    SSH_PORT: 33022
+    HOST: "https://portfolio.chipsa.ru"
+    DOCS_API_HOST: "https://portfolio.chipsa.ru"
+  dev_build_frontend:
+    <<: *dev
+    GIT_LFS_SKIP_SMUDGE: 0
+  prod: &prod # Переменные для продакшена
+    <<: *common
+    ENV_PRIVATE_KEY: $PRODUCTION_PRIVATE_KEY
+    PROJECT_HOST: "<<[PROJECT_HOST_HERE]>>"
+    PROJECT_PATH: "<<[PROJECT_PATH_HERE]>>"
+    BRANCH_NAME: master
+    HOST: "[HOST]"
+    DOCS_API_HOST: "https://portfolio.chipsa.ru"
+  prod_build_frontend:
+    <<: *prod
+    GIT_LFS_SKIP_SMUDGE: 0

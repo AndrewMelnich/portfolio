@@ -1,0 +1,17 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "trailingComma": "all",
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": true,
+    "arrowParens": "always",
+    "printWidth": 120,
+    "sortPackageJson": false,
+    "sortImports": {
+        "newlinesBetween": false,
+        "internalPattern": ["@/"],
+        "groups": ["builtin", ["external", "unknown"], "internal", ["parent", "sibling", "index"]]
+    },
+    "astro": {},
+    "ignorePatterns": ["pnpm-lock.yaml", "pnpm-workspace.yaml", "*.figma.mcp.yml"]
+}

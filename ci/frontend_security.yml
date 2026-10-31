@@ -1,0 +1,31 @@
+.frontend_audit:
+  extends: .cache_pnpm_pull
+  image: $IMAGE_FRONTEND
+  stage: test
+  dependencies: []
+  variables: !reference [.variables, common]
+  before_script:
+    - cd $FRONTEND_PATH
+    - !reference [.scripts, install_frontend_dependencies]
+  script:
+    - pnpm audit --prod --audit-level=high
+  allow_failure: false
+
+frontend_audit:
+  extends: .frontend_audit
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: !reference [.changes, frontend_build]
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+frontend_audit_dev:
+  extends: .frontend_audit
+  variables: !reference [.variables, dev]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+frontend_audit_prod:
+  extends: .frontend_audit
+  variables: !reference [.variables, prod]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" && $ENABLE_PROD_JOBS == "true"

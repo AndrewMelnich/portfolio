@@ -1,0 +1,31 @@
+---
+import ErrorView from '@/_pages/Error';
+import RootLayout from '@/app/layouts/RootLayout';
+import { getCommonPageProps } from '@/shared/api/get-common-page-props';
+import { DICT, type AppLocale } from '@/shared/config';
+import { reportServerError } from '@/shared/lib/rollbar';
+
+type Props = {
+    error?: unknown;
+};
+
+const locale = Astro.currentLocale as AppLocale;
+const { error } = Astro.props as Props;
+
+Astro.response.status = 500;
+
+if (error) {
+    await reportServerError(error, Astro.request, { route: Astro.url.pathname });
+}
+
+const htmlClass = 'error-page';
+const commonPageProps = await getCommonPageProps();
+const meta = {
+    ...commonPageProps.meta,
+    title: DICT.INTERNAL_SERVER_ERROR[locale],
+};
+---
+
+<RootLayout htmlClass={htmlClass} meta={meta} withKeyVisual={false}>
+    <ErrorView code="500" message={DICT.SOMETHING_WENT_WRONG[locale]} />
+</RootLayout>

@@ -1,0 +1,17 @@
+---
+description: Fallow project policy — commands live in the fallow skill
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Fallow
+
+Commands and flags: skill `fallow` (`.agents/skills/fallow`, copy of fallow 3.33.1). Do not guess flags.
+
+Run from `frontend/` via `pnpm exec fallow` (`pnpm fallow:audit`, `pnpm fallow:scan`). Config: `frontend/.fallowrc.json`. The repo root has no fallow config. Do not run `fallow init`, `fallow recommend`, or `fallow agent install` there.
+
+`fallow audit` gate is `new-only`. Inherited debt is not a failure. Do not mass-fix the backlog unless asked.
+
+Setup is done: CI `.github/workflows/frontend_fallow.yml`, husky pre-commit, Cursor `.cursor/hooks.json` (the `stop` dispatcher lints the files the chat edited; it does not run fallow). Do not use skill `fallow-setup` to re-wire them.
+
+After a fallow version bump, from `frontend/` re-run `pnpm exec fallow agent install --harness cursor --without guide --without mcp --without hooks` so the skill copy matches the package.

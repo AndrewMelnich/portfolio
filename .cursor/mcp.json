@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "Framelink MCP for Figma": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--stdio"],
+      "envFile": "${workspaceFolder}/.env"
+    },
+    "planfix": {
+      "url": "https://mcp.planfix.ru/mcp"
+    },
+    "rollbar": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@rollbar/mcp-server@latest"],
+      "env": {
+        "ROLLBAR_CONFIG_FILE": "${workspaceFolder}/.rollbar-mcp.json"
+      }
+    },
+    "storybook": {
+      "url": "http://localhost:6006/mcp"
+    }
+  }
+}

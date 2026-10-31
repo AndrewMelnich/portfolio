@@ -1,0 +1,64 @@
+{
+  "app": "frontend",
+  "verify": {
+    "build": "pnpm exec astro build",
+    "buildOutput": "build",
+    "serve": "pnpm exec astro preview --host {host} --port {port}",
+    "host": "127.0.0.1",
+    "port": 4327,
+    "env": {
+      "PORT": "{port}",
+      "PUBLIC_HOST": "{url}",
+      "PUBLIC_ENV": "local"
+    },
+    "readyText": "portfolio",
+    "sourcePaths": [
+      "src",
+      "public",
+      "astro.config.ts"
+    ],
+    "sourceExclude": [
+      "src/**/*.test.*",
+      "**/*.md"
+    ]
+  },
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 900
+    },
+    "laptop": {
+      "width": 1280,
+      "height": 800
+    },
+    "tablet": {
+      "width": 1024,
+      "height": 1366,
+      "isMobile": true,
+      "hasTouch": true
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "deviceScaleFactor": 3
+    }
+  },
+  "defaultViewport": "laptop",
+  "overflowWidths": [
+    1440,
+    1366,
+    1199,
+    767,
+    375
+  ],
+  "checks": {
+    "onEdit": "SKIP_TSC=1 VERIFY_DIRECT_BIN=1 bash scripts/verify-files.sh",
+    "onStop": "bash scripts/verify-changed.sh"
+  },
+  "e2e": {
+    "dir": "tests/e2e",
+    "command": "pnpm test:e2e"
+  }
+}

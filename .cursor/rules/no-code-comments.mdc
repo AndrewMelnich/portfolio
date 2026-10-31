@@ -1,0 +1,15 @@
+---
+description: Self-explaining JS/TS — no explanatory comments. Agents copy nearby comments as templates for hacks.
+globs: "**/*.{js,jsx,mjs,cjs,ts,tsx}"
+alwaysApply: false
+---
+
+# Self-explaining code
+
+JS/TS only. Leave `*.sh` and other non-JS/TS files untouched. Leave `${var#pattern}`, `${var##pattern}`, and `${#var}` whole — that `#` is a shell parameter expansion, not a comment.
+
+Do not write or keep explanatory comments, commented-out code, HACK notes, or workaround excuses. Put intent in names, extracted functions, types, and tests. Fix workarounds or track them in an issue.
+
+**Allowed only:** `TODO` / `FIXME`; license/SPDX headers; directives/pragmas with a reason (`eslint-disable`, `stylelint-disable`, `prettier-ignore`, `@ts-expect-error`, `'use client'`, `/* @__PURE__ */`, `/* glsl */`, beasties, `/// <reference>`, `fallow-ignore-next-line`); JSDoc on public exported APIs when the signature cannot carry the contract; a rare URL to an issue/spec for a constraint a name cannot hold.
+
+Skill: `.agents/skills/no-code-comments`.

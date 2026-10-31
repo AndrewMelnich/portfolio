@@ -1,0 +1,26 @@
+{
+  "source": "/Users/andrewmelnichenko/Sites/plenum",
+  "sitesRoot": "/Users/andrewmelnichenko/Sites",
+  "targets": [
+    { "name": "plenum", "action": "skip" },
+    { "name": "vileda", "action": "skip" },
+    { "name": "ren", "archetype": "bitrix", "defaultBranch": "master" },
+    { "name": "eldis24", "archetype": "bitrix", "defaultBranch": "master" },
+    { "name": "astro-boilerplate", "defaultBranch": "master" },
+    { "name": "chillbase", "defaultBranch": "master" },
+    { "name": "chipsa.ru-laravel", "defaultBranch": "master" },
+    { "name": "dvizh-online-school", "defaultBranch": "master" },
+    { "name": "tnf-site", "defaultBranch": "master" },
+    { "name": "blings-web", "defaultBranch": "master" },
+    { "name": "energoline", "defaultBranch": "master" },
+    { "name": "next-boilerplate", "defaultBranch": "master" },
+    { "name": "zagranitsa", "defaultBranch": "master" },
+    { "name": "vki", "defaultBranch": "master" },
+    { "name": "composit", "archetype": "vite-root", "defaultBranch": "master" },
+    { "name": "new-composit", "archetype": "vite-root", "defaultBranch": "master" },
+    { "name": "tmc.epp", "defaultBranch": "master" },
+    { "name": "vue-boilerplate", "defaultBranch": "master" },
+    { "name": "vue.epp", "defaultBranch": "master" },
+    { "name": "sgk.epp", "defaultBranch": "master" }
+  ]
+}

@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { tp } from '@/shared/lib/formatting';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'section'> & RawProps;
+
+const { code, message, ...props } = Astro.props;
+---
+
+<section class:list={['error-page-section', props.class]} {...props} aria-labelledby="error-page-title">
+    <div class="wrapper error-page-section__inner">
+        <p class="error-page-section__code">{tp(code)}</p>
+        <h1 id="error-page-title" class="error-page-section__message">
+            {tp(message)}
+        </h1>
+    </div>
+</section>
+
+<style lang="scss" is:global>
+    @use './ErrorView';
+</style>

@@ -1,0 +1,40 @@
+---
+/**
+ * @see https://www.npmjs.com/package/@rocketmark/figma-testing-library
+ * 
+ * Finding the node
+This component calls the Figma API to grab an image of a particular node in your Figma file. You can pull in a whole page, a single component, and even a single layer.
+
+The easiest way to find a particular node id in your Figma file is by using Figma in the browser and opening up dev tools where you have full access to the Figma plugin api with figma.
+
+Open up dev tools in fav browser.
+Select the node you want to grab.
+In the console enter: `figma.currentPage.selection[0].id`
+This will return the node id that you will pass to the component.
+ */
+
+import { PUBLIC_FIGMA_FILE_ID, PUBLIC_FIGMA_TOKEN } from 'astro:env/client';
+
+type Props = {
+    nodeId: string;
+};
+
+const nodeId = Astro.props.nodeId;
+---
+
+<ftl-holster
+    access-token={PUBLIC_FIGMA_TOKEN}
+    file-id={PUBLIC_FIGMA_FILE_ID}
+    node={nodeId}
+    opacity="0.3"
+    show-grid="false"
+    view="overlay"
+>
+    <div class="figma-layout__slot">
+        <slot />
+    </div>
+</ftl-holster>
+
+<style lang="scss" is:global>
+    @use './FigmaLayout';
+</style>

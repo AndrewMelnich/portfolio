@@ -1,0 +1,76 @@
+{
+    "entry": [
+        "plugins/stylelint/*.js",
+        "scripts/sync-figma-colors.mjs",
+        "scripts/generate-zod-schemas-openapi.mjs",
+        "scripts/check-empty-style-blocks.js",
+        "steiger.config.ts",
+        "global-setup.ts",
+        "src/shared/ui/**/*.astro",
+        "src/shared/ui/**/*.ts",
+        "src/shared/ui/**/*.tsx",
+        "src/shared/lib/**/*.ts",
+        "src/widgets/**/*.astro",
+        "src/widgets/**/*.ts",
+        "src/widgets/**/*.tsx"
+    ],
+    "ignorePatterns": [
+        "dist/**",
+        "build/**",
+        ".astro/**",
+        "src/app/css/base/_normalize.scss",
+        "**/*.generated.ts",
+        "src/shared/api/generated/**",
+        "public/static/**",
+        "scripts/__fixtures__/**"
+    ],
+    "ignoreDependencies": [
+        "@feature-sliced/eslint-config",
+        "eslint-plugin-boundaries",
+        "eslint-plugin-import",
+        "postcss-html",
+        "classnames",
+        "@astrojs/node",
+        "@astrojs/react",
+        "@astrojs/sitemap",
+        "openapi-typescript",
+        "@typescript/native"
+    ],
+    "ignoreFindings": [
+        "src/**/*.scss",
+        "src/app/layouts/RootLayout/RootLayout.ts",
+        "src/shared/ui/AjaxForm/**",
+        "src/shared/api/utils/**",
+        "src/shared/api/axios-instance.ts",
+        "src/shared/lib/axios/**"
+    ],
+    "ignoreExports": [
+        { "file": "src/**/*.astro", "exports": ["Props", "RawProps"] },
+        { "file": "src/**/index.ts", "exports": ["*"] }
+    ],
+    "boundaries": {
+        "preset": "feature-sliced",
+        "zones": [{ "name": "pages", "patterns": ["src/_pages/**"] }]
+    },
+    "audit": {
+        "gate": "new-only"
+    },
+    "rules": {
+        "policy-violation": "off"
+    },
+    "overrides": [
+        {
+            "files": ["src/**/lib/**"],
+            "rules": {
+                "unused-files": "off",
+                "unused-exports": "off",
+                "unused-types": "off",
+                "unused-class-members": "off"
+            }
+        }
+    ],
+    "duplicates": {
+        "mode": "mild",
+        "minOccurrences": 3
+    }
+}

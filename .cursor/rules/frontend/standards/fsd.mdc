@@ -1,0 +1,51 @@
+---
+description: Feature Sliced Design (local deviations from the canon)
+globs: frontend/src/**/*
+alwaysApply: false
+---
+
+# FSD
+
+Canon: [fsd.how](https://fsd.how). Check: `pnpm lint:fsd` (steiger).
+
+## Steiger exceptions
+
+File-scoped `rules: 'off'` lives in `frontend/steiger.config.ts`. One consumer → move the slice to that consumer; do not silence. An `off` without a reason on that disable naming why the move is impossible is a review finding.
+
+## Astro
+
+- `src/pages` — file-based routing only (thin entry points).
+- FSD pages layer → `src/_pages` (imports `@/_pages/*`).
+- Do not put slices/segments in `src/pages`.
+- New **section** lives under the view until a second page needs it. Rule: `page-sections.mdc`.
+
+## Layers (top to bottom)
+
+`app` → `_pages` → `widgets` → `features` → `entities` → `shared`
+
+Imports only downward. Slice public API — `index.ts` (named exports, not `export *`).
+
+Do not export what nothing outside the file imports. Helper type — no `export`, or inline. `export` only when there is an external import.
+
+Exception: `RawProps as XRawProps` on the section / view public API — transformers import it; do not wait for the first caller.
+
+```ts
+// ❌ useless export — type lives only in this file
+export type OptionResult = {
+  id: string;
+  votes: number;
+  percent: number;
+};
+
+export type PollResult = {
+  options: OptionResult[];
+};
+
+// ✅ inline if used once
+export type PollResult = {
+  options: { id: string; votes: number; percent: number }[];
+};
+
+// ✅ no export if needed locally twice
+type OptionResult = { id: string; votes: number; percent: number };
+```

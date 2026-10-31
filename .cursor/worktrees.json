@@ -1,0 +1,4 @@
+{
+  "setup-worktree-unix": "bash .cursor/scripts/setup-worktree.sh",
+  "setup-worktree": "bash .cursor/scripts/setup-worktree.sh"
+}

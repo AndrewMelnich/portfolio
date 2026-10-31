@@ -1,0 +1,15 @@
+---
+import { CSP_ENABLED_INTEGRATIONS } from '@/shared/config';
+import InlineScript from '@/shared/ui/InlineScript';
+import { googleAnalyticsSnippet, requireCspIntegration } from './snippets';
+
+type Props = {
+    id: string;
+};
+
+const { id } = Astro.props;
+
+requireCspIntegration('googleAnalytics', 'GoogleAnalytics', CSP_ENABLED_INTEGRATIONS);
+---
+
+<InlineScript code={googleAnalyticsSnippet(id)} />

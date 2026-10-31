@@ -1,0 +1,24 @@
+---
+import { CSP_ENABLED_INTEGRATIONS } from '@/shared/config';
+import InlineScript from '@/shared/ui/InlineScript';
+import { googleTagManagerSnippet, requireCspIntegration } from './snippets';
+
+type Props = {
+    id: string;
+};
+
+const { id } = Astro.props;
+
+requireCspIntegration('gtm', 'GoogleTagManager', CSP_ENABLED_INTEGRATIONS);
+---
+
+<InlineScript code={googleTagManagerSnippet(id)} />
+<noscript>
+    <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${encodeURIComponent(id)}`}
+        title="Google Tag Manager"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+    ></iframe>
+</noscript>

@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'form'>;
+
+const { ...props } = Astro.props;
+---
+
+<form class:list={['js-ajax-form', props.class]} {...props}>
+    <slot />
+</form>
+
+<script>
+    const init = async () => {
+        const { default: ajaxForms } = await import('./AjaxForm');
+
+        ajaxForms.init();
+    };
+
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(init);
+    } else {
+        init();
+    }
+</script>

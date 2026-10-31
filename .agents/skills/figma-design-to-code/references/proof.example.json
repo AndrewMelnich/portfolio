@@ -1,0 +1,15 @@
+{
+  "fileKey": "fixture",
+  "frameId": "1:1",
+  "url": "/layout-clean/",
+  "figmaFile": "figma/desktop-1440.json",
+  "seams": [
+    {
+      "name": "hero to intro",
+      "axis": "y",
+      "prev": { "selector": ".hero", "nodeId": "1:2" },
+      "next": { "selector": ".intro__text", "nodeId": "1:4" }
+    }
+  ],
+  "origins": [{ "name": "title", "selector": ".hero__title", "nodeId": "1:3" }]
+}

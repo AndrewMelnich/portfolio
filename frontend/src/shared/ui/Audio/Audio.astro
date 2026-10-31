@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { AudioShape } from '@/shared/model/types';
+
+export type Props = HTMLAttributes<'audio'> & {
+    source: AudioShape;
+};
+
+const { source, ...props } = Astro.props;
+---
+
+<audio {...props}>
+    {source.type ? <source src={source.src} type={source.type} /> : <source src={source.src} />}
+    <slot />
+</audio>

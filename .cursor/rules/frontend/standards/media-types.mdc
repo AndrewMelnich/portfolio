@@ -1,0 +1,87 @@
+---
+description: Canonical ImageShape, VideoShape and AudioShape types for media
+globs: frontend/**/*.{ts,tsx,astro}
+alwaysApply: false
+---
+
+# Media types (ImageShape, VideoShape, AudioShape)
+
+For images, video and audio in the frontend, **always** use types from `@/shared/model/types`:
+
+- **Images** → `ImageShape` (`src`, optionally `width`, `height`, `alt`, `title`)
+- **Video** → `VideoShape` — array of `{ media?, src, type, captions? }`
+- **Audio** → `AudioShape` (`src`, optionally `type`)
+
+```ts
+import type { ImageShape, VideoShape, AudioShape } from "@/shared/model/types";
+```
+
+## Do not
+
+- Duplicate `VideoShape` / `AudioShape` under another name in props, `model/`, or `App*`
+
+## Exceptions
+
+- Extra fields (e.g. `caption`) — on the **parent** object next to `image: ImageShape`, not via a new image-like type
+
+## Rendering
+
+When a prop (or field) is typed as `ImageShape`, `VideoShape` or `AudioShape`, render it with the shared UI components — not raw `<img>` / `<video>` / `<audio>` / `<source>`.
+
+| Prop type    | Component | Import                                                   |
+| ------------ | --------- | -------------------------------------------------------- |
+| `ImageShape` | `Image`   | `@/shared/ui/Image`                                      |
+| `VideoShape` | `Video`   | `@/shared/ui/Video/Video.astro` (or `@/shared/ui/Video`) |
+| `AudioShape` | `Audio`   | `@/shared/ui/Audio/Audio.astro` (or `@/shared/ui/Audio`) |
+
+```astro
+---
+import Image from '@/shared/ui/Image';
+import Video from '@/shared/ui/Video/Video.astro';
+import Audio from '@/shared/ui/Audio/Audio.astro';
+import type { ImageShape, VideoShape, AudioShape } from '@/shared/model/types';
+---
+
+{image && (
+    <Image
+        src={image.src}
+        alt={image.alt ?? ''}
+        width={image.width ?? 96}
+        height={image.height ?? 96}
+        title={image.title}
+        sizes="(max-width: 767px) 50vw, 25vw"
+    />
+)}
+
+{video && <Video sources={video} />}
+{audio && <Audio source={audio} />}
+```
+
+- **`Image`**: pass `ImageShape` fields (`src`, `alt`, `width`, `height`, `title`) **and required `sizes`** from the mockup slot width (vw/px per breakpoint). ESLint `custom/require-image-sizes`. Defaults for optional `width` / `height` / `alt` when missing.
+- **`Video`**: prop name is `sources` (type `VideoShape`); pass poster and other `<video>` attrs via component props.
+- **`Audio`**: prop name is `source` (type `AudioShape`); pass `controls` and other `<audio>` attrs via component props. Transcript — on the parent block, not on `AudioShape`.
+
+## Do not (markup)
+
+- Raw `<img src={image.src} …>` when `image` is `ImageShape`
+- Raw `<video>` / manual `<source>` loop when data is `VideoShape`
+- Raw `<audio>` / manual `<source>` when data is `AudioShape`
+
+## Examples (types)
+
+```ts
+// ✅
+image?: ImageShape;
+
+// ❌
+sources: { src: string; type: string }[];
+
+// ✅
+video: VideoShape;
+
+// ❌
+src: string;
+
+// ✅
+audio: AudioShape;
+```

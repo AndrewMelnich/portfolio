@@ -1,0 +1,45 @@
+# На сервере:
+# 1. ssh-keygen
+# 2. Копировать приватный ключ, положить в переменную PRODUCTION_PRIVATE_KEY в gitlab
+# 3. Копировать публичный ключ (~/.ssh/<KEY_NAME>.pub), добавить в ~/.ssh/authorized_keys на сервере
+# 4. (prod only) Добавить публичный ключ (~/.ssh/<KEY_NAME>.pub) в SSH-ключи студийного гитлаба
+# 5. Добавить в переменную SSH_KNOWN_HOSTS в gitlab (ssh-keyscan -H <SERVER IP>)
+# 6. Клонировать репозиторий проекта на удаленный сервер (этот путь будет $PROJECT_PATH)
+
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - local: ci/_variables.yml
+  - local: ci/_hidden_jobs.yml
+  - local: ci/frontend_security.yml
+  - local: ci/frontend_premerge_checks.yml
+  - local: ci/frontend_fallow.yml
+  - local: ci/frontend_diff_in_slice.yml
+  - local: ci/gitleaks.yml
+  - local: ci/frontend_build.yml
+  - local: ci/frontend_deploy.yml
+  - local: ci/pull.yml
+
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
+variables:
+  SAST_EXCLUDED_PATHS: "spec, test, tests, tmp, frontend/scripts, frontend/plugins, frontend/codegen, frontend/astro.config.ts"
+
+image: alpine
+
+default:
+  interruptible: true
+
+stages:
+  - build
+  - test
+  - deploy
+  - deploy_after

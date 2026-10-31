@@ -1,0 +1,266 @@
+---
+description: >
+  SCSS / BEM. Reset gate: before finish, Read _reset + _normalize and keep
+  in BEM only props those files do not already set for the markup tag.
+  Hit area: a control under 42px on either axis uses `@include clickable`.
+globs: frontend/src/**/*.scss
+alwaysApply: false
+---
+
+# Стили
+
+- Используй методологию БЭМ.
+
+## Медиа-фрейм (обложка / клип)
+
+Рамка под фото/видео (`__clip`, `__media`, `__picture` с `overflow: clip` / `object-fit: cover` внутри) — **`aspect-ratio: W / H`** из макета (целые). Stylelint: `custom/no-fixed-media-height`.
+
+Обычный fluid-фрейм: `width: 100%` + `aspect-ratio`, без `height` в `px`. Брейкпоинт — новый `aspect-ratio`.
+
+Фиксированный `height` в `px` ок **только если** есть `aspect-ratio` и `width` — `auto` или не задан (высота задаёт размер, ширина из ratio).
+
+```scss
+// ❌ width 100% + фиксированный height
+.block__clip {
+  width: 100%;
+  height: 804px;
+}
+
+// ✅ fluid
+.block__clip {
+  width: 100%;
+  aspect-ratio: 1392 / 804;
+}
+
+// ✅ высота задаёт размер
+.block__clip {
+  aspect-ratio: 16 / 9;
+  height: 400px;
+}
+```
+
+`height: 100%` на самом `<img>` / cover внутри absolute-fill — ок.
+
+## Подчёркивание ссылки / кнопки из макета
+
+В макете underline у текстовой ссылки или button-like control → класс `.link` / `.link--underlined` (`app/css/components/_link.scss`), не `text-decoration: underline`. Stylelint: `custom/no-text-decoration-underline`.
+
+## Reset / normalize (CRITICAL)
+
+Source of truth: `frontend/src/app/css/base/_reset.scss` + `_normalize.scss`.
+
+### Gate (обязательный шаг)
+
+Перед сдачей / «готово» по любому BEM SCSS:
+
+1. Открой (Read) `_reset.scss` и `_normalize.scss`.
+2. Для каждого тега в разметке компонента (`.astro` / HTML) сопоставь BEM-селектор → тег.
+3. В BEM оставь **только** свойства, которых **нет** у этого тега в reset/normalize (таблица ниже — шпаргалка; файлы — канон).
+4. Link-reset с соседней секции не копируй — сначала шаг 1–3.
+
+**Done:** в SCSS компонента нет свойства, которое reset/normalize уже задаёт для того же тега. Исключение: override **чужой** библиотеки (Swiper и т.п.) — `stylelint-disable-next-line` with a reason, or a mixin whose name states the override.
+
+| Элемент / кейс                                           | Уже есть                                                                                                              | Файл                                              |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `a`                                                      | `color: inherit`, `text-decoration: none`                                                                             | `_normalize.scss`                                 |
+| `button`                                                 | `padding: 0`, `border: 0`, `background-color: transparent`, `color: inherit`, `font-*: inherit`, `cursor: pointer`, … | `_reset.scss`                                     |
+| `body`, `p`, `h*`, `figure`, `blockquote`, form controls | `margin: 0` (и др.)                                                                                                   | `_normalize.scss`                                 |
+| `[hidden]`                                               | `display: none`                                                                                                       | `_normalize.scss`                                 |
+| `ul` / `ol` без маркеров                                 | `.list-unstyled` в `layout/_common.scss`                                                                              | не дублируй `margin`/`padding`/`list-style` в BEM |
+
+```scss
+// ❌ ПЛОХО — уже в reset / normalize
+.toggler {
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+}
+
+.card {
+  color: inherit;
+  text-decoration: none;
+}
+
+// ✅ ХОРОШО — только то, чего нет в reset / normalize
+.toggler {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+```
+
+## Page column grid (Figma layout grid)
+
+Колоночная сетка страницы (`--grid-columns`, `cols()` / `grid-columns` / `grid-offset` в `app/css/utils/_mixins.scss`) — **только flex**:
+
+```scss
+display: flex;
+gap: var(--grid-gap);
+// widths: @include grid-columns(N);
+// skip: @include grid-offset(margin-left, K);
+```
+
+**Запрещено** реализовывать эту сетку через `display: grid` + `repeat(var(--grid-columns), …)` (или равные `1fr`-треки «под колонки»). Локальный CSS grid для другой раскладки (не page grid) — ок.
+
+Колонка страницы — класс `.wrapper` в `layout/_common.scss`: `max-width: var(--wrapper-max-width)`, поля по центру, `padding-inline: var(--offset-x)`. Секция этот набор не повторяет.
+
+## Ограничение ширины текста
+
+Для переноса строк в **текстовых блоках** (заголовки, описания, абзацы) задавай `max-width` в **`ch`**, не в `px`.
+
+Число — stdout скрипта. Флаги и формула — его `--help`:
+
+```bash
+node .agents/skills/figma-design-to-code/scripts/ch-from-px.mjs --help
+```
+
+`--font` — файл того же face, что в макете. В `ch` не подставляй `px / fontSize`.
+
+Исключения: layout-контейнеры, карточки, медиа, декор — там `px` / `%` по задаче.
+
+## Вложенность в SCSS
+
+Стили потомков, модификаторов, псевдоклассов и контекстных селекторов (`:nth-of-type`, `[open]`, `@media`) пиши **внутри блока-родителя** — так сохраняется визуальный контекст. Это обычная вложенность SCSS, не склейка BEM-классов в HTML. Stylelint: `custom/nest-contextual-selectors`.
+
+```scss
+// ❌ ПЛОХО — разнесённые селекторы, контекст теряется
+.card__item:nth-of-type(4n + 1) .card__surface {
+  background-color: #{$green-800};
+}
+
+.card__item {
+  display: flex;
+}
+
+// ✅ ХОРОШО
+.card__item {
+  display: flex;
+
+  &:nth-of-type(4n + 1) {
+    .card__surface {
+      background-color: #{$green-800};
+    }
+  }
+}
+```
+
+- Отдельный корневой селектор — только для **другого** BEM-блока/элемента того же компонента (сосед в разметке).
+- Не выноси `@media (prefers-reduced-motion)` и `:hover` родителя в конец файла — см. ниже.
+
+## Локальные CSS custom properties
+
+Не заводи `--*` в компоненте, если значение не переиспользуется **в двух и более селекторах**. Инлайнь `px` / токен в том свойстве, где нужно. Брейкпоинт — оверрайд того же свойства, не новая переменная.
+
+Одна пара `width` + `height` на том же элементе — не переиспользование.
+
+Ок оставить: `--pad-x` на label и list; глобальные `--app-border-radius`, `--grid-gap`, `--offset-x`.
+
+```scss
+// ❌ ПЛОХО — var живёт ради одного селектора
+.block {
+  --block-icon-size: 48px;
+
+  @include laptop {
+    --block-icon-size: 32px;
+  }
+}
+
+.block__icon {
+  width: var(--block-icon-size);
+  height: var(--block-icon-size);
+}
+
+// ✅ ХОРОШО
+.block__icon {
+  width: 48px;
+  height: 48px;
+
+  @include laptop {
+    width: 32px;
+    height: 32px;
+  }
+}
+```
+
+```scss
+// ✅ переиспользование — var ок
+.block {
+  --block-pad-x: 59px;
+
+  @include laptop {
+    --block-pad-x: 48px;
+  }
+}
+
+.block__label {
+  margin-inline: var(--block-pad-x);
+}
+
+.block__list {
+  padding-inline: var(--block-pad-x);
+}
+```
+
+## Зона клика
+
+`@mixin clickable` в `frontend/src/app/css/utils/_mixins.scss`. `::before` растягивает мишень до 42×42 и не меняет видимый размер. Если обе стороны контрола уже не меньше 42px, миксин не нужен. Иконка, крестик и любой контрол меньше 42px по одной из осей получают `@include clickable`.
+
+## Выравнивание текста в контроле
+
+Текст внутри button-like элементов (кнопка, бейдж, статус, опция фильтра) — `@include text-box-trim` из `frontend/src/app/css/utils/_mixins.scss` (`text-box: trim-both cap alphabetic`). Сырое `text-box` в BEM не пиши.
+
+## Transition на shared UI
+
+Перед `transition` / `transform` / `opacity` на селекторе: проверь, не сидит ли уже transition на **том же** элементе (shared `Button`, `Icon`, `Video`, …).
+
+Если да — **не** переопределяй. Вешай motion на **обёртку** вокруг компонента; root shared-компонента не трогай.
+
+```scss
+// ❌ ПЛОХО — ломает transition кнопки
+.block__cta {
+  transition: opacity 0.2s ease;
+}
+
+// ✅ ХОРОШО — motion на wrapper
+.block__cta-wrap {
+  transition: opacity 0.2s ease;
+}
+```
+
+## `prefers-reduced-motion`
+
+Отключай transition/animation **внутри класса**, у которого они заданы — не выноси общий блок в конец файла.
+
+```scss
+// ❌ ПЛОХО
+.carousel__track {
+  transition: transform 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel__track,
+  .hero__title {
+    transition: none;
+  }
+}
+
+// ✅ ХОРОШО
+.carousel__track {
+  transition: transform 0.4s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+```
+
+- Каждый анимируемый элемент — свой `@media` рядом с `transition` / `animation`.
+- Состояния (`:hover`, `[open]`) без анимации при `reduce` должны оставаться доступными.
+- Для JS (GSAP, Swiper): `matchMedia('(prefers-reduced-motion: reduce)')` до autoplay/parallax.

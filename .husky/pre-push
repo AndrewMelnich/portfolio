@@ -1,0 +1,79 @@
+UPSTREAM="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+BASE=
+for ref in "$UPSTREAM" master origin/master; do
+    [ -n "$ref" ] || continue
+    BASE="$(git merge-base "$ref" HEAD 2>/dev/null || true)"
+    [ -n "$BASE" ] && break
+done
+if [ -z "$BASE" ]; then
+    echo "pre-push: no merge-base with the upstream, master or origin/master; fetch master and retry" >&2
+    exit 1
+fi
+
+CHANGED="$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- frontend/ | sed 's#^frontend/##')"
+
+if [ -n "$CHANGED" ]; then
+    cd frontend
+
+    SCRIPTS="$(echo "$CHANGED" | grep -E '^src/.*\.(js|jsx|ts|tsx|astro)$' || true)"
+    STYLES="$(echo "$CHANGED" | grep -E '^src/.*\.(css|scss|astro)$' || true)"
+    SRC_CHANGED="$(echo "$CHANGED" | grep -E '^src/' || true)"
+
+    NEEDED="tsc oxfmt fallow"
+    [ -n "$SCRIPTS" ] && NEEDED="$NEEDED eslint"
+    [ -n "$STYLES" ] && NEEDED="$NEEDED stylelint"
+    [ -n "$SRC_CHANGED" ] && NEEDED="$NEEDED steiger"
+
+    MISSING=
+    for bin in $NEEDED; do
+        [ -x "node_modules/.bin/$bin" ] || MISSING="$MISSING $bin"
+    done
+    if [ -n "$MISSING" ]; then
+        echo "pre-push: missing binaries in frontend/node_modules/.bin:$MISSING" >&2
+        echo "Fix: ROOT_WORKTREE_PATH=<main repo> bash .cursor/scripts/setup-worktree.sh (or cd frontend && pnpm install). Do not bypass with --no-verify." >&2
+        exit 1
+    fi
+
+    JOBS=
+    run_on_files() {
+        list="$1"
+        shift
+        printf '%s\n' "$list" | tr '\n' '\0' | xargs -0 "$@"
+    }
+    start() {
+        name="$1"
+        shift
+        "$@" </dev/null &
+        JOBS="$JOBS $!:$name"
+    }
+
+    start tsc pnpm exec tsc --noEmit
+    start format run_on_files "$CHANGED" pnpm exec oxfmt --check --no-error-on-unmatched-pattern
+    start fallow pnpm exec fallow audit --base "$BASE" --quiet --gate-marker pre-push
+    if [ -n "$SCRIPTS" ]; then
+        start eslint run_on_files "$SCRIPTS" pnpm exec eslint --cache --cache-location .eslintcache
+    fi
+    if [ -n "$STYLES" ]; then
+        start stylelint run_on_files "$STYLES" pnpm exec stylelint --cache --cache-location .stylelintcache
+    fi
+    if [ -n "$SRC_CHANGED" ]; then
+        start steiger pnpm exec steiger ./src
+        start lint:pages pnpm lint:pages
+        start lint:feature-map pnpm lint:feature-map
+        start lint:breakpoints pnpm lint:breakpoints
+    fi
+
+    FAILED=
+    for job in $JOBS; do
+        wait "${job%%:*}" || FAILED="$FAILED ${job#*:}"
+    done
+    if [ -n "$FAILED" ]; then
+        echo "pre-push: failed:$FAILED" >&2
+        exit 1
+    fi
+
+    cd ..
+fi
+
+command -v git-lfs >/dev/null 2>&1 || { echo >&2 "\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting the 'pre-push' file in the hooks directory (set by 'core.hookspath'; usually '.git/hooks').\n"; exit 2; }
+        git lfs pre-push "$@"

@@ -1,0 +1,12 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'div'> & RawProps;
+
+const { ...props } = Astro.props;
+---
+
+<div class:list={['wrapper', props.class]} {...props}>
+    <h1 class="h1">portfolio</h1>
+</div>

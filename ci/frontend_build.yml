@@ -1,0 +1,47 @@
+.frontend_build:
+  extends: .cache_pnpm
+  image: $IMAGE_FRONTEND
+  stage: build
+  variables: !reference [.variables, common]
+  artifacts:
+    paths:
+      - frontend/build/
+      - frontend/junit.xml
+      - frontend/public/sitemap*.xml
+    expire_in: 1 day
+    reports:
+      junit:
+        - frontend/junit.xml
+  before_script:
+    - cd $FRONTEND_PATH
+    - !reference [.scripts, install_frontend_dependencies]
+
+frontend_build_dev:
+  extends: .frontend_build
+  variables: !reference [.variables, dev_build_frontend]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+      when: always
+      changes: !reference [.changes, frontend_build]
+  script:
+    - bash create-env.sh -p $FRONTEND_PORT -e development -h $HOST -a $HOST -d $DOCS_API_HOST
+    - !reference [.scripts, sync_astro_types]
+    - pnpm lint
+    - pnpm build
+    - pnpm test:ci
+    - pnpm test:html
+    - bash robots-disallow.sh
+
+frontend_build_prod:
+  extends: .frontend_build
+  variables: !reference [.variables, prod_build_frontend]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" && $ENABLE_PROD_JOBS == "true"
+      changes: !reference [.changes, frontend_build]
+  script:
+    - bash create-env.sh -p $FRONTEND_PORT -e production -h $HOST -a $HOST -d $DOCS_API_HOST
+    - !reference [.scripts, sync_astro_types]
+    - pnpm lint
+    - pnpm build
+    - pnpm test:ci
+    - pnpm test:html

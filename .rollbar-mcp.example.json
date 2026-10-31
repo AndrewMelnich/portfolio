@@ -1,0 +1,6 @@
+{
+  "projects": [
+    { "name": "frontend", "token": "" },
+    { "name": "backend", "token": "" }
+  ]
+}

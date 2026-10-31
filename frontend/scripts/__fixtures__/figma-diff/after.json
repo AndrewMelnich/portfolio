@@ -1,0 +1,126 @@
+{
+    "name": "Lux",
+    "lastModified": "2026-10-12T09:00:00Z",
+    "thumbnailUrl": "https://volatile.example/after.png",
+    "role": "viewer",
+    "editorType": "figma",
+    "linkAccess": "view",
+    "version": "200",
+    "document": {
+        "id": "0:0",
+        "name": "Document",
+        "type": "DOCUMENT",
+        "children": [
+            {
+                "id": "0:1",
+                "name": "Home",
+                "type": "CANVAS",
+                "backgroundColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+                "children": [
+                    {
+                        "id": "1:1",
+                        "name": "Hero",
+                        "type": "FRAME",
+                        "absoluteBoundingBox": { "x": 0, "y": 0, "width": 1440, "height": 800 },
+                        "absoluteRenderBounds": { "x": 0, "y": 0, "width": 1440, "height": 800.4 },
+                        "fills": [
+                            {
+                                "type": "SOLID",
+                                "color": { "r": 0.5, "g": 0, "b": 0, "a": 1 }
+                            }
+                        ],
+                        "children": [
+                            {
+                                "id": "1:2",
+                                "name": "Headline",
+                                "type": "TEXT",
+                                "characters": "Hi",
+                                "style": { "fontSize": 24, "fontWeight": 400 }
+                            },
+                            {
+                                "id": "1:4",
+                                "name": "NewBadge",
+                                "type": "FRAME",
+                                "itemSpacing": 0,
+                                "children": []
+                            },
+                            {
+                                "id": "1:11",
+                                "name": "Copy",
+                                "type": "TEXT",
+                                "characters": "c"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "1:10",
+                        "name": "Footer",
+                        "type": "FRAME",
+                        "itemSpacing": 4,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "0:2",
+                "name": "Unused",
+                "type": "CANVAS",
+                "children": [
+                    {
+                        "id": "9:1",
+                        "name": "Parked",
+                        "type": "FRAME",
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    },
+    "components": {
+        "2:1": {
+            "key": "compA",
+            "name": "Button",
+            "description": "Primary",
+            "remote": false
+        }
+    },
+    "componentSets": {},
+    "styles": {
+        "S:1": {
+            "key": "styleA",
+            "name": "Black",
+            "styleType": "FILL",
+            "remote": false,
+            "description": ""
+        },
+        "S:2": {
+            "key": "styleB",
+            "name": "White",
+            "styleType": "FILL",
+            "remote": false,
+            "description": ""
+        }
+    },
+    "variables": {
+        "VariableID:1": {
+            "name": "bg",
+            "resolvedType": "COLOR",
+            "valuesByMode": {
+                "m1": { "r": 0.9, "g": 1, "b": 1, "a": 1 }
+            }
+        },
+        "VariableID:2": {
+            "name": "fg",
+            "resolvedType": "COLOR",
+            "valuesByMode": {
+                "m1": { "r": 0, "g": 0, "b": 0, "a": 1 }
+            }
+        }
+    },
+    "variableCollections": {
+        "VariableCollectionId:1": {
+            "name": "Color",
+            "modes": [{ "modeId": "m1", "name": "Default" }]
+        }
+    }
+}

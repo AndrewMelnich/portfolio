@@ -1,0 +1,14 @@
+frontend_fallow:
+  extends: .cache_pnpm
+  image: $IMAGE_FRONTEND
+  stage: test
+  variables: !reference [.variables, common]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes: !reference [.changes, frontend_build]
+  before_script:
+    - git fetch --unshallow origin || true
+    - cd $FRONTEND_PATH
+    - !reference [.scripts, install_frontend_dependencies]
+  script:
+    - pnpm exec fallow audit

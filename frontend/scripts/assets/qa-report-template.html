@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{TITLE}}</title>
+        <style>
+            :root {
+                --bg: #f4f4f1;
+                --panel: #fff;
+                --ink: #1a1a1a;
+                --muted: #6b6b66;
+                --line: #ddd9d0;
+                --pass: #1b7a3d;
+                --pass-bg: #e8f6ec;
+                --fail: #b42318;
+                --fail-bg: #fdeceb;
+                --skip: #6b6b66;
+                --skip-bg: #f0efe9;
+                --info: #8a5a00;
+                --info-bg: #fff6e0;
+                --warn: #9a3412;
+                --warn-bg: #ffedd5;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                font:
+                    14px/1.45 ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    Segoe UI,
+                    sans-serif;
+                color: var(--ink);
+                background: var(--bg);
+            }
+            main {
+                max-width: 2560px;
+                margin: 0 auto;
+                padding: 32px 20px 64px;
+            }
+            header {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 20px 24px;
+                margin-bottom: 20px;
+            }
+            h1 {
+                margin: 0 0 8px;
+                font-size: 22px;
+                font-weight: 650;
+            }
+            .meta {
+                color: var(--muted);
+                font-size: 13px;
+            }
+            .meta code {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 12px;
+                color: var(--ink);
+            }
+            .verdict {
+                display: inline-block;
+                margin-top: 12px;
+                padding: 4px 10px;
+                border-radius: 999px;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                font-size: 12px;
+            }
+            .verdict-PASS {
+                background: var(--pass-bg);
+                color: var(--pass);
+            }
+            .verdict-FAIL {
+                background: var(--fail-bg);
+                color: var(--fail);
+            }
+            .counts {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 16px 0 0;
+            }
+            .counts span {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            .warn {
+                margin: 16px 0 0;
+                padding: 10px 12px;
+                border-radius: 6px;
+                background: var(--warn-bg);
+                color: var(--warn);
+                font-size: 13px;
+            }
+            section {
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 16px 20px;
+                margin-bottom: 16px;
+            }
+            h2 {
+                margin: 0 0 12px;
+                font-size: 16px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+            }
+            th,
+            td {
+                text-align: left;
+                vertical-align: top;
+                padding: 8px 10px;
+                border-bottom: 1px solid var(--line);
+            }
+            th {
+                color: var(--muted);
+                font-weight: 600;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+            td code {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 12px;
+            }
+            .pill {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 999px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+            .pill-PASS {
+                background: var(--pass-bg);
+                color: var(--pass);
+            }
+            .pill-FAIL {
+                background: var(--fail-bg);
+                color: var(--fail);
+            }
+            .pill-SKIP {
+                background: var(--skip-bg);
+                color: var(--skip);
+            }
+            .pill-INFO {
+                background: var(--info-bg);
+                color: var(--info);
+            }
+            .muted {
+                color: var(--muted);
+            }
+            footer {
+                margin-top: 8px;
+                color: var(--muted);
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>{{TITLE}}</h1>
+                <div class="meta">
+                    Block: <code>{{BLOCK}}</code> · Frame: <code>{{FRAME}}</code> · Generated:
+                    <code>{{GENERATED_AT}}</code>
+                </div>
+                <div class="meta">
+                    Snapshot: <code>{{SNAPSHOT}}</code><br />
+                    Check: <code>{{CHECK}}</code><br />
+                    CSS tree: <code>{{CSS_TREE}}</code><br />
+                    URL: <code>{{URL}}</code> · Selector: <code>{{SELECTOR}}</code> · Viewport:
+                    <code>{{VIEWPORT}}</code> (designedWidth <code>{{DESIGNED_WIDTH}}</code>)
+                </div>
+                <div class="verdict verdict-{{VERDICT}}">{{VERDICT}}</div>
+                <div class="counts">
+                    <span>PASS {{COUNT_PASS}}</span>
+                    <span>FAIL {{COUNT_FAIL}}</span>
+                    <span>SKIP {{COUNT_SKIP}}</span>
+                    <span>INFO {{COUNT_INFO}}</span>
+                </div>
+                {{WARNINGS}}
+            </header>
+
+            <section>
+                <h2>Diff</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Selector</th>
+                            <th>Check</th>
+                            <th>Figma (from)</th>
+                            <th>Live</th>
+                            <th>Δ</th>
+                            <th>Verdict</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ROWS}}
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>Map</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Selector</th>
+                            <th>Node id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{MAP_ROWS}}
+                    </tbody>
+                </table>
+            </section>
+
+            <footer>
+                qa-review · template:
+                <code>.agents/skills/qa-review/assets/report-template.html</code> · protocol: compare-protocol.md ·
+                anti-cheat: do not quiet-edit check values
+            </footer>
+        </main>
+    </body>
+</html>

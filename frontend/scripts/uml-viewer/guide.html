@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8" />
+        <title>UML viewer — как пользоваться</title>
+        <style>
+            :root {
+                --bg: #14171c;
+                --panel: #1b1f26;
+                --line: #2c323c;
+                --text: #d7dce3;
+                --muted: #8b95a3;
+                --bad: #e5534b;
+                --ok: #3fb950;
+                --accent: #e3b341;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                max-width: 820px;
+                margin: 0 auto;
+                padding: 32px 20px 80px;
+                background: var(--bg);
+                color: var(--text);
+                font:
+                    16px/1.5 system-ui,
+                    sans-serif;
+            }
+            h1 {
+                font-size: 28px;
+                margin: 0 0 8px;
+            }
+            h2 {
+                margin: 36px 0 8px;
+                font-size: 20px;
+            }
+            p {
+                margin: 8px 0;
+            }
+            a {
+                color: var(--accent);
+            }
+            code,
+            kbd {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 0.9em;
+            }
+            kbd {
+                padding: 1px 6px;
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                background: var(--panel);
+            }
+            .lead {
+                color: var(--muted);
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 12px 0;
+            }
+            th,
+            td {
+                padding: 6px 8px;
+                border-bottom: 1px solid var(--line);
+                text-align: left;
+                vertical-align: top;
+            }
+            th {
+                color: var(--accent);
+                font-size: 12px;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+            .bad {
+                color: var(--bad);
+            }
+            .ok {
+                color: var(--ok);
+            }
+            .muted {
+                color: var(--muted);
+            }
+            svg {
+                display: block;
+                width: 100%;
+                height: auto;
+                margin: 16px 0;
+                background: #101318;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+            }
+            svg text {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 13px;
+                fill: var(--text);
+            }
+            svg .hint {
+                font-family: system-ui, sans-serif;
+                font-size: 12px;
+                fill: var(--accent);
+            }
+        </style>
+    </head>
+    <body>
+        <p><a href="/">← к диаграмме</a></p>
+        <h1>Как пользоваться</h1>
+        <p class="lead">
+            Диаграмма — это дерево папок проекта. Стрелка значит «импортирует». Чем ниже блок, тем он внутреннее.
+        </p>
+
+        <h2>Провалиться внутрь</h2>
+        <p>
+            <strong>Двойной клик по папке</strong> открывает её содержимое. Папка подписана курсивом, внутри список
+            <code>▸ подпапка</code> и файлы.
+        </p>
+        <p>
+            <strong>Двойной клик по файлу</strong> открывает карточку: экспорт, кто от него зависит и исходник. Ссылка
+            «Открыть в Cursor» ведёт на эту строку.
+        </p>
+        <p><strong>Двойной клик по овалу</strong> (блок другого уровня, который торчит сбоку) переносит к нему.</p>
+        <svg viewBox="0 0 760 250" role="img" aria-label="Двойной клик по папке проваливает внутрь">
+            <rect x="30" y="40" width="200" height="150" rx="6" fill="#1d3326" stroke="#3fb950" />
+            <text x="130" y="68" text-anchor="middle" font-style="italic" font-family="system-ui" font-weight="600">
+                frontend
+            </text>
+            <text x="48" y="96">▸ entities</text>
+            <text x="48" y="116">▸ shared</text>
+            <text x="48" y="136">▸ app</text>
+            <text class="hint" x="30" y="24">двойной клик</text>
+            <path d="M250 110 H310" stroke="#e3b341" stroke-width="2" marker-end="url(#ah)" />
+            <rect x="330" y="30" width="180" height="90" rx="6" fill="#1d3326" stroke="#3fb950" />
+            <text x="420" y="54" text-anchor="middle" font-style="italic" font-family="system-ui" font-weight="600">
+                entities
+            </text>
+            <text x="346" y="82">▸ article</text>
+            <text x="346" y="102">▸ page</text>
+            <rect x="530" y="40" width="200" height="70" rx="6" fill="#1d3326" stroke="#3fb950" />
+            <text x="630" y="68" text-anchor="middle">request.ts</text>
+            <text x="630" y="90" text-anchor="middle" fill="#8b95a3">+ getArticle</text>
+            <text class="hint" x="530" y="28">двойной клик по файлу — карточка</text>
+            <defs>
+                <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <path d="M0 0 L10 5 L0 10" fill="none" stroke="#e3b341" />
+                </marker>
+            </defs>
+        </svg>
+        <p>
+            На <code>x5-vyruchaem</code> путь такой: корень → <code>frontend</code> → <code>entities</code> →
+            <code>article</code> → файл.
+        </p>
+
+        <h2>Подняться обратно</h2>
+        <table>
+            <tr>
+                <th>Жест</th>
+                <th>Куда</th>
+            </tr>
+            <tr>
+                <td><kbd>Esc</kbd> или кнопка <kbd>←</kbd></td>
+                <td>На уровень выше. Если открыта карточка файла — сначала закрывает её.</td>
+            </tr>
+            <tr>
+                <td>Крошки сверху <code>x5 / frontend / entities</code></td>
+                <td>Клик по любому звену прыгает сразу туда.</td>
+            </tr>
+        </table>
+
+        <h2>Смотреть, не проваливаясь</h2>
+        <table>
+            <tr>
+                <th>Жест</th>
+                <th>Что делает</th>
+            </tr>
+            <tr>
+                <td>Один клик</td>
+                <td>Выделяет блок. Справа — его связи и нарушения. Остальные стрелки тускнеют.</td>
+            </tr>
+            <tr>
+                <td>Клик по пустому месту</td>
+                <td>Снимает выделение. Справа сводка всего уровня.</td>
+            </tr>
+            <tr>
+                <td>Навести на стрелку</td>
+                <td>Список импортов, которые она объединяет. <span class="bad">✕</span> — нарушение.</td>
+            </tr>
+            <tr>
+                <td>Имя в правой панели</td>
+                <td>Прыгает к этому модулю.</td>
+            </tr>
+            <tr>
+                <td>Колесо</td>
+                <td>Прокрутка холста. Это обычный скролл, не зум.</td>
+            </tr>
+            <tr>
+                <td>
+                    <kbd>Ctrl</kbd> + колесо, <kbd>Ctrl</kbd> <kbd>+</kbd> / <kbd>−</kbd>, кнопки <kbd>−</kbd>
+                    <kbd>100%</kbd> <kbd>+</kbd>
+                </td>
+                <td>Масштаб. <kbd>Ctrl</kbd> <kbd>0</kbd> возвращает 100%.</td>
+            </tr>
+            <tr>
+                <td><kbd>R</kbd></td>
+                <td>Перечитать диаграмму. Само обновление и так идёт при сохранении файлов.</td>
+            </tr>
+        </table>
+
+        <h2>Что означают блоки</h2>
+        <p>
+            Цифра в левом верхнем углу — уровень. <strong>0 внизу</strong>, это внутренний слой (<code>shared</code>,
+            <code>Enums</code>). Наружу уровень растёт, <code>routes</code> и <code>pages</code> наверху. Хорошая
+            стрелка смотрит вниз: внешний слой зависит от внутреннего.
+        </p>
+        <table>
+            <tr>
+                <th>Вид</th>
+                <th>Значение</th>
+            </tr>
+            <tr>
+                <td>Курсив</td>
+                <td>Папка. Двойной клик открывает её.</td>
+            </tr>
+            <tr>
+                <td><code>▸</code> и обычная строка</td>
+                <td>Подпапка и файл внутри блока.</td>
+            </tr>
+            <tr>
+                <td><code>◆</code></td>
+                <td>Astro-компонент.</td>
+            </tr>
+            <tr>
+                <td><code>API</code></td>
+                <td>Файл, который только реэкспортирует (<code>index.ts</code>).</td>
+            </tr>
+            <tr>
+                <td><code>I</code></td>
+                <td>Только типы, интерфейс или enum.</td>
+            </tr>
+            <tr>
+                <td><span class="ok">Зелёная</span> заливка</td>
+                <td>Нарушений нет.</td>
+            </tr>
+            <tr>
+                <td><span class="bad">Красная</span> заливка и <code>✕12</code></td>
+                <td>Столько импортов нарушают правило. <code>✕</code> в углу блока.</td>
+            </tr>
+            <tr>
+                <td>Овал</td>
+                <td>
+                    Модуль не с этого уровня. Двойной клик переносит к нему. Кнопка <kbd>npm</kbd> добавляет овалы
+                    пакетов.
+                </td>
+            </tr>
+        </table>
+
+        <h2>Стрелки</h2>
+        <table>
+            <tr>
+                <th>Линия</th>
+                <th>Значение</th>
+            </tr>
+            <tr>
+                <td>Сплошная серая</td>
+                <td>Импорт в правильную сторону.</td>
+            </tr>
+            <tr>
+                <td class="bad">Красная</td>
+                <td>
+                    Нарушение. Внутренний слой импортирует внешний, или слайс импортирует соседний слайс (<code
+                        >entities/article</code
+                    >
+                    → <code>entities/page</code>).
+                </td>
+            </tr>
+            <tr>
+                <td>Пунктир</td>
+                <td>Только <code>import type</code>.</td>
+            </tr>
+            <tr>
+                <td>Точки</td>
+                <td>
+                    HTTP: фронт вызывает <code>/v1/…</code>, стрелка идёт в контроллер бэкенда. Наведение показывает
+                    маршрут.
+                </td>
+            </tr>
+        </table>
+        <p>
+            Кнопка <kbd>Стрелки</kbd> прячет линии. Кнопка <kbd>Компактно</kbd> оставляет только имена блоков, без
+            списка файлов. Кнопка <kbd>Цвет</kbd> переключает заливку: нарушения или метрика D (насколько блок далёк от
+            «стабильного и абстрактного»).
+        </p>
+
+        <h2>Правая панель</h2>
+        <p>У выделенного блока:</p>
+        <table>
+            <tr>
+                <th>Число</th>
+                <th>Смысл</th>
+            </tr>
+            <tr>
+                <td>Ca</td>
+                <td>Сколько чужих модулей его импортируют. 0 — никто не пользуется, кандидат на удаление.</td>
+            </tr>
+            <tr>
+                <td>Ce</td>
+                <td>Сколько модулей импортирует он сам.</td>
+            </tr>
+            <tr>
+                <td>I</td>
+                <td>Нестабильность, Ce / (Ca + Ce). Близко к 1 — блок легко менять, от него никто не зависит.</td>
+            </tr>
+            <tr>
+                <td>A</td>
+                <td>Доля абстрактного: интерфейсы и абстрактные классы среди файлов блока.</td>
+            </tr>
+            <tr>
+                <td>D</td>
+                <td>
+                    Расстояние до главной последовательности. 0 — либо стабильный и абстрактный, либо нестабильный и
+                    конкретный.
+                </td>
+            </tr>
+        </table>
+        <p>Ниже списки «Зависит от» и «Используется в». Клик по строке открывает тот модуль.</p>
+
+        <h2>Карточка файла</h2>
+        <p>
+            Двойной клик по файлу. Слева экспорт и связи, справа исходник. Клик по строке экспорта прокручивает исходник
+            к ней и меняет ссылку «Открыть в Cursor». <kbd>Esc</kbd> или <kbd>×</kbd> закрывает карточку и не уходит с
+            уровня. Рядом с именем файла — бейдж расширения (TS / Astro / SCSS…), как в дереве Source Control. Любые
+            файлы в сканируемых каталогах (scss, yml, md, svg…) видны в папках и открываются; в стрелки зависимостей
+            входят только модули с <code>import</code>/<code>export</code>. Бинарники — в дереве, в карточке пометка
+            <code>⟨ binary file ⟩</code>.
+        </p>
+
+        <h2>Diff для MR</h2>
+        <p>
+            Сервер запускается с веткой, с которой сравнивать: <code>pnpm uml --diff origin/dev</code>. В шапке плашка
+            <code>DIFF</code>.
+        </p>
+        <table>
+            <tr>
+                <th>Цвет</th>
+                <th>Значение</th>
+            </tr>
+            <tr>
+                <td class="ok">Зелёная</td>
+                <td>
+                    обводка — блок целиком новый (все файлы внутри добавлены) или новая стрелка. Папка, которая уже
+                    была, с новыми файлами внутри — не зелёная.
+                </td>
+            </tr>
+            <tr>
+                <td style="color: #e3b341">Жёлтая</td>
+                <td>обводка — внутри есть изменения или новые файлы, но сам блок не появился с нуля.</td>
+            </tr>
+            <tr>
+                <td class="muted">Серая приглушённая</td>
+                <td>блок без изменений (соседи по стрелкам и остальной фон).</td>
+            </tr>
+            <tr>
+                <td class="bad">Красный пунктир</td>
+                <td>обводка — удалено. Заливка остаётся приглушённой.</td>
+            </tr>
+            <tr>
+                <td class="bad">Красная</td>
+                <td>в этом режиме только новое нарушение, которого не было на базе.</td>
+            </tr>
+        </table>
+        <p>
+            Кнопка <kbd>Только изменения</kbd> прячет всё, чего diff не коснулся, и оставляет соседей по стрелкам.
+            Строка <code>diff +1 ~13 −0</code> справа: добавлено, изменено, удалено.
+        </p>
+        <p>
+            Двойной клик по изменённому, новому или удалённому файлу открывает карточку сразу на diff кода относительно
+            базы (зелёные строки добавлены, красные удалены). Слева номер строки файла. «Открыть в Cursor» открывает
+            первую изменённую строку, клик по строке выбирает другую. Новый файл, которого git ещё не видит
+            (<code>??</code>), показывается целиком как добавление. Кнопка <kbd>Файл</kbd> в шапке карточки показывает
+            исходник целиком. У папки diff кода нет — внутри неё несколько файлов, провалитесь до файла.
+        </p>
+
+        <h2>Заметка агенту</h2>
+        <p>
+            Поле «Агенту» внизу панели. Напиши, что не так, и нажми «Отправить». Вместе с текстом уходит, какая
+            диаграмма открыта, какой уровень и что выделено. Потом скажи агенту разобрать inbox.
+        </p>
+
+        <h2>Запуск</h2>
+        <table>
+            <tr>
+                <th>Команда</th>
+                <th>Зачем</th>
+            </tr>
+            <tr>
+                <td><code>pnpm uml</code></td>
+                <td>Диаграмма на <a href="http://127.0.0.1:4815">127.0.0.1:4815</a>. Перечитывает файлы сама.</td>
+            </tr>
+            <tr>
+                <td><code>pnpm uml --open</code></td>
+                <td>То же и сразу открывает браузер.</td>
+            </tr>
+            <tr>
+                <td><code>pnpm uml --diff origin/dev</code></td>
+                <td>Подсветка изменений относительно ветки.</td>
+            </tr>
+        </table>
+        <p class="muted">
+            Команды из каталога <code>frontend/</code>. Страница гайда — <a href="/guide">/guide</a>, кнопка
+            <kbd>?</kbd> в шапке диаграммы.
+        </p>
+    </body>
+</html>

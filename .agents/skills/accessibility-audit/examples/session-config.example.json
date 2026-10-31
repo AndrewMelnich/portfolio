@@ -1,0 +1,77 @@
+{
+  "baseUrl": "https://example.com",
+  "loginUrl": "https://example.com/login",
+  "storageStatePath": "sandbox/auth/state.json",
+  "secrets": {
+    "username": "A11Y_USERNAME",
+    "password": "A11Y_PASSWORD"
+  },
+  "variables": {
+    "tenant": "acme"
+  },
+  "actionLibrary": {
+    "login-form": [
+      {
+        "type": "fill",
+        "selector": "#email",
+        "value": "${secret:username}"
+      },
+      {
+        "type": "fill",
+        "selector": "#password",
+        "value": "${secret:password}"
+      },
+      {
+        "type": "click",
+        "selector": "button[type=\"submit\"]"
+      },
+      {
+        "type": "waitForURL",
+        "value": "**/dashboard"
+      }
+    ],
+    "dismiss-cookie-banner": [
+      {
+        "type": "click",
+        "selector": "[data-testid=\"cookie-accept\"]"
+      }
+    ]
+  },
+  "actions": [
+    {
+      "use": "login-form"
+    }
+  ],
+  "routeProfiles": [
+    {
+      "name": "account-pages",
+      "match": "/account|/settings",
+      "afterLogin": [
+        {
+          "use": "dismiss-cookie-banner"
+        }
+      ],
+      "beforeAudit": [
+        {
+          "type": "setViewport",
+          "width": 1280,
+          "height": 900
+        },
+        {
+          "type": "waitForSelector",
+          "selector": "main"
+        }
+      ]
+    },
+    {
+      "name": "tenant-switcher",
+      "match": "/app",
+      "beforeAudit": [
+        {
+          "type": "goto",
+          "value": "${baseUrl}/app/${tenant}"
+        }
+      ]
+    }
+  ]
+}

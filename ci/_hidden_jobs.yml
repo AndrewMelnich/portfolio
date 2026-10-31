@@ -1,0 +1,50 @@
+.cache_pnpm:
+  cache: &cache_pnpm
+    key:
+      files:
+        - frontend/pnpm-lock.yaml
+      prefix: pnpm
+    paths:
+      - frontend/.pnpm-store
+    policy: pull-push
+
+.cache_pnpm_pull:
+  cache:
+    <<: *cache_pnpm
+    policy: pull
+
+.scripts:
+  script:
+    - "which ssh-agent || ( apk update && apk add openssh-client )"
+    - eval $(ssh-agent -s)
+    - echo "$ENV_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+  install_frontend_dependencies:
+    - npm install --global corepack@latest
+    - corepack enable
+    - pnpm config set store-dir "$CI_PROJECT_DIR/frontend/.pnpm-store"
+    - pnpm install --frozen-lockfile
+  sync_astro_types:
+    - pnpm astro sync
+  install_deploy_deps:
+    - which rsync || ( apk update && apk add rsync )
+  git_pull:
+    - ssh -p $SSH_PORT $PROJECT_HOST "cd $PROJECT_PATH/ && git checkout $BRANCH_NAME && git pull --force origin $BRANCH_NAME && git lfs prune"
+  install_frontend_on_server:
+    - |
+      ssh -p $SSH_PORT $PROJECT_HOST "cd $PROJECT_PATH/$FRONTEND_PATH && export CI=true NVM_DIR=\"\${NVM_DIR:-\$HOME/.nvm}\" && . \"\$NVM_DIR/nvm.sh\" && { nvm use || nvm install; } && LOCK=\$(sha256sum pnpm-lock.yaml | awk '{print \$1}') && if [ -d node_modules ] && [ -f .pnpm-lock.sha256 ] && [ \"\$(cat .pnpm-lock.sha256)\" = \"\$LOCK\" ]; then echo 'pnpm install skipped: lockfile unchanged'; else corepack enable && pnpm config set store-dir .pnpm-store && pnpm install --frozen-lockfile && echo \"\$LOCK\" > .pnpm-lock.sha256; fi"
+
+.changes:
+  frontend_build:
+    - ".gitlab-ci.yml"
+    - "ci/**/*"
+    - "frontend/pnpm-lock.yaml"
+    - "frontend/package.json"
+    - "frontend/astro.config.*"
+    - "frontend/config.js"
+    - "frontend/scripts/**/*"
+    - "frontend/src/**/*"
+  pull:
+    - "ci/**/*"
+    - "backend/**/*"

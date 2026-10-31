@@ -1,0 +1,25 @@
+---
+description: Model picks for teach/how/why and the page pipeline roles (implementer, visual-judge, code-review, orchestrator) in this repo
+alwaysApply: true
+---
+
+# Roles recorded here: teach → how + why, plus the page pipeline roles (implementer, visual-judge, code-review, orchestrator). Unlisted roles fall back to skill defaults.
+
+# inherit-parent = same model as parent chat.
+
+# budget: medium (high)
+
+how explorer: grok-4.5-high
+how explainer: claude-sonnet-5-5-high
+why investigators: grok-4.5-high
+why synthesizer: claude-sonnet-5-5-high
+
+# Page pipeline. Skills and playbooks name these roles, never a model.
+# implementer: the ticket agent of a section or of assembly.
+# visual-judge: a strong multimodal model; it grades pixels from sheets.
+# code-review: one agent on the assembly diff, Standards and Spec.
+# orchestrator: the model of the parent chat that runs implement-spec; the user sets it before the run, a Task cannot change it.
+implementer: cursor-grok-4.5-high
+visual-judge: claude-sonnet-5-5-high
+code-review: claude-sonnet-5-5-high
+orchestrator: claude-sonnet-5-5-high

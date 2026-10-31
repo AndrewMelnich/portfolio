@@ -1,0 +1,43 @@
+---
+import { CSP_ENABLED_INTEGRATIONS } from '@/shared/config';
+import { isRollbarEnvironmentEnabled, rollbarCodeVersion, rollbarEnvironment } from '@/shared/lib/rollbar';
+import { requireCspIntegration } from './snippets';
+
+type Props = {
+    accessToken: string;
+};
+
+const { accessToken } = Astro.props;
+
+requireCspIntegration('rollbar', 'Rollbar', CSP_ENABLED_INTEGRATIONS);
+---
+
+{isRollbarEnvironmentEnabled && (
+    <div
+        hidden
+        data-rollbar
+        data-access-token={accessToken}
+        data-environment={rollbarEnvironment}
+        data-code-version={rollbarCodeVersion}
+    />
+)}
+
+<script>
+    import Rollbar from 'rollbar';
+    import { isBotUserAgent } from '@/shared/lib/rollbar/bots';
+
+    const config = document.querySelector<HTMLElement>('[data-rollbar]')?.dataset;
+
+    if (config?.accessToken) {
+        Rollbar.init({
+            accessToken: config.accessToken,
+            captureUncaught: true,
+            captureUnhandledRejections: true,
+            checkIgnore: () => isBotUserAgent(navigator.userAgent),
+            payload: {
+                environment: config.environment,
+                client: config.codeVersion ? { javascript: { code_version: config.codeVersion } } : undefined,
+            },
+        });
+    }
+</script>

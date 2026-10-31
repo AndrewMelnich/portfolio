@@ -1,0 +1,21 @@
+---
+description: Project a11y — carousel, skip-link
+globs: frontend/src/**/*.{astro,scss,ts,tsx}
+alwaysApply: false
+---
+
+# Accessibility (project)
+
+RU gov / WCAG: skill `accessibility` (fstack). Widget AT quirks: skill `aria-patterns` (fstack). Motion placement: `css.mdc`.
+
+## Skip link
+
+First in `<body>`, inside `<nav aria-label="Ссылки для быстрого перехода">` (SR landmark).
+
+## Carousel
+
+**With** interactive nodes in slides: one landmark (`section[aria-label]`); no `role="group"` / extra `aria-roledescription`; prev/next/dots — `aria-hidden` on the block + `tabindex="-1"` (mouse only); Tab/←→ via links/buttons/fields in `<li>`. Do not `inert` / `aria-hidden` list items. Keyboard slide change → focus a tabbable in the active slide. Never `tabindex="0"` on `ul.scrolling-list`.
+
+**Without** focusable nodes in `<li>` (img/text only): while SliderNav is visible (`aria-hidden="false"`), prev/next stay in Tab. Arrow keys — `keydown` on `.js-scrolling-slider` when focus is inside. Names: `{section label}: next slide`.
+
+Repeated widgets on a page need unique accessible names (not two `aria-label="Смотреть видео"`, not three `section aria-label="Галерея"`).

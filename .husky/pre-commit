@@ -1,0 +1,65 @@
+if command -v gitleaks >/dev/null 2>&1; then
+    gitleaks git --staged --redact --no-banner
+fi
+
+STAGED="$(git diff --cached --name-only)"
+
+echo "$STAGED" | grep --quiet '^frontend/' || exit 0
+
+cd frontend
+
+LINTABLE="$(echo "$STAGED" | grep -E '^frontend/src/.*\.(js|jsx|ts|tsx|astro|md|mdx|css|scss)$' || true)"
+
+RUN_FALLOW=
+echo "$STAGED" | grep -E --quiet '^frontend/(src/|package\.json|pnpm-lock\.yaml|\.fallowrc)' && RUN_FALLOW=1
+
+RUN_STEIGER=
+echo "$STAGED" | grep --quiet '^frontend/src/' && RUN_STEIGER=1
+
+NEEDED=
+[ -n "$LINTABLE" ] && NEEDED="$NEEDED lint-staged eslint oxfmt stylelint"
+[ -n "$RUN_FALLOW" ] && NEEDED="$NEEDED fallow"
+[ -n "$RUN_STEIGER" ] && NEEDED="$NEEDED steiger"
+
+MISSING=
+for bin in $NEEDED; do
+    [ -x "node_modules/.bin/$bin" ] || MISSING="$MISSING $bin"
+done
+if [ -n "$MISSING" ]; then
+    echo "pre-commit: missing binaries in frontend/node_modules/.bin:$MISSING" >&2
+    echo "Fix: ROOT_WORKTREE_PATH=<main repo> bash .cursor/scripts/setup-worktree.sh (or cd frontend && pnpm install). Do not bypass with --no-verify." >&2
+    exit 1
+fi
+
+if [ -n "$LINTABLE" ]; then
+    pnpm exec lint-staged --allow-empty || exit $?
+fi
+
+fail=0
+
+if [ -n "$RUN_FALLOW" ]; then
+    UPSTREAM="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+    if [ -n "$UPSTREAM" ]; then
+        BASE="$(git merge-base "$UPSTREAM" HEAD 2>/dev/null || echo "$UPSTREAM")"
+    else
+        BASE="master"
+    fi
+    if git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+        pnpm exec fallow audit --base "$BASE" --quiet --gate-marker pre-commit &
+        fallow_pid=$!
+    fi
+fi
+
+if [ -n "$RUN_STEIGER" ]; then
+    pnpm exec steiger ./src &
+    steiger_pid=$!
+fi
+
+if [ -n "${fallow_pid:-}" ]; then
+    wait "$fallow_pid" || fail=1
+fi
+if [ -n "${steiger_pid:-}" ]; then
+    wait "$steiger_pid" || fail=1
+fi
+
+exit "$fail"

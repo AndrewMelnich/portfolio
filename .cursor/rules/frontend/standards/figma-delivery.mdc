@@ -1,0 +1,24 @@
+---
+description: Figma-scoped delivery — design-review + layout-proof evidence (reviewer)
+globs:
+alwaysApply: false
+---
+
+# Figma delivery evidence
+
+Judgement for the **reviewer** when the diff implements or restyles a block from a Figma frame (section, widget, popup).
+
+## Required evidence
+
+Both must be present for each in-scope frame (or the review **FAIL**s that delivery):
+
+1. **design-review** — a report that meets the parent ceiling in `.agents/skills/design-review/SKILL.md` (How, parent). A report outside that ceiling is not evidence.
+2. **layout-proof** — `layout-proof.mjs` exited 0 for that frame on this run's `verify-ui` preview (batch of manifests / `--dir` OK; each frame still needs its own exit 0 / `notes.md`). Accept: `notes.md` under `.cursor/fstack/artifacts/…/layout-proof/` that quotes the exit and includes a `text:` line and an `overflow` row. design-review `PASS` is the token diff. It does not stand in for that exit.
+
+## Not evidence
+
+Screenshots, browser CDP / `getBoundingClientRect` tables, hand-written box diffs, or a drive against `pnpm dev` / a non-verify host.
+
+## Skip
+
+No Figma frame in the task/spec → this rule does not apply.

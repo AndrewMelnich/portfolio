@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0.0",
+  "metadata": {
+    "url": "https://example.com/contact",
+    "tool": "axe",
+    "standard": "wcag22aa",
+    "waitMs": 0,
+    "generatedAt": "2026-03-20T10:00:00.000Z",
+    "runId": "sample-run-001",
+    "runLabel": "Sample Run 001",
+    "mode": "cli",
+    "session": null
+  },
+  "summary": {
+    "total": 3,
+    "byImpact": {
+      "critical": 0,
+      "serious": 1,
+      "moderate": 2,
+      "minor": 0
+    },
+    "byStatus": {
+      "violation": 2,
+      "needs-review": 1,
+      "pass": 0
+    }
+  },
+  "findings": [
+    {
+      "source": "automated",
+      "tool": "axe-core",
+      "status": "violation",
+      "impact": "serious",
+      "pageUrl": "https://example.com/contact",
+      "ruleId": "label",
+      "wcag": ["wcag2a", "wcag412"],
+      "selector": "#email",
+      "html": "<input id=\"email\" type=\"email\">",
+      "summary": "Form controls must have labels",
+      "evidence": "Input element has no associated label.",
+      "remediation": "Associate a visible label using a matching for/id pair.",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/label"
+    },
+    {
+      "source": "manual",
+      "tool": "manual",
+      "status": "violation",
+      "impact": "moderate",
+      "pageUrl": "https://example.com/contact",
+      "ruleId": "KB-02",
+      "wcag": ["2.4.7", "2.4.13"],
+      "selector": "button[type=\"submit\"]",
+      "html": "",
+      "summary": "Primary submit button has no visible keyboard focus",
+      "evidence": "Button outline disappears when tabbing.",
+      "remediation": "Add a persistent focus style with sufficient contrast.",
+      "helpUrl": "",
+      "screenshot": "screenshots/finding-002-kb-02.png"
+    },
+    {
+      "source": "automated",
+      "tool": "axe-core",
+      "status": "needs-review",
+      "impact": "moderate",
+      "pageUrl": "https://example.com/contact",
+      "ruleId": "color-contrast",
+      "wcag": ["wcag143"],
+      "selector": ".muted-copy",
+      "html": "<p class=\"muted-copy\">Need help? Contact support.</p>",
+      "summary": "Elements must meet minimum color contrast ratio thresholds",
+      "evidence": "Automated tool flagged possible low contrast on helper text.",
+      "remediation": "Verify contrast with computed foreground and background colors.",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast"
+    }
+  ]
+}

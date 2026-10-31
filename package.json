@@ -1,17 +1,9 @@
 {
-  "name": "portfolio",
-  "type": "module",
-  "version": "0.0.1",
-  "engines": {
-    "node": ">=22.20.0"
-  },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "prepare": "husky && bash ./scripts/setup_git_config.sh"
   },
-  "dependencies": {
-    "astro": "^7.4.4"
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0",
+    "husky": "^9.1.7"
   }
 }

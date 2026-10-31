@@ -1,0 +1,26 @@
+export default {
+    ru: {
+        EMPTY_FIELD: 'Поле обязательно к заполнению',
+        INVALIDATED_EMAIL: 'Введите корректный адрес эл. почты',
+        INVALIDATED_PHONE: 'Введите корректный номер телефона',
+        INVALIDATED_PHONE_TOO_SHORT: 'Номер телефона слишком короткий',
+        INVALIDATED_PHONE_TOO_LONG: 'Номер телефона слишком длинный',
+        INVALIDATED_PHONE_INVALID_COUNTRY: 'Неверный код страны',
+        INVALIDATED_SELECT: 'Выберите значение из списка',
+        INVALIDATED_DATE: 'Введите корректную дату',
+        INVALIDATED_EQUALS: 'Значение полей должно совпадать',
+        INVALIDATED_CHECKBOX: 'Необходимо подтвердить согласие',
+    },
+    en: {
+        EMPTY_FIELD: 'This field must not be empty',
+        INVALIDATED_EMAIL: 'Enter a valid email address',
+        INVALIDATED_PHONE: 'Enter a valid phone number',
+        INVALIDATED_PHONE_TOO_SHORT: 'Phone number is too short',
+        INVALIDATED_PHONE_TOO_LONG: 'Phone number is too long',
+        INVALIDATED_PHONE_INVALID_COUNTRY: 'Invalid country code',
+        INVALIDATED_SELECT: 'Choose an option',
+        INVALIDATED_DATE: 'Enter a valid date',
+        INVALIDATED_EQUALS: 'Values must be equal',
+        INVALIDATED_CHECKBOX: 'Agreement is required',
+    },
+};

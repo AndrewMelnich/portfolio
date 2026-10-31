@@ -1,0 +1,2395 @@
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8" />
+        <title>UML viewer</title>
+        <style>
+            :root {
+                --bg: #14171c;
+                --panel: #1b1f26;
+                --line: #2c323c;
+                --text: #d7dce3;
+                --muted: #8b95a3;
+                --edge: #7d8794;
+                --bad: #e5534b;
+                --accent: #e3b341;
+                --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                display: grid;
+                grid-template: 'top top' auto 'canvas side' 1fr / 1fr 300px;
+                height: 100vh;
+                margin: 0;
+                background: var(--bg);
+                color: var(--text);
+                font:
+                    13px/1.4 system-ui,
+                    sans-serif;
+            }
+            body > header {
+                grid-area: top;
+            }
+            header {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                padding: 6px 12px;
+                border-bottom: 1px solid var(--line);
+            }
+            header button {
+                min-width: 28px;
+            }
+            #crumbs a {
+                color: var(--accent);
+                cursor: pointer;
+            }
+            #crumbs span {
+                color: var(--muted);
+            }
+            #banner {
+                padding: 2px 8px;
+                border-radius: 4px;
+                background: #5a3d0c;
+                color: #ffd48a;
+                font-weight: 600;
+            }
+            #help {
+                margin-left: auto;
+                color: var(--muted);
+                font-weight: 700;
+                text-decoration: none;
+            }
+            #conn {
+                color: #3fb950;
+            }
+            #conn.off {
+                color: var(--bad);
+            }
+            #canvas {
+                grid-area: canvas;
+                overflow: auto;
+            }
+            aside {
+                grid-area: side;
+                overflow: auto;
+                padding: 8px 12px;
+                border-left: 1px solid var(--line);
+                background: var(--panel);
+            }
+            aside h3 {
+                margin: 14px 0 6px;
+                color: var(--accent);
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+            button {
+                padding: 3px 8px;
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                background: #232933;
+                color: var(--text);
+                font: inherit;
+                cursor: pointer;
+            }
+            button.on {
+                border-color: var(--accent);
+                color: var(--accent);
+            }
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .diagram {
+                display: block;
+                width: 100%;
+                margin-bottom: 4px;
+                text-align: left;
+            }
+            .kv {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 0 10px;
+                font-family: var(--mono);
+                font-size: 12px;
+            }
+            .kv b {
+                color: var(--muted);
+                font-weight: normal;
+            }
+            .list {
+                margin: 4px 0;
+                padding: 0;
+                font-family: var(--mono);
+                font-size: 11px;
+                list-style: none;
+            }
+            .list li {
+                overflow-wrap: anywhere;
+            }
+            .list a {
+                color: var(--text);
+                cursor: pointer;
+            }
+            .list .bad,
+            .bad {
+                color: var(--bad);
+            }
+            .muted {
+                color: var(--muted);
+            }
+            textarea {
+                width: 100%;
+                min-height: 80px;
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                background: var(--bg);
+                color: var(--text);
+                font: inherit;
+            }
+            svg text {
+                fill: var(--text);
+                font-family: var(--mono);
+                font-size: 12px;
+                pointer-events: none;
+            }
+            svg .title {
+                font:
+                    600 13px system-ui,
+                    sans-serif;
+            }
+            svg .dir .title {
+                font-style: italic;
+            }
+            #card-title,
+            #details h3 {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                min-width: 0;
+            }
+            #card-title .ft,
+            #details h3 .ft {
+                flex-shrink: 0;
+            }
+            .ft {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 16px;
+                height: 16px;
+                border-radius: 2px;
+                font:
+                    700 8px/1 ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    monospace;
+                letter-spacing: -0.02em;
+                user-select: none;
+            }
+            .ft-ts,
+            .ft-tsx {
+                background: #3178c6;
+                color: #fff;
+            }
+            .ft-js {
+                background: #f7df1e;
+                color: #323330;
+            }
+            .ft-astro {
+                background: #23262f;
+                color: #ff5d01;
+            }
+            .ft-scss {
+                background: #cd6799;
+                color: #fff;
+            }
+            .ft-css {
+                background: #264de4;
+                color: #fff;
+            }
+            .ft-json {
+                background: #cbcb41;
+                color: #323330;
+            }
+            .ft-php {
+                background: #777bb3;
+                color: #fff;
+            }
+            .ft-md {
+                background: #083fa1;
+                color: #fff;
+            }
+            .ft-file {
+                background: #4a5260;
+                color: #d7dce3;
+            }
+            .ft-folder {
+                background: #e3b341;
+                color: #1b1f26;
+            }
+            svg .meta {
+                fill: var(--muted);
+                font-size: 10px;
+            }
+            svg .item {
+                cursor: pointer;
+            }
+            svg .item.sel rect {
+                stroke: var(--accent) !important;
+                stroke-width: 2.5;
+            }
+            svg .edge {
+                fill: none;
+                stroke: var(--edge);
+                stroke-width: 1.2;
+                opacity: 0.85;
+            }
+            svg .edge.type {
+                stroke-dasharray: 4 3;
+            }
+            svg .edge.bad {
+                stroke: var(--bad);
+                stroke-width: 1.8;
+            }
+            svg .edge.http {
+                stroke-dasharray: 1 4;
+            }
+            svg .edge.added {
+                stroke: #3fb950;
+            }
+            svg .edge.removed {
+                stroke: #8b95a3;
+                stroke-dasharray: 5 4;
+                opacity: 0.45;
+            }
+            svg .item.d-added rect {
+                stroke: #3fb950;
+            }
+            svg .item.d-changed rect {
+                stroke: #e3b341;
+            }
+            svg .item.d-same {
+                opacity: 0.55;
+            }
+            svg .item.d-same rect {
+                stroke: #4a5260;
+            }
+            svg .item.d-same .title {
+                fill: #8b95a3;
+            }
+            svg .line-same {
+                fill: #6b7380;
+            }
+            svg .icon-same {
+                opacity: 0.35;
+            }
+            svg .item.d-removed rect {
+                stroke: var(--bad) !important;
+                stroke-dasharray: 4 3;
+                stroke-width: 1.5;
+                fill-opacity: 0.45;
+            }
+            svg .item.d-removed.sel rect {
+                stroke-width: 2.5;
+            }
+            svg .item.d-removed text,
+            svg .item.d-removed use {
+                opacity: 0.45;
+            }
+            .added {
+                color: #3fb950;
+            }
+            svg.has-sel .edge {
+                opacity: 0.15;
+            }
+            svg.has-sel .edge.hl {
+                opacity: 1;
+                stroke-width: 2.4;
+            }
+            svg .hit {
+                fill: none;
+                stroke: transparent;
+                stroke-width: 10;
+                cursor: help;
+            }
+            #tip {
+                position: fixed;
+                z-index: 20;
+                max-width: 560px;
+                padding: 6px 8px;
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                background: #0d1014;
+                font-family: var(--mono);
+                font-size: 11px;
+                white-space: pre;
+                pointer-events: none;
+            }
+            #card {
+                position: fixed;
+                inset: 30px;
+                z-index: 10;
+                display: grid;
+                grid-template: auto 1fr / minmax(260px, 30%) 1fr;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                background: var(--panel);
+                box-shadow: 0 20px 60px #000a;
+            }
+            #card[hidden],
+            #tip[hidden] {
+                display: none;
+            }
+            #card header {
+                grid-column: 1 / -1;
+                border-bottom: 1px solid var(--line);
+            }
+            #card-info {
+                overflow: auto;
+                padding: 8px 12px;
+                border-right: 1px solid var(--line);
+            }
+            #card-info .op {
+                cursor: pointer;
+            }
+            #card-info .op:hover {
+                color: var(--accent);
+            }
+            #source {
+                overflow: auto;
+                margin: 0;
+                padding: 8px 0;
+                font: 12px/1.5 var(--mono);
+            }
+            #source span {
+                display: block;
+                padding: 0 12px;
+                white-space: pre;
+            }
+            #source span::before {
+                content: attr(data-l);
+                display: inline-block;
+                width: 4ch;
+                margin-right: 12px;
+                color: var(--muted);
+                text-align: right;
+            }
+            #source span.hl {
+                background: #3b3417;
+            }
+            #source.diff span[data-l] {
+                cursor: pointer;
+            }
+            #source span.add {
+                background: #16301f;
+            }
+            #source span.del {
+                background: #3d1d20;
+            }
+            #source span.hunk {
+                color: #8ab4f8;
+            }
+            #source span.meta {
+                color: var(--muted);
+            }
+            #source i {
+                font-style: normal;
+            }
+            #source i.kw {
+                color: #c792ea;
+            }
+            #source i.ty {
+                color: #ffcb6b;
+            }
+            #source i.ty[data-comp],
+            #source i.ty[data-type] {
+                cursor: pointer;
+            }
+            #source i.ty[data-comp]:hover,
+            #source i.ty[data-type]:hover {
+                text-decoration: underline;
+                text-decoration-style: dotted;
+            }
+            #source i.str {
+                color: #c3e88d;
+            }
+            #source i.com {
+                color: #6d7a86;
+                font-style: italic;
+            }
+            #source i.num {
+                color: #f78c6c;
+            }
+            #source i.var {
+                color: #82aaff;
+            }
+            #source i.fn {
+                color: #82aaff;
+            }
+            #source i.prop {
+                color: #eeffff;
+            }
+            #source i.tag {
+                color: #f07178;
+            }
+            #source i.punct {
+                color: #89ddff;
+            }
+            #source i.attr {
+                color: #c792ea;
+            }
+            #source i.mark {
+                color: var(--muted);
+            }
+            /* SCSS — Cursor / VS Code Material-like (see theme screenshot) */
+            #source.lang-scss i.kw {
+                color: #82aaff;
+            }
+            #source.lang-scss i.ty {
+                color: #82aaff;
+            }
+            #source.lang-scss i.tag {
+                color: #ffcb6b;
+            }
+            #source.lang-scss i.attr {
+                color: #82aaff;
+            }
+            #source.lang-scss i.var {
+                color: #eeffff;
+            }
+            #source.lang-scss i.num {
+                color: #f78c6c;
+            }
+            #source.lang-scss i.str {
+                color: #c3e88d;
+            }
+            #source.lang-scss i.punct {
+                color: #c792ea;
+            }
+            a.link {
+                color: var(--accent);
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <button id="up" title="Уровень вверх (Esc)">←</button>
+            <div id="crumbs"></div>
+            <span id="banner" hidden>PROPOSAL — не реализовано в коде</span>
+            <a id="help" href="/guide" target="_blank" title="Как пользоваться">?</a>
+            <span id="conn">●</span>
+        </header>
+        <main id="canvas"><svg id="svg"></svg></main>
+        <aside>
+            <h3>Диаграмма</h3>
+            <div id="diagrams"></div>
+            <h3>Вид</h3>
+            <div class="row">
+                <button id="t-arrows">Стрелки</button>
+                <button id="t-packages">npm</button>
+                <button id="t-compact">Компактно</button>
+                <button id="t-color">Цвет</button>
+                <button id="t-diff" hidden>Только изменения</button>
+            </div>
+            <div class="row" style="margin-top: 4px">
+                <button id="z-out">−</button>
+                <button id="z-reset">100%</button>
+                <button id="z-in">+</button>
+            </div>
+            <div id="details"></div>
+            <h3>Агенту</h3>
+            <textarea
+                id="note"
+                placeholder="Что не так / что предложить. Контекст: текущая диаграмма, уровень и выделение."
+            ></textarea>
+            <div class="row" style="margin-top: 4px; align-items: center">
+                <button id="send">Отправить</button>
+                <span id="inbox" class="muted"></span>
+            </div>
+            <h3>Управление</h3>
+            <div class="muted">
+                Клик — выделить. Двойной клик — провалиться / карточка модуля. ⌘/Ctrl+клик по компоненту — его
+                <code>.astro</code>; по типу — к определению (в т.ч. <code>import type</code> / node_modules). У
+                изменённого файла карточка открывается на diff кода, кнопка «Файл» — исходник целиком. Esc — вверх.
+                Наведи на стрелку — список импортов. Ctrl+колесо / Ctrl± — зум. R — перечитать.
+                <br />
+                <span class="bad">Красная заливка</span> — нарушение слоя или кросс-импорт слайсов. Пунктир — только
+                <code>import type</code>. Точки — вызов HTTP. Diff: <span class="added">зелёное</span> новое, жёлтое
+                изменённое, <span class="bad">красный пунктир</span> — удалено. Приглушённо-серое без изменений — только
+                при включённом «Только изменения».
+            </div>
+        </aside>
+        <div id="card" hidden>
+            <header>
+                <b id="card-title"></b>
+                <button id="card-mode" hidden>Файл</button>
+                <a id="card-open" class="link" href="#">Открыть в Cursor</a>
+                <button id="card-close" style="margin-left: auto">×</button>
+            </header>
+            <div id="card-info"></div>
+            <pre id="source"></pre>
+        </div>
+        <div id="tip" hidden></div>
+        <script>
+            const $ = (s) => document.querySelector(s);
+            const esc = (s) =>
+                String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+            const SEP = '\u0001';
+            const ABSTRACT = new Set(['interface', 'abstract']);
+            const under = (id, prefix) => id === prefix || id.startsWith(`${prefix}/`);
+
+            const S = Object.assign(
+                {
+                    diagram: 'real',
+                    path: [],
+                    selected: null,
+                    arrows: true,
+                    packages: false,
+                    compact: false,
+                    color: 'violations',
+                    diff: true,
+                    zoom: 1,
+                },
+                JSON.parse(localStorage.getItem('uml-viewer') || '{}'),
+            );
+            const save = () => localStorage.setItem('uml-viewer', JSON.stringify(S));
+            let ir = null;
+            let model = null;
+            let current = null;
+            let cardImports = new Map(); // local binding → import spec (current card)
+
+            function buildModel() {
+                const proposal = ir.proposals.find((p) => p.id === S.diagram);
+                if (!proposal) S.diagram = 'real';
+                const paths = new Map();
+                const ranks = new Map();
+                for (const m of ir.modules) {
+                    const segs = m.id.split('/');
+                    if (!proposal) {
+                        paths.set(m.id, segs);
+                        ranks.set(m.id, m.rank);
+                        continue;
+                    }
+                    if ((proposal.omit || []).some((o) => under(m.id, o))) continue;
+                    let best = null;
+                    let group = -1;
+                    proposal.groups.forEach((g, i) =>
+                        g.members.forEach((member) => {
+                            if (under(m.id, member) && (!best || member.length > best.length))
+                                [best, group] = [member, i];
+                        }),
+                    );
+                    if (!best) {
+                        paths.set(m.id, ['(unassigned)', ...segs]);
+                        ranks.set(m.id, -1);
+                        continue;
+                    }
+                    const rest = m.id === best ? [] : m.id.slice(best.length + 1).split('/');
+                    paths.set(m.id, [proposal.groups[group].label, best, ...rest]);
+                    ranks.set(m.id, group);
+                }
+
+                const root = { segs: [], name: ir.title, children: new Map(), modules: [] };
+                for (const [id, segs] of paths) {
+                    let node = root;
+                    node.modules.push(id);
+                    segs.forEach((seg, i) => {
+                        if (!node.children.has(seg))
+                            node.children.set(seg, {
+                                segs: segs.slice(0, i + 1),
+                                name: seg,
+                                children: new Map(),
+                                modules: [],
+                            });
+                        node = node.children.get(seg);
+                        node.modules.push(id);
+                    });
+                    node.module = id;
+                }
+
+                const violation = (e) => {
+                    if (!proposal || e.violation === 'no-route' || e.kind === 'http') return e.violation;
+                    const [ra, rb] = [ranks.get(e.from), ranks.get(e.to)];
+                    return ra >= 0 && rb >= 0 && ra < rb ? 'layer' : undefined;
+                };
+                const edges = ir.edges
+                    .filter((e) => paths.has(e.from) && paths.has(e.to))
+                    .map((e) => ({ ...e, violation: violation(e) }));
+                let touched = null;
+                if (S.diff && ir.diff) {
+                    touched = new Set();
+                    for (const m of ir.modules) if (m.diff && paths.has(m.id)) touched.add(m.id);
+                    for (const e of edges)
+                        if (e.diff || e.newViolation) {
+                            touched.add(e.from);
+                            touched.add(e.to);
+                        }
+                }
+                return {
+                    root,
+                    paths,
+                    ranks,
+                    edges,
+                    proposal,
+                    touched,
+                    byId: new Map(ir.modules.map((m) => [m.id, m])),
+                    foreign: ir.foreign.filter((f) => paths.has(f.from)),
+                };
+            }
+
+            function nodeAt(segs) {
+                let node = model.root;
+                for (const s of segs) {
+                    node = node.children.get(s);
+                    if (!node) return null;
+                }
+                return node;
+            }
+
+            // "Domain/shared/ui/Tabs" → segments, where a proposal member like "shared/ui" is one segment.
+            function resolvePath(str) {
+                const segs = [];
+                let node = model.root;
+                let rest = str.replace(/^\/|\/$/g, '');
+                while (rest) {
+                    const child = [...node.children.values()]
+                        .filter((c) => rest === c.name || rest.startsWith(`${c.name}/`))
+                        .sort((a, b) => b.name.length - a.name.length)[0];
+                    if (!child) break;
+                    segs.push(child.name);
+                    node = child;
+                    rest = rest.slice(child.name.length + 1);
+                }
+                return segs;
+            }
+
+            function metrics(modules) {
+                const set = new Set(modules);
+                const ca = new Set();
+                const ce = new Set();
+                const violations = [];
+                for (const e of model.edges) {
+                    if (e.diff === 'removed') continue;
+                    const [fi, ti] = [set.has(e.from), set.has(e.to)];
+                    if (fi && !ti) ce.add(e.to);
+                    if (!fi && ti) ca.add(e.from);
+                    if (fi && e.violation && (!model.touched || e.newViolation)) violations.push(e);
+                }
+                let abstract = 0;
+                let lines = 0;
+                const changed = { added: 0, changed: 0, removed: 0 };
+                for (const id of set) {
+                    const m = model.byId.get(id);
+                    lines += m.lines;
+                    if (ABSTRACT.has(m.stereotype)) abstract++;
+                    if (m.diff) changed[m.diff]++;
+                }
+                const I = ca.size + ce.size ? ce.size / (ca.size + ce.size) : 0;
+                const A = set.size ? abstract / set.size : 0;
+                const delta = changed.added + changed.changed + changed.removed;
+                return { ca, ce, I, A, D: Math.abs(A + I - 1), violations, lines, count: set.size, changed, delta };
+            }
+
+            function view() {
+                let node = nodeAt(S.path);
+                while (!node || (node.module && !node.children.size && S.path.length)) {
+                    S.path = S.path.slice(0, -1);
+                    node = nodeAt(S.path);
+                }
+                const depth = S.path.length;
+                const hit = (ids) => !model.touched || ids.some((id) => model.touched.has(id));
+                const childKey = (id) => {
+                    const p = model.paths.get(id);
+                    for (let i = 0; i < depth; i++) if (p[i] !== S.path[i]) return null;
+                    return p.slice(0, depth + 1).join(SEP);
+                };
+                const items = new Map();
+                const put = (c) =>
+                    items.set(c.segs.join(SEP), {
+                        key: c.segs.join(SEP),
+                        kind: c.children.size ? 'dir' : 'leaf',
+                        name: c.name,
+                        node: c,
+                        segs: c.segs,
+                        m: metrics(c.modules),
+                    });
+                const ensure = (key) => {
+                    if (items.has(key)) return true;
+                    const child = node.children.get(key.split(SEP).at(-1));
+                    if (!child) return false;
+                    put(child);
+                    return true;
+                };
+                for (const c of node.children.values()) if (hit(c.modules)) put(c);
+                const bundles = new Map();
+                const link = (from, to, pair) => {
+                    const key = `${from}→${to}`;
+                    if (!bundles.has(key)) bundles.set(key, { from, to, pairs: [] });
+                    bundles.get(key).pairs.push(pair);
+                };
+                for (const e of model.edges) {
+                    if (model.touched && !model.touched.has(e.from) && !model.touched.has(e.to)) continue;
+                    const a = childKey(e.from);
+                    if (!a) continue;
+                    let b = childKey(e.to);
+                    if (b === a) continue;
+                    if (!b) {
+                        const p = model.paths.get(e.to);
+                        let d = 0;
+                        while (d < depth && p[d] === S.path[d]) d++;
+                        const segs = p.slice(0, d === 0 ? Math.min(2, p.length) : d + 1);
+                        b = `ext:${segs.join(SEP)}`;
+                        if (!items.has(b)) items.set(b, { key: b, kind: 'ext', name: segs.join('/'), segs });
+                    } else if (!ensure(b)) continue;
+                    if (!ensure(a)) continue;
+                    link(a, b, e);
+                }
+                if (S.packages)
+                    for (const f of model.foreign) {
+                        const a = childKey(f.from);
+                        if (!a || !items.has(a)) continue;
+                        const b = `pkg:${f.to}`;
+                        if (!items.has(b)) items.set(b, { key: b, kind: 'pkg', name: f.to });
+                        link(a, b, { ...f, foreign: true });
+                    }
+                const list = [...bundles.values()];
+                for (const b of list) {
+                    b.violation = b.pairs.some(
+                        (p) => p.diff !== 'removed' && (model.touched ? p.newViolation : p.violation),
+                    );
+                    b.type = b.pairs.every((p) => p.type);
+                    b.http = b.pairs.every((p) => p.kind === 'http');
+                    const marks = new Set(b.pairs.map((p) => p.diff).filter(Boolean));
+                    b.diff = marks.size === 1 ? [...marks][0] : null;
+                }
+                return { node, items, bundles: list };
+            }
+
+            // Structure-only leaves (scss/yml/…) — no import edges; laid out beside the graph.
+            function isStructureOnly(it) {
+                if (it.kind !== 'leaf') return false;
+                const m = model.byId.get(it.node.module);
+                return m?.stereotype === 'file' || m?.stereotype === 'stylesheet';
+            }
+
+            // Policy rank when each box is one layer (ranks differ). Same rank everywhere → topology, deps below.
+            function rank(v) {
+                for (const it of v.items.values()) {
+                    if (isStructureOnly(it)) {
+                        it.aside = true;
+                        it.rank = undefined;
+                    } else {
+                        it.aside = false;
+                    }
+                }
+                const inner = [...v.items.values()].filter((i) => (i.kind === 'dir' || i.kind === 'leaf') && !i.aside);
+                const uniform = (it) => {
+                    const ranks = [...new Set(it.node.modules.map((id) => model.ranks.get(id)).filter((r) => r >= 0))];
+                    return ranks.length === 1 ? ranks[0] : ranks.length ? null : -1;
+                };
+                const uniforms = inner.map(uniform);
+                if (uniforms.every((r) => r !== null) && new Set(uniforms).size > 1) {
+                    const top = Math.max(0, ...uniforms) + 1;
+                    inner.forEach((it, i) => (it.rank = uniforms[i] < 0 ? top : uniforms[i]));
+                    return;
+                }
+                const out = new Map(inner.map((i) => [i.key, []]));
+                for (const b of v.bundles) if (out.has(b.from) && out.has(b.to)) out.get(b.from).push(b.to);
+                const memo = new Map();
+                const stack = new Set();
+                const height = (k) => {
+                    if (memo.has(k)) return memo.get(k);
+                    if (stack.has(k)) return 0;
+                    stack.add(k);
+                    const r = Math.max(0, ...out.get(k).map((t) => height(t) + 1));
+                    stack.delete(k);
+                    memo.set(k, r);
+                    return r;
+                };
+                for (const it of inner) it.rank = height(it.key);
+            }
+
+            const ctx = document.createElement('canvas').getContext('2d');
+            const textWidth = (s, font) => ((ctx.font = font), ctx.measureText(s).width);
+            const MONO = '12px ui-monospace, SFMono-Regular, Menlo, monospace';
+            const TITLE = '600 13px system-ui, sans-serif';
+            const TITLE_DIR = 'italic 600 13px system-ui, sans-serif';
+            const MAX_LINES = 14;
+            const FT_SIZE = 14;
+            const FT_GAP = 5;
+
+            function fileExt(name) {
+                const m = /\.([a-z0-9]+)$/i.exec(name || '');
+                return m ? m[1].toLowerCase() : '';
+            }
+
+            function fileIconKind(name, kind) {
+                if (kind === 'dir') return 'folder';
+                if (kind && kind !== 'leaf') return '';
+                const ext = fileExt(name);
+                return (
+                    {
+                        ts: 'ts',
+                        tsx: 'tsx',
+                        mts: 'ts',
+                        cts: 'ts',
+                        js: 'js',
+                        jsx: 'js',
+                        mjs: 'js',
+                        cjs: 'js',
+                        astro: 'astro',
+                        scss: 'scss',
+                        sass: 'scss',
+                        css: 'css',
+                        json: 'json',
+                        php: 'php',
+                        md: 'md',
+                    }[ext] || (ext ? 'file' : '')
+                );
+            }
+
+            function fileIconLabel(kind) {
+                return (
+                    {
+                        ts: 'TS',
+                        tsx: 'TSX',
+                        js: 'JS',
+                        astro: 'A',
+                        scss: 'S',
+                        css: 'C',
+                        json: '{}',
+                        php: 'P',
+                        md: 'MD',
+                        file: '·',
+                        folder: '▸',
+                    }[kind] || ''
+                );
+            }
+
+            function fileIconHtml(name, kind) {
+                const ik = fileIconKind(name, kind);
+                if (!ik) return '';
+                return `<span class="ft ft-${ik}" aria-hidden="true">${fileIconLabel(ik)}</span>`;
+            }
+
+            function fileIconSvgDefs() {
+                const badge = (id, fill, ink, label, fs = 8) =>
+                    `<g id="${id}"><rect width="14" height="14" rx="2" fill="${fill}"/><text x="7" y="10.5" text-anchor="middle" fill="${ink}" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="${fs}" font-weight="700">${label}</text></g>`;
+                return [
+                    badge('ft-ts', '#3178c6', '#fff', 'TS'),
+                    badge('ft-tsx', '#3178c6', '#fff', 'TSX', 6.5),
+                    badge('ft-js', '#f7df1e', '#323330', 'JS'),
+                    badge('ft-astro', '#23262f', '#ff5d01', 'A', 9),
+                    badge('ft-scss', '#cd6799', '#fff', 'S', 9),
+                    badge('ft-css', '#264de4', '#fff', 'C', 9),
+                    badge('ft-json', '#cbcb41', '#323330', '{}', 7),
+                    badge('ft-php', '#777bb3', '#fff', 'P', 9),
+                    badge('ft-md', '#083fa1', '#fff', 'MD', 6.5),
+                    badge('ft-file', '#4a5260', '#d7dce3', '·', 10),
+                    `<g id="ft-folder"><path d="M1 3.5h4l1.2 1.5H13a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H1.5A1 1 0 0 1 .5 12V4.5A1 1 0 0 1 1.5 3.5H1z" fill="#e3b341"/></g>`,
+                ].join('');
+            }
+
+            function boxLines(it) {
+                if (S.compact) return [];
+                let lines;
+                if (it.kind === 'dir')
+                    // Always list every child; mute unchanged only while «Только изменения» is on.
+                    lines = [...it.node.children.values()]
+                        .sort((a, b) => b.children.size - a.children.size || a.name.localeCompare(b.name))
+                        .map((c) => ({
+                            type: 'child',
+                            name: c.name,
+                            dir: c.children.size > 0,
+                            same: Boolean(ir.diff) && S.diff && !c.modules.some((id) => model.byId.get(id)?.diff),
+                        }));
+                else
+                    lines = model.byId
+                        .get(it.node.module)
+                        .ops.filter((op) => op.kind !== 'component')
+                        .map((op) => ({
+                            type: 'op',
+                            text: `${op.type ? 'τ' : '+'} ${op.name}${op.kind === 'function' ? '()' : ''}`,
+                        }));
+                if (lines.length > MAX_LINES) {
+                    const extra = lines.length - MAX_LINES + 1;
+                    lines = [...lines.slice(0, MAX_LINES - 1), { type: 'more', count: extra }];
+                }
+                return lines;
+            }
+
+            function lineLabel(l) {
+                if (l.type === 'child') return l.name;
+                if (l.type === 'more') return `… +${l.count}`;
+                return l.text;
+            }
+
+            function lineWidth(l) {
+                const label = lineLabel(l);
+                const iconPad = l.type === 'child' && fileIconKind(l.name, l.dir ? 'dir' : 'leaf') ? 12 + 4 : 0;
+                return textWidth(label, MONO) + 24 + iconPad;
+            }
+
+            function layout(v) {
+                const items = [...v.items.values()];
+                for (const it of items) {
+                    if (it.kind === 'ext' || it.kind === 'pkg') {
+                        it.w = textWidth(it.name, MONO) + 28;
+                        it.h = 26;
+                        continue;
+                    }
+                    it.lines = boxLines(it);
+                    const titleFont = it.kind === 'dir' ? TITLE_DIR : TITLE;
+                    const iconPad = fileIconKind(it.name, it.kind) ? FT_SIZE + FT_GAP : 0;
+                    it.w = Math.max(
+                        130,
+                        textWidth(it.name, titleFont) + 64 + iconPad,
+                        ...it.lines.map((l) => lineWidth(l)),
+                    );
+                    it.h = 32 + it.lines.length * 16 + (it.lines.length ? 6 : 0);
+                }
+                const inner = items.filter((i) => i.rank !== undefined);
+                const ranks = [...new Set(inner.map((i) => i.rank))].sort((a, b) => b - a);
+                const neighbours = new Map(items.map((i) => [i.key, []]));
+                for (const b of v.bundles) {
+                    neighbours.get(b.from).push(b.to);
+                    neighbours.get(b.to).push(b.from);
+                }
+                const placed = new Map();
+                const MAX_W = Math.max(1200, ($('#canvas').clientWidth - 260) / S.zoom);
+                let y = 30;
+                let right = 0;
+                for (const r of ranks) {
+                    const row = inner.filter((i) => i.rank === r).sort((a, b) => a.name.localeCompare(b.name));
+                    row.sort((a, b) => bary(a) - bary(b) || 0);
+                    let x = 30;
+                    let rowH = 0;
+                    for (const it of row) {
+                        if (x > 30 && x + it.w > MAX_W) {
+                            y += rowH + 40;
+                            x = 30;
+                            rowH = 0;
+                        }
+                        Object.assign(it, { x, y });
+                        placed.set(it.key, x + it.w / 2);
+                        x += it.w + 36;
+                        rowH = Math.max(rowH, it.h);
+                        right = Math.max(right, it.x + it.w);
+                    }
+                    y += rowH + 90;
+                }
+                const outer = items
+                    .filter((i) => i.rank === undefined && !i.aside)
+                    .sort((a, b) => a.kind.localeCompare(b.kind) || bary(a) - bary(b) || a.name.localeCompare(b.name));
+                let x = 30;
+                for (const it of outer) {
+                    if (x > 30 && x + it.w > MAX_W) {
+                        y += 26 + 24;
+                        x = 30;
+                    }
+                    Object.assign(it, { x, y });
+                    x += it.w + 16;
+                    right = Math.max(right, it.x + it.w);
+                }
+                let height = (outer.length ? y + 26 : y - 90) + 30;
+                // Structure-only (no deps): column to the right of the import graph.
+                const aside = items.filter((i) => i.aside).sort((a, b) => a.name.localeCompare(b.name));
+                if (aside.length) {
+                    const ax = (right > 0 ? right : 0) + 48;
+                    let ay = 30;
+                    for (const it of aside) {
+                        Object.assign(it, { x: ax, y: ay });
+                        ay += it.h + 16;
+                        right = Math.max(right, it.x + it.w);
+                    }
+                    height = Math.max(height, ay + 30);
+                }
+                v.width = Math.max(60, right + 30);
+                v.height = Math.max(60, height);
+
+                function bary(it) {
+                    const xs = neighbours
+                        .get(it.key)
+                        .filter((k) => placed.has(k))
+                        .map((k) => placed.get(k));
+                    return xs.length ? xs.reduce((s, n) => s + n, 0) / xs.length : Infinity;
+                }
+            }
+
+            function route(v) {
+                const sides = new Map();
+                const end = (it, side, other, b, role) => {
+                    const key = `${it.key}|${side}`;
+                    if (!sides.has(key)) sides.set(key, []);
+                    sides.get(key).push({ it, side, other, b, role });
+                };
+                for (const b of v.bundles) {
+                    const [a, t] = [v.items.get(b.from), v.items.get(b.to)];
+                    let sides2;
+                    if (t.y >= a.y + a.h - 1) sides2 = ['bottom', 'top'];
+                    else if (t.y + t.h <= a.y + 1) sides2 = ['top', 'bottom'];
+                    else sides2 = ['bottom', 'bottom'];
+                    end(a, sides2[0], t, b, 'from');
+                    end(t, sides2[1], a, b, 'to');
+                }
+                for (const list of sides.values()) {
+                    const horizontal = list[0].side === 'top' || list[0].side === 'bottom';
+                    list.sort((p, q) =>
+                        horizontal ? p.other.x + p.other.w / 2 - (q.other.x + q.other.w / 2) : p.other.y - q.other.y,
+                    );
+                    list.forEach((e, i) => {
+                        const f = (i + 1) / (list.length + 1);
+                        const { x, y, w, h } = e.it;
+                        const pt = {
+                            top: [x + w * f, y],
+                            bottom: [x + w * f, y + h],
+                            left: [x, y + h * f],
+                            right: [x + w, y + h * f],
+                        }[e.side];
+                        e.b[`${e.role}Pt`] = { x: pt[0], y: pt[1], side: e.side };
+                    });
+                }
+                const dir = { top: [0, -1], bottom: [0, 1], left: [-1, 0], right: [1, 0] };
+                for (const b of v.bundles) {
+                    const [a, t] = [b.fromPt, b.toPt];
+                    const k = Math.max(40, Math.hypot(t.x - a.x, t.y - a.y) / 3);
+                    const [d1, d2] = [dir[a.side], dir[t.side]];
+                    b.d = `M${a.x},${a.y} C${a.x + d1[0] * k},${a.y + d1[1] * k} ${t.x + d2[0] * k},${t.y + d2[1] * k} ${t.x},${t.y}`;
+                }
+            }
+
+            function diffMark(it) {
+                if (!it.m) return '';
+                const { added, changed, removed } = it.m.changed;
+                if (removed && !added && !changed) return 'd-removed';
+                // Green only when the whole box is new. A pre-existing dir with new files inside → yellow.
+                if (added && !changed && !removed && added === it.m.count) return 'd-added';
+                return added || changed || removed ? 'd-changed' : '';
+            }
+
+            function fill(it) {
+                if (it.kind === 'ext') return ['#22303c', '#4b6075'];
+                // «Только изменения»: untouched boxes stay grey so +/~/− marks read first.
+                if (ir.diff && S.diff && !diffMark(it)) return ['#1a1e24', '#4a5260'];
+                if (it.kind === 'pkg') return ['#2a2533', '#6b5a85'];
+                if (S.color === 'D') {
+                    const hue = Math.round(120 * (1 - it.m.D));
+                    return [`hsl(${hue} 30% 20%)`, `hsl(${hue} 55% 48%)`];
+                }
+                return it.m.violations.length ? ['#3d1d20', '#e5534b'] : ['#1d3326', '#3fb950'];
+            }
+
+            function badge(it) {
+                if (it.kind !== 'leaf') return '';
+                return (
+                    { interface: 'I', 'public-api': 'API', component: '◆', stylesheet: 'CSS' }[
+                        model.byId.get(it.node.module).stereotype
+                    ] ?? ''
+                );
+            }
+
+            function draw(v) {
+                const svg = $('#svg');
+                const W = v.width;
+                const H = v.height;
+                svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+                svg.setAttribute('width', W * S.zoom);
+                svg.setAttribute('height', H * S.zoom);
+                const sel = v.items.get(S.selected) ? S.selected : null;
+                svg.classList.toggle('has-sel', Boolean(sel));
+                const items = [...v.items.values()];
+                v.list = items;
+                let out = `<defs>
+                    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#7d8794" stroke-width="1.5"/></marker>
+                    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="none" stroke="#e5534b" stroke-width="1.5"/></marker>
+                    ${fileIconSvgDefs()}
+                </defs>`;
+                if (S.arrows)
+                    v.bundles.forEach((b, i) => {
+                        const cls = [
+                            'edge',
+                            b.violation && 'bad',
+                            b.type && 'type',
+                            b.http && 'http',
+                            b.diff,
+                            sel && (b.from === sel || b.to === sel) && 'hl',
+                        ]
+                            .filter(Boolean)
+                            .join(' ');
+                        out += `<path class="${cls}" d="${b.d}" marker-end="url(#${b.violation ? 'ahb' : 'ah'})"/><path class="hit" data-b="${i}" d="${b.d}"/>`;
+                    });
+                items.forEach((it, i) => {
+                    const [bg, stroke] = fill(it);
+                    const rx = it.kind === 'ext' || it.kind === 'pkg' ? it.h / 2 : 6;
+                    const mark = diffMark(it) || (ir.diff && S.diff && it.kind !== 'ext' ? 'd-same' : '');
+                    out += `<g class="item ${it.kind}${mark ? ` ${mark}` : ''}${it.key === sel ? ' sel' : ''}" data-i="${i}"><rect x="${it.x}" y="${it.y}" width="${it.w}" height="${it.h}" rx="${rx}" fill="${bg}" stroke="${stroke}"/>`;
+                    if (it.kind === 'ext' || it.kind === 'pkg') {
+                        out += `<text x="${it.x + it.w / 2}" y="${it.y + 17}" text-anchor="middle">${esc(it.name)}</text></g>`;
+                        return;
+                    }
+                    {
+                        const ik = fileIconKind(it.name, it.kind);
+                        const titleFont = it.kind === 'dir' ? TITLE_DIR : TITLE;
+                        const tw = textWidth(it.name, titleFont);
+                        const groupW = (ik ? FT_SIZE + FT_GAP : 0) + tw;
+                        const gx = it.x + (it.w - groupW) / 2;
+                        if (ik)
+                            out += `<use href="#ft-${ik}" x="${gx}" y="${it.y + 6}" width="${FT_SIZE}" height="${FT_SIZE}"/>`;
+                        out += `<text class="title" x="${ik ? gx + FT_SIZE + FT_GAP : it.x + it.w / 2}" y="${it.y + 20}" text-anchor="${ik ? 'start' : 'middle'}">${esc(it.name)}</text>`;
+                    }
+                    if (typeof it.rank === 'number')
+                        out += `<text class="meta" x="${it.x + 6}" y="${it.y + 12}">${it.rank}</text>`;
+                    const b = badge(it);
+                    if (b)
+                        out += `<text class="meta" x="${it.x + it.w - 6}" y="${it.y + 12}" text-anchor="end">${b}</text>`;
+                    if (it.m.violations.length)
+                        out += `<text class="meta" x="${it.x + it.w - 6}" y="${it.y + it.h - 5}" text-anchor="end" style="fill:#e5534b">✕${it.m.violations.length}</text>`;
+                    it.lines.forEach((l, n) => {
+                        const ly = it.y + 42 + n * 16;
+                        const lx = it.x + 12;
+                        if (l.type === 'child') {
+                            const ik = fileIconKind(l.name, l.dir ? 'dir' : 'leaf');
+                            if (ik)
+                                out += `<use class="${l.same ? 'icon-same' : ''}" href="#ft-${ik}" x="${lx}" y="${ly - 10}" width="12" height="12"/>`;
+                            out += `<text class="${l.same ? 'line-same' : ''}" x="${lx + (ik ? 16 : 0)}" y="${ly}">${esc(l.name)}</text>`;
+                            return;
+                        }
+                        out += `<text x="${lx}" y="${ly}">${esc(lineLabel(l))}</text>`;
+                    });
+                    out += '</g>';
+                });
+                svg.innerHTML = out;
+            }
+
+            const short = (id) => id.replace(/\/index\.(ts|js)$/, '/');
+            const pairText = (p) => {
+                const mark = { added: '+', removed: '−' }[p.diff] ?? (p.violation ? '✕' : ' ');
+                const http = p.kind === 'http' ? `  ${p.labels[0]}` : '';
+                return `${mark} ${short(p.from)} → ${p.foreign ? p.to : short(p.to)}${p.type ? '  (type)' : ''}${http}`;
+            };
+            const linkTo = (id) => `<a data-goto="${esc(id)}">${esc(short(id))}</a>`;
+
+            function details(v) {
+                const it = v.items.get(S.selected);
+                const box = $('#details');
+                if (!it) {
+                    const m = metrics(v.node.modules);
+                    const bad = v.bundles.filter((b) => b.violation).length;
+                    const delta = ir.diff
+                        ? `<b>diff</b><span><span class="added">+${m.changed.added}</span> ~${m.changed.changed} <span class="muted">−${m.changed.removed}</span></span>`
+                        : '';
+                    const empty =
+                        model.touched && !v.items.size ? `<div class="muted">На этом уровне нет изменений.</div>` : '';
+                    box.innerHTML = `<h3>${esc(S.path.join('/') || ir.title)}</h3>
+                        <div class="kv"><b>модулей</b><span>${m.count}</span><b>строк</b><span>${m.lines}</span>
+                        <b>стрелок</b><span>${v.bundles.length}</span><b>нарушений</b><span class="${bad ? 'bad' : ''}">${bad}</span>${delta}</div>${empty}`;
+                    return;
+                }
+                if (it.kind === 'ext' || it.kind === 'pkg') {
+                    const pairs = v.bundles.filter((b) => b.to === it.key).flatMap((b) => b.pairs);
+                    box.innerHTML = `<h3>${esc(it.name)}</h3><div class="muted">${it.kind === 'pkg' ? 'npm-пакет' : 'вне текущего уровня — двойной клик, чтобы перейти'}</div>
+                        <ul class="list">${pairs.map((p) => `<li class="${p.violation ? 'bad' : ''}">${esc(pairText(p))}</li>`).join('')}</ul>`;
+                    return;
+                }
+                const m = it.m;
+                const f = (n) => n.toFixed(2);
+                const file = it.kind === 'leaf' ? model.byId.get(it.node.module) : null;
+                const diffHint = file?.diff
+                    ? `<div class="muted">Двойной клик — diff кода (${{ added: 'новый файл', changed: 'изменения', removed: 'файл удалён' }[file.diff]}).</div>`
+                    : '';
+                box.innerHTML = `<h3>${fileIconHtml(it.name, it.kind)}<span>${esc(it.segs.join('/'))}</span></h3>${diffHint}
+                    <div class="kv"><b>уровень</b><span>${it.rank}</span><b>модулей</b><span>${m.count}</span><b>строк</b><span>${m.lines}</span>
+                    <b>Ca / Ce</b><span>${m.ca.size} / ${m.ce.size}</span><b>I</b><span>${f(m.I)}</span><b>A</b><span>${f(m.A)}</span><b>D</b><span>${f(m.D)}</span></div>
+                    ${m.violations.length ? `<h3 class="bad">Нарушения (${m.violations.length})</h3><ul class="list">${m.violations.map((e) => `<li class="bad">${e.violation}: ${linkTo(e.from)} → ${linkTo(e.to)}</li>`).join('')}</ul>` : ''}
+                    <h3>Зависит от (${m.ce.size})</h3><ul class="list">${[...m.ce]
+                        .sort()
+                        .map((id) => `<li>${linkTo(id)}</li>`)
+                        .join('')}</ul>
+                    <h3>Используется в (${m.ca.size})</h3><ul class="list">${[...m.ca]
+                        .sort()
+                        .map((id) => `<li>${linkTo(id)}</li>`)
+                        .join('')}</ul>`;
+            }
+
+            function crumbs() {
+                const parts = [
+                    `<a data-depth="0">${esc(ir.title)}</a>`,
+                    ...S.path.map((s, i) => `<a data-depth="${i + 1}">${esc(s)}</a>`),
+                ];
+                $('#crumbs').innerHTML = parts.join('<span> / </span>');
+                const banner = [
+                    model.proposal && 'PROPOSAL — не реализовано в коде',
+                    ir.diff && `DIFF ${ir.diff.ref} · ${ir.diff.base}`,
+                ].filter(Boolean);
+                $('#banner').hidden = !banner.length;
+                $('#banner').textContent = banner.join(' · ');
+                $('#t-diff').hidden = !ir.diff;
+                $('#t-diff').classList.toggle('on', S.diff);
+                $('#diagrams').innerHTML = [
+                    `<button class="diagram${S.diagram === 'real' ? ' on' : ''}" data-diagram="real">Реальная диаграмма</button>`,
+                    ...ir.proposals.map(
+                        (p) =>
+                            `<button class="diagram${S.diagram === p.id ? ' on' : ''}" data-diagram="${esc(p.id)}">Proposal: ${esc(p.name || p.id)}</button>`,
+                    ),
+                ].join('');
+                $('#t-arrows').classList.toggle('on', S.arrows);
+                $('#t-packages').classList.toggle('on', S.packages);
+                $('#t-compact').classList.toggle('on', S.compact);
+                $('#t-color').textContent = S.color === 'D' ? 'Цвет: D' : 'Цвет: нарушения';
+                $('#z-reset').textContent = `${Math.round(S.zoom * 100)}%`;
+            }
+
+            function render() {
+                if (!ir) return;
+                model = buildModel();
+                const v = view();
+                rank(v);
+                layout(v);
+                route(v);
+                draw(v);
+                details(v);
+                crumbs();
+                current = v;
+                save();
+            }
+
+            function goto(id) {
+                const segs = model.paths.get(id);
+                if (!segs) return;
+                closeCard();
+                S.path = segs.slice(0, -1);
+                S.selected = segs.join(SEP);
+                render();
+            }
+
+            let cardMode = 'file';
+            let cardLine = 1;
+
+            const KW_PHP = new Set(
+                'abstract and array as break case catch class clone const continue declare default do echo else elseif empty enum extends final finally fn for foreach function global if implements include include_once instanceof insteadof interface isset list match namespace new or parent print private protected public readonly require require_once return self static switch throw trait try unset use var while xor yield true false null'.split(
+                    ' ',
+                ),
+            );
+            const KW_TS = new Set(
+                'abstract as async await break case catch class const continue debugger default delete do else enum export extends false finally for from function if implements import in infer instanceof interface is keyof let new null of private protected public readonly return static super switch this throw true try type typeof undefined var void while with yield satisfies'.split(
+                    ' ',
+                ),
+            );
+            const TY_BUILTIN = new Set(
+                'string number boolean any never unknown void null undefined object bigint symbol this'.split(' '),
+            );
+
+            function codeLang(m) {
+                const lang = (m?.lang || '').toLowerCase();
+                if (lang === 'php') return 'php';
+                if (lang === 'astro') return 'astro';
+                if (lang === 'tsx' || lang === 'jsx') return 'tsx';
+                if (lang === 'scss' || lang === 'sass' || lang === 'css') return 'scss';
+                return 'ts';
+            }
+
+            const SCSS_AT = new Set(
+                'use forward import include mixin function extend if else each for while return debug warn error at-root content media supports keyframes charset layer'.split(
+                    ' ',
+                ),
+            );
+            const SCSS_VAL = new Set(
+                'flex grid block inline none absolute relative fixed sticky static column row center start end stretch solid dashed dotted transparent inherit initial unset auto hidden visible wrap nowrap bold normal italic underline uppercase lowercase pointer default collapse separate both horizontal vertical space-between space-around space-evenly flex-start flex-end self-start self-end safe unsafe min max fit-content max-content min-content repeat rgba rgb hsl hsla url calc clamp min max minmax var'.split(
+                    ' ',
+                ),
+            );
+
+            function highlightScss(line, state) {
+                let i = 0;
+                let out = '';
+                let expectValue = false;
+                let afterAt = '';
+                const emit = (cls, text) => {
+                    if (text) out += cls ? `<i class="${cls}">${esc(text)}</i>` : esc(text);
+                };
+                const readString = (q, from) => {
+                    let j = from + 1;
+                    while (j < line.length) {
+                        if (line[j] === '\\') {
+                            j += 2;
+                            continue;
+                        }
+                        if (line[j] === q) {
+                            j++;
+                            break;
+                        }
+                        j++;
+                    }
+                    return j;
+                };
+                while (i < line.length) {
+                    if (state.block) {
+                        const end = line.indexOf('*/', i);
+                        if (end < 0) {
+                            emit('com', line.slice(i));
+                            return out;
+                        }
+                        emit('com', line.slice(i, end + 2));
+                        i = end + 2;
+                        state.block = false;
+                        continue;
+                    }
+                    const c = line[i];
+                    const n = line[i + 1];
+                    if (c === '/' && n === '/') {
+                        emit('com', line.slice(i));
+                        break;
+                    }
+                    if (c === '/' && n === '*') {
+                        state.block = true;
+                        continue;
+                    }
+                    if (/\s/.test(c)) {
+                        emit('', c);
+                        i++;
+                        continue;
+                    }
+                    if (c === '"' || c === "'") {
+                        const j = readString(c, i);
+                        emit('str', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (c === '$' && /[A-Za-z_-]/.test(n || '')) {
+                        let j = i + 1;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        emit('var', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (c === '-' && n === '-' && /[A-Za-z_]/.test(line[i + 2] || '')) {
+                        let j = i + 2;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        emit('punct', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (c === '@' && /[A-Za-z-]/.test(n || '')) {
+                        let j = i + 1;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        const name = line.slice(i + 1, j);
+                        emit('kw', `@${name}`);
+                        i = j;
+                        expectValue = false;
+                        afterAt = name;
+                        continue;
+                    }
+                    if (c === '#' && n === '{') {
+                        emit('punct', '#{');
+                        i += 2;
+                        continue;
+                    }
+                    if (c === '#' && /[0-9a-fA-F]/.test(n || '')) {
+                        let j = i + 1;
+                        while (j < line.length && /[0-9a-fA-F]/.test(line[j])) j++;
+                        const len = j - i;
+                        if (len === 4 || len === 5 || len === 7 || len === 9) {
+                            emit('num', line.slice(i, j));
+                            i = j;
+                            continue;
+                        }
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        emit('tag', line.slice(i, j));
+                        i = j;
+                        expectValue = false;
+                        continue;
+                    }
+                    if (c === '#' && /[A-Za-z_-]/.test(n || '')) {
+                        let j = i + 1;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        emit('tag', line.slice(i, j));
+                        i = j;
+                        expectValue = false;
+                        continue;
+                    }
+                    if (c === '.' && /[A-Za-z_]/.test(n || '')) {
+                        let j = i + 1;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        emit('tag', line.slice(i, j));
+                        i = j;
+                        expectValue = false;
+                        afterAt = '';
+                        continue;
+                    }
+                    if (c === '&') {
+                        emit('punct', '&');
+                        i++;
+                        expectValue = false;
+                        continue;
+                    }
+                    if (c === '*' && (afterAt === 'use' || expectValue || /\s/.test(line[i - 1] || ' '))) {
+                        emit('punct', '*');
+                        i++;
+                        continue;
+                    }
+                    if (c === '!' && line.startsWith('!important', i)) {
+                        emit('kw', '!important');
+                        i += 10;
+                        continue;
+                    }
+                    if (c === ':' && n === ':') {
+                        let j = i + 2;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        emit('punct', line.slice(i, j));
+                        i = j;
+                        expectValue = false;
+                        continue;
+                    }
+                    if (c === ':' && !expectValue && /[a-zA-Z-]/.test(n || '')) {
+                        let j = i + 1;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        emit('punct', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (c === ':') {
+                        emit('', ':');
+                        i++;
+                        expectValue = true;
+                        continue;
+                    }
+                    if (c === '{' || c === '}') {
+                        emit('punct', c);
+                        i++;
+                        expectValue = false;
+                        afterAt = '';
+                        continue;
+                    }
+                    if (c === ';') {
+                        emit('', ';');
+                        i++;
+                        expectValue = false;
+                        afterAt = '';
+                        continue;
+                    }
+                    if (
+                        /[0-9]/.test(c) ||
+                        (c === '.' && /[0-9]/.test(n || '')) ||
+                        (c === '-' && /[0-9.]/.test(n || ''))
+                    ) {
+                        let j = i + 1;
+                        while (j < line.length && /[0-9.eE+-]/.test(line[j])) j++;
+                        while (j < line.length && /[%a-zA-Z]/.test(line[j])) j++;
+                        emit('num', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (/[A-Za-z_-]/.test(c)) {
+                        let j = i + 1;
+                        while (j < line.length && /[\w-]/.test(line[j])) j++;
+                        const word = line.slice(i, j);
+                        let k = j;
+                        while (k < line.length && /\s/.test(line[k])) k++;
+                        if (word === 'as') {
+                            emit('punct', word);
+                        } else if (afterAt === 'include' || afterAt === 'mixin' || afterAt === 'function') {
+                            emit('kw', word);
+                            afterAt = '';
+                        } else if (expectValue) {
+                            if (line[k] === '(') emit('kw', word);
+                            else if (SCSS_VAL.has(word)) emit('num', word);
+                            else emit('', word);
+                        } else if (line[k] === ':') emit('attr', word);
+                        else if (line[k] === '(') emit('kw', word);
+                        else if (SCSS_AT.has(word)) emit('kw', word);
+                        else emit('tag', word);
+                        i = j;
+                        continue;
+                    }
+                    emit('', c);
+                    i++;
+                }
+                return out;
+            }
+
+            // One pass per line. Block comments carry `state.block` across lines of a whole file.
+            function highlightLine(line, lang, state) {
+                if (lang === 'scss') return highlightScss(line, state);
+                const kw = lang === 'php' ? KW_PHP : KW_TS;
+                const jsx = lang === 'tsx' || lang === 'astro';
+                let i = 0;
+                let out = '';
+                let afterImport = false;
+                let importType = false;
+                let inImportTypeList = false;
+                let expectTypeName = false;
+                let pendingTypeAlias = false;
+                let inType = Boolean(state.inType);
+                const emit = (cls, text) => {
+                    if (text) out += cls ? `<i class="${cls}">${esc(text)}</i>` : esc(text);
+                };
+                const emitType = (name) => {
+                    out += `<i class="ty" data-type="${esc(name)}">${esc(name)}</i>`;
+                };
+                const readString = (q, from) => {
+                    let j = from + 1;
+                    while (j < line.length) {
+                        if (line[j] === '\\') {
+                            j += 2;
+                            continue;
+                        }
+                        if (line[j] === q) {
+                            j++;
+                            break;
+                        }
+                        j++;
+                    }
+                    return j;
+                };
+                // `` `…${expr}…` `` — static green, `${`/`}` cyan, expr white.
+                const emitTemplate = (from) => {
+                    let j = from + 1;
+                    emit('str', '`');
+                    let buf = '';
+                    const flush = () => {
+                        if (buf) {
+                            emit('str', buf);
+                            buf = '';
+                        }
+                    };
+                    while (j < line.length) {
+                        if (line[j] === '\\') {
+                            buf += line.slice(j, j + 2);
+                            j += 2;
+                            continue;
+                        }
+                        if (line[j] === '`') {
+                            flush();
+                            emit('str', '`');
+                            return j + 1;
+                        }
+                        if (line[j] === '$' && line[j + 1] === '{') {
+                            flush();
+                            emit('punct', '${');
+                            j += 2;
+                            const start = j;
+                            let depth = 1;
+                            while (j < line.length && depth > 0) {
+                                const ch = line[j];
+                                if (ch === '"' || ch === "'" || ch === '`') {
+                                    j = readString(ch, j);
+                                    continue;
+                                }
+                                if (ch === '{') depth++;
+                                else if (ch === '}') {
+                                    depth--;
+                                    if (depth === 0) break;
+                                }
+                                j++;
+                            }
+                            if (start < j) emit('', line.slice(start, j));
+                            if (j < line.length && line[j] === '}') {
+                                emit('punct', '}');
+                                j++;
+                            }
+                            continue;
+                        }
+                        buf += line[j++];
+                    }
+                    flush();
+                    return j;
+                };
+                // Brace scan; strings/templates (incl. `${…}`) skipped so depth stays honest.
+                const scanExpr = (from, depth) => {
+                    let j = from;
+                    while (j < line.length && depth > 0) {
+                        const ch = line[j];
+                        if (ch === '"' || ch === "'" || ch === '`') {
+                            j = readString(ch, j);
+                            continue;
+                        }
+                        if (ch === '{') {
+                            depth++;
+                            j++;
+                            continue;
+                        }
+                        if (ch === '}') {
+                            depth--;
+                            if (depth === 0) return { j, depth, end: j };
+                            j++;
+                            continue;
+                        }
+                        j++;
+                    }
+                    return { j, depth, end: j };
+                };
+                // `{ … }` in attrs / JSX — may span lines via state.jsxExpr.
+                const emitExpr = (from) => {
+                    emit('punct', '{');
+                    const start = from + 1;
+                    const { j, depth, end } = scanExpr(start, 1);
+                    out += highlightLine(line.slice(start, end), 'tsx', { block: false });
+                    if (depth === 0) {
+                        emit('punct', '}');
+                        state.jsxExpr = 0;
+                        return j + 1;
+                    }
+                    state.jsxExpr = depth;
+                    return j;
+                };
+                const resumeExpr = (from) => {
+                    const { j, depth, end } = scanExpr(from, state.jsxExpr);
+                    out += highlightLine(line.slice(from, end), 'tsx', { block: false });
+                    if (depth === 0) {
+                        emit('punct', '}');
+                        state.jsxExpr = 0;
+                        return j + 1;
+                    }
+                    state.jsxExpr = depth;
+                    return j;
+                };
+                // Attrs after tag name; may span lines via state.jsxTag.
+                const emitJsxAttrs = (from) => {
+                    let j = from;
+                    while (j < line.length) {
+                        const ch = line[j];
+                        if (/\s/.test(ch)) {
+                            emit('', ch);
+                            j++;
+                            continue;
+                        }
+                        if (ch === '/' && line[j + 1] === '/') {
+                            emit('com', line.slice(j));
+                            state.jsxTag = true;
+                            return line.length;
+                        }
+                        if (ch === '/' && line[j + 1] === '>') {
+                            emit('punct', '/>');
+                            state.jsxTag = false;
+                            return j + 2;
+                        }
+                        if (ch === '>') {
+                            emit('punct', '>');
+                            state.jsxTag = false;
+                            return j + 1;
+                        }
+                        if (ch === '{') {
+                            j = emitExpr(j);
+                            continue;
+                        }
+                        if (ch === '"' || ch === "'") {
+                            const k = readString(ch, j);
+                            emit('str', line.slice(j, k));
+                            j = k;
+                            continue;
+                        }
+                        if (ch === '=') {
+                            emit('punct', '=');
+                            j++;
+                            continue;
+                        }
+                        if (/[A-Za-z_@]/.test(ch)) {
+                            let k = j + 1;
+                            while (k < line.length && /[\w.:-]/.test(line[k])) k++;
+                            emit('attr', line.slice(j, k));
+                            j = k;
+                            continue;
+                        }
+                        emit('', ch);
+                        j++;
+                    }
+                    state.jsxTag = true;
+                    return j;
+                };
+                const emitJsxTag = (from) => {
+                    let j = from;
+                    if (line.startsWith('<!--', j)) {
+                        const end = line.indexOf('-->', j);
+                        if (end < 0) {
+                            emit('com', line.slice(j));
+                            state.htmlCom = true;
+                            return line.length;
+                        }
+                        emit('com', line.slice(j, end + 3));
+                        return end + 3;
+                    }
+                    emit('punct', '<');
+                    j++;
+                    if (line[j] === '/') {
+                        emit('punct', '/');
+                        j++;
+                    }
+                    if (/[A-Za-z_]/.test(line[j] || '')) {
+                        let k = j + 1;
+                        while (k < line.length && /[\w.:-]/.test(line[k])) k++;
+                        const name = line.slice(j, k);
+                        if (/^[A-Z]/.test(name)) out += `<i class="ty" data-comp="${esc(name)}">${esc(name)}</i>`;
+                        else emit('tag', name);
+                        j = k;
+                    }
+                    return emitJsxAttrs(j);
+                };
+                while (i < line.length) {
+                    if (jsx && state.htmlCom) {
+                        const end = line.indexOf('-->', i);
+                        if (end < 0) {
+                            emit('com', line.slice(i));
+                            return out;
+                        }
+                        emit('com', line.slice(i, end + 3));
+                        i = end + 3;
+                        state.htmlCom = false;
+                        continue;
+                    }
+                    if (jsx && state.jsxExpr > 0) {
+                        i = resumeExpr(i);
+                        if (state.jsxExpr > 0) return out;
+                        if (state.jsxTag) {
+                            i = emitJsxAttrs(i);
+                        }
+                        continue;
+                    }
+                    if (jsx && state.jsxTag) {
+                        i = emitJsxAttrs(i);
+                        continue;
+                    }
+                    if (state.block) {
+                        const end = line.indexOf('*/', i);
+                        if (end < 0) {
+                            emit('com', line.slice(i));
+                            i = line.length;
+                            break;
+                        }
+                        emit('com', line.slice(i, end + 2));
+                        i = end + 2;
+                        state.block = false;
+                        continue;
+                    }
+                    const c = line[i];
+                    const n = line[i + 1];
+                    if (lang === 'php' && c === '<' && n === '?') {
+                        const take = line.startsWith('<?=', i) ? 3 : line.startsWith('<?php', i) ? 5 : 2;
+                        emit('kw', line.slice(i, i + take));
+                        i += take;
+                        continue;
+                    }
+                    if (lang === 'php' && c === '?' && n === '>') {
+                        emit('kw', '?>');
+                        i += 2;
+                        continue;
+                    }
+                    if (jsx && c === '<' && /[A-Za-z/!]/.test(n || '')) {
+                        i = emitJsxTag(i);
+                        continue;
+                    }
+                    if (jsx && c === '{') {
+                        i = emitExpr(i);
+                        continue;
+                    }
+                    if (c === '/' && n === '/') {
+                        emit('com', line.slice(i));
+                        break;
+                    }
+                    if (lang === 'php' && c === '#' && n !== '[' && (i === 0 || /\s/.test(line[i - 1]))) {
+                        emit('com', line.slice(i));
+                        break;
+                    }
+                    if (c === '/' && n === '*') {
+                        state.block = true;
+                        continue;
+                    }
+                    if (c === '`' && lang !== 'php') {
+                        i = emitTemplate(i);
+                        continue;
+                    }
+                    if (c === '"' || c === "'") {
+                        const j = readString(c, i);
+                        emit('str', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (c === '$' && lang === 'php' && /[A-Za-z_]/.test(n || '')) {
+                        let j = i + 1;
+                        while (j < line.length && /\w/.test(line[j])) j++;
+                        emit('var', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (/[A-Za-z_]/.test(c)) {
+                        let j = i + 1;
+                        while (j < line.length && /\w/.test(line[j])) j++;
+                        const word = line.slice(i, j);
+                        let k = j;
+                        while (k < line.length && /\s/.test(line[k])) k++;
+                        const call = line[k] === '(';
+                        const afterDot = i > 0 && line[i - 1] === '.';
+                        // Type positions → ty+data-type. Values/imports white. JSX tags → data-comp in emitJsxTag.
+                        let cls = '';
+                        if (kw.has(word) || (inType && TY_BUILTIN.has(word))) {
+                            cls = 'kw';
+                            if (word === 'import') {
+                                afterImport = true;
+                                importType = false;
+                                expectTypeName = false;
+                                pendingTypeAlias = false;
+                            } else if (word === 'type' && afterImport) {
+                                importType = true;
+                                expectTypeName = false;
+                            } else if (word === 'type') {
+                                expectTypeName = true;
+                                pendingTypeAlias = true;
+                            } else if (word === 'interface' || word === 'enum' || word === 'class') {
+                                expectTypeName = true;
+                                pendingTypeAlias = false;
+                            } else if (word === 'from') {
+                                afterImport = false;
+                                importType = false;
+                                inImportTypeList = false;
+                                expectTypeName = false;
+                            } else {
+                                expectTypeName = false;
+                                if (word !== 'typeof' && word !== 'as' && word !== 'extends' && word !== 'implements')
+                                    afterImport = false;
+                                if (
+                                    word === 'extends' ||
+                                    word === 'implements' ||
+                                    word === 'satisfies' ||
+                                    word === 'as'
+                                )
+                                    inType = true;
+                            }
+                        } else if (expectTypeName || inType || inImportTypeList || (importType && afterImport)) {
+                            emitType(word);
+                            if (expectTypeName) expectTypeName = false;
+                            i = j;
+                            continue;
+                        } else if (call) cls = 'fn';
+                        else if (afterDot) cls = 'prop';
+                        emit(cls, word);
+                        i = j;
+                        continue;
+                    }
+                    if (lang === 'php' && c === '\\') {
+                        let j = i + 1;
+                        while (j < line.length && /[\w\\]/.test(line[j])) j++;
+                        emit('ty', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (/[0-9]/.test(c) && (i === 0 || !/\w/.test(line[i - 1]))) {
+                        let j = i + 1;
+                        while (j < line.length && /[0-9a-fA-FxX._]/.test(line[j])) j++;
+                        emit('num', line.slice(i, j));
+                        i = j;
+                        continue;
+                    }
+                    if (c === '=' && pendingTypeAlias) {
+                        emit('punct', '=');
+                        pendingTypeAlias = false;
+                        inType = true;
+                        i++;
+                        continue;
+                    }
+                    if (c === '{' && importType) {
+                        emit('', c);
+                        inImportTypeList = true;
+                        i++;
+                        continue;
+                    }
+                    if (c === '}' && inImportTypeList) {
+                        emit('', c);
+                        inImportTypeList = false;
+                        i++;
+                        continue;
+                    }
+                    if (c === ';' && inType) {
+                        emit('', c);
+                        inType = false;
+                        pendingTypeAlias = false;
+                        i++;
+                        continue;
+                    }
+                    emit('', c);
+                    i++;
+                }
+                state.inType = inType;
+                return out;
+            }
+
+            function highlightFile(text, lang) {
+                const state = { block: false, front: false, htmlCom: false, jsxTag: false, jsxExpr: 0, inType: false };
+                return text
+                    .split('\n')
+                    .map((line, i) => {
+                        if (lang === 'astro' && line.trim() === '---') {
+                            state.front = !state.front;
+                            state.block = false;
+                            state.htmlCom = false;
+                            state.jsxTag = false;
+                            state.jsxExpr = 0;
+                            state.inType = false;
+                            return `<span data-l="${i + 1}">${esc(line) || ' '}</span>`;
+                        }
+                        const use = lang === 'astro' ? (state.front ? 'ts' : 'astro') : lang;
+                        return `<span data-l="${i + 1}">${highlightLine(line, use, state) || ' '}</span>`;
+                    })
+                    .join('');
+            }
+
+            function renderDiff(text, lang, totalLines = 0) {
+                if (!text) return { html: '<span class="meta">Текстовых отличий нет.</span>', line: 0 };
+                const meta =
+                    /^(diff |index |---|\+\+\+|new file|deleted file|similarity |rename |old mode|new mode|Binary files)/;
+                let oldLine = 0;
+                let newLine = 0;
+                let line = 0;
+                let isNew = false;
+                const state = { block: false, front: false, htmlCom: false, jsxTag: false, jsxExpr: 0, inType: false };
+                const rows = text.split('\n');
+                if (rows.at(-1) === '') rows.pop();
+                let html = rows
+                    .map((row) => {
+                        if (row.startsWith('new file') || row === '--- /dev/null') isNew = true;
+                        const hunk = row.match(/^@@ -(\d+)(?:,\d+)? \+(\d+)/);
+                        if (hunk) {
+                            oldLine = Number(hunk[1]);
+                            newLine = Number(hunk[2]);
+                            state.jsxTag = false;
+                            state.jsxExpr = 0;
+                            state.inType = false;
+                            return `<span class="hunk">${esc(row) || ' '}</span>`;
+                        }
+                        if (meta.test(row) || row === '\\ No newline at end of file')
+                            return `<span class="meta">${esc(row) || ' '}</span>`;
+                        let cls = '';
+                        let mark = '';
+                        let body = row;
+                        let num = 0;
+                        if (row.startsWith('+')) {
+                            [cls, mark, body, num] = ['add', '+', row.slice(1), newLine];
+                            if (!line) line = newLine;
+                            newLine++;
+                        } else if (row.startsWith('-')) {
+                            [cls, mark, body, num] = ['del', '-', row.slice(1), oldLine];
+                            if (!line) line = oldLine;
+                            oldLine++;
+                        } else if (row.startsWith(' ')) {
+                            [mark, body, num] = [' ', row.slice(1), newLine];
+                            oldLine++;
+                            newLine++;
+                        }
+                        const at = num ? ` data-l="${num}"` : '';
+                        if (lang === 'astro' && body.trim() === '---') {
+                            state.front = !state.front;
+                            state.block = false;
+                            state.htmlCom = false;
+                            state.jsxTag = false;
+                            state.jsxExpr = 0;
+                            state.inType = false;
+                            return `<span class="${cls}"${at}><i class="mark">${esc(mark)}</i>${esc(body) || ' '}</span>`;
+                        }
+                        const use = lang === 'astro' ? (state.front ? 'ts' : 'astro') : lang;
+                        return `<span class="${cls}"${at}><i class="mark">${esc(mark)}</i>${highlightLine(body, use, state) || ' '}</span>`;
+                    })
+                    .join('');
+                // Git omits the empty line after a final newline. The editor and «строк» count it.
+                if (isNew && newLine > 0 && totalLines >= newLine)
+                    for (let n = newLine; n <= totalLines; n++)
+                        html += `<span class="add" data-l="${n}"><i class="mark">+</i> </span>`;
+                return { html, line };
+            }
+
+            function parseImportNames(text) {
+                const map = new Map();
+                const addNamed = (raw, spec) => {
+                    for (const part of raw.split(',')) {
+                        let p = part.trim().replace(/^type\s+/, '');
+                        if (!p) continue;
+                        const bits = p.split(/\s+as\s+/);
+                        const local = (bits[1] || bits[0]).trim();
+                        if (local) map.set(local, spec);
+                    }
+                };
+                for (const m of text.matchAll(
+                    /^import\s+(?:type\s+)?(?:(\w+)\s*,\s*)?\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/gm,
+                )) {
+                    if (m[1]) map.set(m[1], m[3]);
+                    addNamed(m[2], m[3]);
+                }
+                for (const m of text.matchAll(/^import\s+(?:type\s+)?(\w+)\s+from\s*['"]([^'"]+)['"]/gm))
+                    map.set(m[1], m[2]);
+                return map;
+            }
+
+            function resolveImportPath(fromId, spec) {
+                if (spec.startsWith('@/')) return spec.slice(2);
+                if (!spec.startsWith('.')) return spec;
+                const parts = fromId.split('/');
+                parts.pop();
+                for (const seg of spec.split('/')) {
+                    if (!seg || seg === '.') continue;
+                    if (seg === '..') parts.pop();
+                    else parts.push(seg);
+                }
+                return parts.join('/');
+            }
+
+            function matchImportModule(fromId, spec) {
+                const base = resolveImportPath(fromId, spec);
+                const exts = ['.ts', '.tsx', '.astro', '.js', '.jsx', '.mjs', '.mts'];
+                for (const id of [base, ...exts.map((e) => base + e), ...exts.map((e) => `${base}/index${e}`)])
+                    if (model.byId.has(id)) return id;
+                const edge = model.edges.find(
+                    (e) =>
+                        e.from === fromId &&
+                        (e.to === base || e.to.startsWith(`${base}/`) || e.to.replace(/\/index\.[^/]+$/, '') === base),
+                );
+                return edge?.to ?? null;
+            }
+
+            function preferAstroComponent(moduleId, name) {
+                if (!moduleId) return null;
+                if (moduleId.endsWith('.astro')) return moduleId;
+                const root = /\/index\.[^/]+$/.test(moduleId)
+                    ? moduleId.replace(/\/index\.[^/]+$/, '')
+                    : moduleId.replace(/\/[^/]+$/, '');
+                const exact = `${root}/${name}.astro`;
+                if (model.byId.has(exact)) return exact;
+                const m = model.byId.get(moduleId);
+                for (const op of m?.ops || []) {
+                    if (!op.from?.includes('.astro')) continue;
+                    if (op.name !== 'default' && op.name !== name && !op.from.includes(name)) continue;
+                    const target = resolveImportPath(moduleId, op.from);
+                    if (model.byId.has(target)) return target;
+                }
+                const any = [...model.byId.keys()].find((id) => id.startsWith(`${root}/`) && id.endsWith('.astro'));
+                return any || moduleId;
+            }
+
+            async function loadCardImports(id) {
+                cardImports = new Map();
+                const res = await fetch(`/api/source?id=${encodeURIComponent(id)}`);
+                if (!res.ok) return;
+                const { text } = await res.json();
+                cardImports = parseImportNames(text);
+                return text;
+            }
+
+            async function paintSource() {
+                const id = $('#card').dataset.id;
+                const m = model.byId.get(id);
+                const source = $('#source');
+                const lang = codeLang(m);
+                $('#card-mode').hidden = !m?.diff;
+                $('#card-mode').textContent = cardMode === 'diff' ? 'Файл' : 'Diff';
+                source.classList.toggle('diff', cardMode === 'diff');
+                source.classList.toggle('lang-scss', lang === 'scss');
+                source.textContent = '…';
+                if (cardMode === 'diff') {
+                    const res = await fetch(`/api/diff?id=${encodeURIComponent(id)}`);
+                    if (!res.ok) return (source.textContent = 'diff недоступен');
+                    const { text } = await res.json();
+                    const diff = renderDiff(text, lang, m.lines);
+                    source.innerHTML = diff.html;
+                    if (diff.line && cardLine === 1) armOpen(diff.line);
+                    const row =
+                        source.querySelector(`span.add[data-l="${cardLine}"]`) ||
+                        source.querySelector(`span[data-l="${cardLine}"]`);
+                    row?.classList.add('hl');
+                    if (row && cardLine !== 1) row.scrollIntoView({ block: 'center' });
+                    else source.scrollTop = 0;
+                    return;
+                }
+                const res = await fetch(`/api/source?id=${encodeURIComponent(id)}`);
+                if (!res.ok) return (source.textContent = 'исходник недоступен');
+                const { text } = await res.json();
+                cardImports = parseImportNames(text);
+                source.innerHTML = highlightFile(text, lang);
+            }
+
+            function findOpLine(moduleId, name) {
+                const ops = model.byId.get(moduleId)?.ops || [];
+                const hit =
+                    ops.find(
+                        (op) =>
+                            op.name === name && (op.type || /^(type|interface|enum|class|component)$/.test(op.kind)),
+                    ) || ops.find((op) => op.name === name);
+                return hit?.line || 1;
+            }
+
+            async function gotoType(name) {
+                const fromId = $('#card').dataset.id;
+                if (!fromId || !name) return;
+                const localLine = findOpLine(fromId, name);
+                const localOp = (model.byId.get(fromId)?.ops || []).some(
+                    (op) => op.name === name && (op.type || /^(type|interface|enum|class)$/.test(op.kind)),
+                );
+                if (localOp) return showLine(localLine);
+                const spec = cardImports.get(name);
+                if (!spec) return;
+                const mod = matchImportModule(fromId, spec);
+                if (mod && model.byId.has(mod)) {
+                    await openCard(mod, findOpLine(mod, name));
+                    return;
+                }
+                const res = await fetch(
+                    `/api/goto?from=${encodeURIComponent(fromId)}&spec=${encodeURIComponent(spec)}&name=${encodeURIComponent(name)}`,
+                );
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.id) await openCard(data.id, data.line || 1);
+            }
+
+            async function openCard(id, line = 1) {
+                const m = model.byId.get(id);
+                if (!m) return;
+                const mm = metrics([id]);
+                const opLine = (op) =>
+                    `<li class="op" data-line="${op.line}">${op.type ? 'τ' : '+'} ${esc(op.name)} <span class="muted">${esc(op.kind)}${op.from ? ` ← ${esc(op.from)}` : ''} :${op.line}</span></li>`;
+                {
+                    const base = (m.file || m.id || '').split('/').pop();
+                    $('#card-title').innerHTML = `${fileIconHtml(base, 'leaf')}<span>${esc(m.file)}</span>`;
+                }
+                $('#card-info').innerHTML =
+                    `<div class="kv"><b>тип</b><span>${m.stereotype}</span><b>строк</b><span>${m.lines}</span>
+                    <b>Ca / Ce</b><span>${mm.ca.size} / ${mm.ce.size}</span><b>I / A / D</b><span>${mm.I.toFixed(2)} / ${mm.A.toFixed(2)} / ${mm.D.toFixed(2)}</span></div>
+                    <h3>Экспорт</h3><ul class="list">${m.ops.map(opLine).join('')}</ul>
+                    ${mm.violations.length ? `<h3 class="bad">Нарушения</h3><ul class="list">${mm.violations.map((e) => `<li class="bad">${e.violation}: → ${linkTo(e.to)}</li>`).join('')}</ul>` : ''}
+                    <h3>Зависит от</h3><ul class="list">${[...mm.ce]
+                        .sort()
+                        .map((d) => `<li>${linkTo(d)}</li>`)
+                        .join('')}</ul>
+                    <h3>Используется в</h3><ul class="list">${[...mm.ca]
+                        .sort()
+                        .map((d) => `<li>${linkTo(d)}</li>`)
+                        .join('')}</ul>`;
+                $('#card').hidden = false;
+                $('#card').dataset.id = id;
+                armOpen(line > 0 ? line : 1);
+                cardMode = m.diff && line <= 1 ? 'diff' : 'file';
+                if (m.diff && line > 1) cardMode = 'file';
+                if (cardMode === 'diff') await loadCardImports(id);
+                await paintSource();
+                if (cardMode === 'file') showLine(line > 0 ? line : 1);
+            }
+
+            function armOpen(line) {
+                cardLine = line;
+                const m = model.byId.get($('#card').dataset.id);
+                $('#card-open').hidden = !m?.path;
+            }
+
+            async function showLine(line) {
+                armOpen(line);
+                if ($('#source').classList.contains('diff')) {
+                    cardMode = 'file';
+                    await paintSource();
+                }
+                $('#source .hl')?.classList.remove('hl');
+                const el = $(`#source span[data-l="${line}"]`);
+                if (!el || line === 1) return ($('#source').scrollTop = 0);
+                el.classList.add('hl');
+                el.scrollIntoView({ block: 'center' });
+            }
+
+            const closeCard = () => ($('#card').hidden = true);
+
+            function up() {
+                if (!S.path.length) return;
+                S.selected = S.path.join(SEP);
+                S.path = S.path.slice(0, -1);
+                render();
+            }
+
+            function zoom(z) {
+                S.zoom = Math.min(3, Math.max(0.2, Math.round(z * 10) / 10));
+                render();
+            }
+
+            const itemOf = (e) => {
+                const g = e.target.closest('.item');
+                return g && current.list[Number(g.dataset.i)];
+            };
+            // Selection only toggles classes. A full redraw on the first click removes the box, and the second click never becomes a dblclick.
+            function paintSelection() {
+                const sel = current.items.get(S.selected) ? S.selected : null;
+                const svg = $('#svg');
+                svg.classList.toggle('has-sel', Boolean(sel));
+                svg.querySelectorAll('.item').forEach((g) =>
+                    g.classList.toggle('sel', current.list[Number(g.dataset.i)]?.key === sel),
+                );
+                svg.querySelectorAll('.edge').forEach((p) => {
+                    const b = current.bundles[Number(p.nextElementSibling?.dataset.b)];
+                    p.classList.toggle('hl', Boolean(sel && b && (b.from === sel || b.to === sel)));
+                });
+                details(current);
+                save();
+            }
+            $('#svg').addEventListener('click', (e) => {
+                if (e.detail > 1) return;
+                const it = itemOf(e);
+                S.selected = it ? it.key : null;
+                paintSelection();
+            });
+            $('#svg').addEventListener('dblclick', (e) => {
+                const it = itemOf(e);
+                if (!it || it.kind === 'pkg') return;
+                if (it.kind === 'ext') {
+                    S.path = it.segs.slice(0, -1);
+                    S.selected = it.segs.join(SEP);
+                } else if (it.kind === 'dir') {
+                    S.path = it.segs;
+                    S.selected = null;
+                } else return openCard(it.node.module);
+                render();
+            });
+            $('#svg').addEventListener('mousemove', (e) => {
+                const tip = $('#tip');
+                const hit = e.target.closest('.hit');
+                if (!hit) return (tip.hidden = true);
+                const b = current.bundles[Number(hit.dataset.b)];
+                tip.innerHTML = b.pairs
+                    .map((p) => `<div class="${p.violation ? 'bad' : ''}">${esc(pairText(p))}</div>`)
+                    .join('');
+                tip.hidden = false;
+                tip.style.left = `${Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 10)}px`;
+                tip.style.top = `${e.clientY + 14}px`;
+            });
+            $('#canvas').addEventListener(
+                'wheel',
+                (e) => {
+                    if (!e.ctrlKey && !e.metaKey) return;
+                    e.preventDefault();
+                    zoom(S.zoom * (e.deltaY < 0 ? 1.1 : 0.9));
+                },
+                { passive: false },
+            );
+            document.addEventListener('click', (e) => {
+                const t = e.target;
+                if (t.dataset.goto) goto(t.dataset.goto);
+                else if (t.dataset.depth !== undefined) {
+                    closeCard();
+                    S.path = S.path.slice(0, Number(t.dataset.depth));
+                    S.selected = null;
+                    render();
+                } else if (t.dataset.diagram) {
+                    S.diagram = t.dataset.diagram;
+                    S.path = [];
+                    S.selected = null;
+                    render();
+                } else if (t.closest('.op')) showLine(Number(t.closest('.op').dataset.line));
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key !== 'Escape' && e.target.closest?.('textarea')) return;
+                if (e.key === 'Escape') return $('#card').hidden ? up() : closeCard();
+                if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+'))
+                    return (e.preventDefault(), zoom(S.zoom * 1.1));
+                if ((e.ctrlKey || e.metaKey) && e.key === '-') return (e.preventDefault(), zoom(S.zoom * 0.9));
+                if ((e.ctrlKey || e.metaKey) && e.key === '0') return (e.preventDefault(), zoom(1));
+                if (e.key === 'r' || e.key === 'R') load();
+            });
+            $('#up').onclick = up;
+            $('#card-close').onclick = closeCard;
+            $('#source').addEventListener('click', async (e) => {
+                if (e.metaKey || e.ctrlKey) {
+                    const typeEl = e.target.closest('i[data-type]');
+                    if (typeEl) {
+                        e.preventDefault();
+                        await gotoType(typeEl.dataset.type);
+                        return;
+                    }
+                    const comp = e.target.closest('i[data-comp]');
+                    if (comp) {
+                        e.preventDefault();
+                        const name = comp.dataset.comp;
+                        const fromId = $('#card').dataset.id;
+                        const spec = cardImports.get(name);
+                        if (!spec || !fromId) return;
+                        const target = preferAstroComponent(matchImportModule(fromId, spec), name);
+                        if (target && model.byId.has(target)) await openCard(target);
+                        return;
+                    }
+                }
+                const row = e.target.closest('#source.diff span[data-l]');
+                if (!row) return;
+                armOpen(Number(row.dataset.l));
+                $('#source .hl')?.classList.remove('hl');
+                row.classList.add('hl');
+            });
+            $('#card-open').onclick = async (e) => {
+                e.preventDefault();
+                const id = $('#card').dataset.id;
+                if (!id) return;
+                const res = await fetch(`/api/open?id=${encodeURIComponent(id)}&line=${cardLine}`);
+                if (!res.ok) $('#card-open').title = 'не открылось';
+            };
+            $('#card-mode').onclick = () => {
+                cardMode = cardMode === 'diff' ? 'file' : 'diff';
+                paintSource();
+            };
+            $('#z-in').onclick = () => zoom(S.zoom * 1.1);
+            $('#z-out').onclick = () => zoom(S.zoom * 0.9);
+            $('#z-reset').onclick = () => zoom(1);
+            for (const k of ['arrows', 'packages', 'compact'])
+                $(`#t-${k}`).onclick = () => {
+                    S[k] = !S[k];
+                    render();
+                };
+            $('#t-color').onclick = () => {
+                S.color = S.color === 'D' ? 'violations' : 'D';
+                render();
+            };
+            $('#t-diff').onclick = () => {
+                S.diff = !S.diff;
+                render();
+            };
+            $('#send').onclick = async () => {
+                const text = $('#note').value;
+                if (!text.trim()) return;
+                const it = current.items.get(S.selected);
+                const context = {
+                    diagram: S.diagram,
+                    path: S.path.join('/'),
+                    selected: it ? (it.segs?.join('/') ?? it.name) : null,
+                    modules: it?.node ? it.node.modules.slice(0, 50) : undefined,
+                };
+                const res = await fetch('/api/inbox', { method: 'POST', body: JSON.stringify({ text, context }) });
+                if (res.ok) $('#note').value = '';
+                poll(false);
+            };
+            addEventListener('resize', () => render());
+
+            async function load() {
+                ir = await (await fetch('/api/ir')).json();
+                render();
+            }
+
+            function apply(cmd) {
+                if (cmd.op !== 'show') return;
+                S.diagram = cmd.diagram || 'real';
+                S.path = [];
+                model = buildModel();
+                S.path = cmd.path ? resolvePath(cmd.path) : [];
+                S.selected = cmd.select ? [...S.path, cmd.select].join(SEP) : null;
+                closeCard();
+                render();
+            }
+
+            async function poll(loop = true) {
+                try {
+                    const state = await (await fetch('/api/state')).json();
+                    if (state.version !== ir?.version) await load();
+                    if (state.command) apply(state.command);
+                    $('#inbox').textContent = state.inbox ? `в очереди агенту: ${state.inbox}` : '';
+                    $('#conn').className = '';
+                    $('#conn').title = `IR ${state.version}`;
+                } catch {
+                    $('#conn').className = 'off';
+                    $('#conn').title = 'сервер недоступен — pnpm uml';
+                }
+                if (loop) setTimeout(poll, 1500);
+            }
+            poll();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,43 @@
+---
+description: Страница = секции; View → RawProps
+globs: frontend/src/_pages/**,frontend/src/widgets/**,frontend/src/entities/**
+alwaysApply: false
+---
+
+# Page = sections
+
+View and every section have `RawProps` (domain only). Wire/DTO shapes do not enter `.astro`.
+
+Mechanics of the `.astro` file: `astro.mdc`. Glossary: `frontend/GLOSSARY.md` (Page, View, Section, Entity). ADR-0001.
+
+## Data
+
+Const секции и импорт во view — `.agents/skills/ui-mode/page.md` (Static, Fresh ticket, Assembly ticket).
+
+- Page-level props = `ViewRawProps` (+ `meta` if needed).
+- Entity list/detail = `I*` envelope (`entities/.../model`).
+- Entity fields inside section RawProps (`reviews?: IReview[]`) — OK.
+
+Page body sections are not article/CMS content-constructor blocks (wysiwyg body). When the user asks for a **конструктор блоков** / backend-driven order of page bands, follow skill `block-constructor` (`.agents/skills/block-constructor`): View `RawProps.sections` as a discriminated union, map/switch in the View, compose in `model/<page>-page.ts`.
+
+```ts
+export type HomeSection =
+  | { type: "hero"; props: HeroSectionRawProps }
+  | { type: "stats"; props: StatsSectionRawProps };
+
+export type RawProps = {
+  sections: HomeSection[];
+};
+```
+
+## Placement
+
+New section → `_pages/<Slice>/ui/<Slice>View/sections/<Name>/` until a second page needs it → `widgets/<Name>/`. `entities/<entity>/ui/` only when `I*` already exists. Slice folder omits `View` suffix; ui segment is `*View` (GLOSSARY.md).
+
+New BEM block: layout/structure from a neighbour section OK; **not** link-reset (`color: inherit` / `text-decoration: none` / `margin: 0`) — already in `app/css/base` (`css.mdc` Reset / normalize).
+
+## Files
+
+- Section: `pnpm mkac Name --section --dir …`. Root `<section>` + `HTMLAttributes<'section'> & RawProps`.
+- View: `HTMLAttributes<'tag'> & RawProps`. Always `RawProps`, even if the field list is still empty.
+- Barrel: `export type { RawProps as NameRawProps }` — without HTML attributes.
