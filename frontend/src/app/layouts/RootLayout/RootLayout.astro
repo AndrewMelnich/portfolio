@@ -7,13 +7,18 @@ import type { PageMeta } from '@/shared/model';
 import InlineScript from '@/shared/ui/InlineScript';
 import LayoutGrid from '@/shared/ui/LayoutGrid';
 import SkipLink from '@/shared/ui/SkipLink';
+import Header from '@/widgets/Header';
+import KeyVisual from '@/widgets/KeyVisual';
+
 type Props = {
     htmlClass?: string;
     meta: PageMeta;
+    withKeyVisual?: boolean;
 };
 
 const locale = Astro.currentLocale as AppLocale;
-const { htmlClass, meta } = Astro.props;
+const { htmlClass, meta, withKeyVisual = true } = Astro.props;
+const showKeyVisual = withKeyVisual && !htmlClass?.includes('error-page');
 const { pathname } = Astro.url;
 
 const cleanPath = getPathWithoutFilter(pathname || '');
@@ -119,6 +124,8 @@ const speculationRules = JSON.stringify({
     </head>
     <body>
         <SkipLink />
+        {showKeyVisual && <KeyVisual />}
+        {!htmlClass?.includes('error-page') && <Header />}
         <main id="main" class="main" tabindex="-1">
             <slot />
         </main>

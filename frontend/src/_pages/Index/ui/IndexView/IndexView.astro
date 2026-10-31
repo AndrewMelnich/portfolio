@@ -4,9 +4,47 @@ import type { RawProps } from './types';
 
 type Props = HTMLAttributes<'div'> & RawProps;
 
-const { ...props } = Astro.props;
+const { class: className, ...props } = Astro.props;
+
+const sections = [
+    {
+        id: 'work',
+        title: 'Work',
+        text: 'Selected projects and collaborations. Placeholder copy for layout.',
+    },
+    {
+        id: 'approach',
+        title: 'Approach',
+        text: 'Process notes and principles. Fish text until real content lands.',
+    },
+    {
+        id: 'studio',
+        title: 'Studio',
+        text: 'About the practice, tools, and ways of working.',
+    },
+    {
+        id: 'contact',
+        title: 'Contact',
+        text: 'Say hello — email and socials go here later.',
+    },
+] as const;
 ---
 
-<div class:list={['wrapper', props.class]} {...props}>
-    <h1 class="h1">portfolio</h1>
+<div class:list={['index-view', className]} {...props}>
+    <section class="index-view__hero wrapper" aria-label="Intro">
+        <p class="index-view__eyebrow">Portfolio</p>
+        <h1 class="index-view__title">Andrew Melnichenko</h1>
+        <p class="index-view__lead">Digital product &amp; interface work. Scroll the anchors above.</p>
+    </section>
+
+    {sections.map((section) => (
+        <section class="index-view__section wrapper" id={section.id}>
+            <h2 class="index-view__section-title">{section.title}</h2>
+            <p class="index-view__section-text">{section.text}</p>
+        </section>
+    ))}
 </div>
+
+<style lang="scss" is:global>
+    @use './styles';
+</style>

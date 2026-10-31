@@ -1,0 +1,35 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'header'>;
+
+const { class: className, ...props } = Astro.props;
+
+const navItems = [
+    { href: '#work', label: 'Work' },
+    { href: '#approach', label: 'Approach' },
+    { href: '#studio', label: 'Studio' },
+    { href: '#contact', label: 'Contact' },
+] as const;
+---
+
+<header class:list={['header', 'js-header', className]} {...props}>
+    <div class="header__inner wrapper">
+        <a class="header__logo" href="/" aria-label="Home"></a>
+        <nav class="header__nav" aria-label="Primary">
+            <ul class="header__list list-unstyled">
+                {navItems.map((item) => (
+                    <li>
+                        <a class="header__link" href={item.href}>
+                            {item.label}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<style lang="scss" is:global>
+    @use './Header';
+</style>

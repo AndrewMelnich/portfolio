@@ -9,7 +9,10 @@
         "src/shared/ui/**/*.astro",
         "src/shared/ui/**/*.ts",
         "src/shared/ui/**/*.tsx",
-        "src/shared/lib/**/*.ts"
+        "src/shared/lib/**/*.ts",
+        "src/widgets/**/*.astro",
+        "src/widgets/**/*.ts",
+        "src/widgets/**/*.tsx"
     ],
     "ignorePatterns": [
         "dist/**",

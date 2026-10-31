@@ -3,20 +3,26 @@
 
 @layer {
     * {
-        @include scrollbar;
+        @include scrollbar(#8a8a8a);
     }
 
     :root {
         interpolate-size: allow-keywords;
+        color-scheme: dark;
     }
 
     html {
         background-color: $body-bg;
         color: $body-color;
+        scroll-behavior: smooth;
 
         &.no-scroll {
             overflow: hidden;
             padding-right: var(--layout-scrollbar-width);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            scroll-behavior: auto;
         }
     }
 

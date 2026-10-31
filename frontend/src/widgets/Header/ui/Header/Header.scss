@@ -1,0 +1,111 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    width: 100%;
+    pointer-events: none;
+}
+
+.header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 72px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    pointer-events: none;
+}
+
+.header__logo {
+    display: block;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    pointer-events: auto;
+    border: 1px solid rgb(255 255 255 / 28%);
+    background: transparent;
+    transition:
+        border-color $app-default-duration $app-default-easing,
+        opacity $app-default-duration $app-default-easing;
+
+    @include hover() {
+        border-color: rgb(255 255 255 / 72%);
+    }
+
+    &:focus-visible {
+        opacity: 1;
+    }
+}
+
+.header__nav {
+    pointer-events: auto;
+}
+
+.header__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px 28px;
+}
+
+.header__link {
+    position: relative;
+    display: inline-block;
+    padding: 4px 0;
+    color: rgb(255 255 255 / 62%);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color $app-default-duration $app-default-easing;
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 1px;
+        background: currentcolor;
+        transform: scaleX(0);
+        transform-origin: right center;
+        transition: transform $app-default-duration $app-default-easing;
+    }
+
+    @include hover() {
+        color: rgb(255 255 255 / 100%);
+
+        &::after {
+            transform: scaleX(1);
+            transform-origin: left center;
+        }
+    }
+
+    &:focus-visible {
+        color: #fff;
+    }
+}
+
+@include mobile() {
+    .header__inner {
+        min-height: 64px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+
+    .header__list {
+        gap: 6px 16px;
+    }
+
+    .header__link {
+        font-size: 11px;
+        letter-spacing: 0.06em;
+    }
+}

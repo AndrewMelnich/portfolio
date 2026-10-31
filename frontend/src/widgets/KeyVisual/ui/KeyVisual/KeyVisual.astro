@@ -1,0 +1,37 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'div'>;
+
+const { class: className, ...props } = Astro.props;
+---
+
+<div class:list={['key-visual', 'js-key-visual', className]} aria-hidden="true" {...props}>
+    <canvas class="key-visual__canvas"></canvas>
+</div>
+
+<style lang="scss" is:global>
+    @use './KeyVisual';
+</style>
+
+<script>
+    const boot = async () => {
+        if (document.prerendering) {
+            await new Promise<void>((resolve) => {
+                document.addEventListener('prerenderingchange', () => resolve(), { once: true });
+            });
+        }
+
+        const { init } = await import('./KeyVisualScene');
+
+        init();
+    };
+
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+            void boot();
+        });
+    } else {
+        void boot();
+    }
+</script>

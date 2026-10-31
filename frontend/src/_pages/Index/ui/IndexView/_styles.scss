@@ -1,0 +1,80 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.index-view {
+    position: relative;
+    z-index: 1;
+}
+
+.index-view__hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 16px;
+    min-height: 100lvh;
+    padding-top: 120px;
+    padding-bottom: 64px;
+}
+
+.index-view__eyebrow {
+    margin: 0;
+    color: rgb(255 255 255 / 48%);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.index-view__title {
+    margin: 0;
+    max-width: 12ch;
+    color: #fff;
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+}
+
+.index-view__lead {
+    margin: 0;
+    max-width: 36ch;
+    color: rgb(255 255 255 / 62%);
+    font-size: clamp(15px, 1.4vw, 18px);
+    line-height: 1.45;
+}
+
+.index-view__section {
+    min-height: 85lvh;
+    padding-top: 96px;
+    padding-bottom: 96px;
+    scroll-margin-top: 96px;
+}
+
+.index-view__section-title {
+    margin: 0 0 16px;
+    color: #fff;
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.index-view__section-text {
+    margin: 0;
+    max-width: 42ch;
+    color: rgb(255 255 255 / 58%);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+@include mobile() {
+    .index-view__hero {
+        padding-bottom: 48px;
+    }
+
+    .index-view__section {
+        min-height: 70lvh;
+        padding-top: 72px;
+        padding-bottom: 72px;
+        scroll-margin-top: 80px;
+    }
+}
