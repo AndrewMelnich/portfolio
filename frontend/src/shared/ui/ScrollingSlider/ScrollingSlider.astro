@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { sanitizeHtml } from '@/shared/lib/utils';
+
+export type Props = HTMLAttributes<'div'> & {
+    slides: unknown[];
+};
+
+const { slides, ...props } = Astro.props;
+---
+
+<div class:list={['base-slider js-scrolling-slider', props.class]} {...props}>
+    <div class="base-slider__list-container js-scrolling-list-container">
+        <ul class="list-unstyled scrolling-list js-scrolling-list">
+            {slides.map(async (slide) => (
+                <li
+                    class="scrolling-list__item js-scrolling-list__item"
+                    set:html={sanitizeHtml(await Astro.slots.render('default', [slide]))}
+                />
+            ))}
+        </ul>
+    </div>
+</div>
+
+<style lang="scss" is:global>
+    @use './ScrollingSlider';
+</style>
+
+<script>
+    import ScrollingSlider from './ScrollingSlider';
+
+    ScrollingSlider.init();
+</script>

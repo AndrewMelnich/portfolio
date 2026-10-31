@@ -1,0 +1,12 @@
+{
+    "name": "server-only",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": {
+            "browser": "./browser.js",
+            "default": "./empty.js"
+        }
+    }
+}

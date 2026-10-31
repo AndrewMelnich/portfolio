@@ -1,0 +1,19 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+export type Props = HTMLAttributes<'div'> & {
+    id: string;
+};
+
+const { ...props } = Astro.props;
+---
+
+<div class:list={['tabs js-tabs', props.class]} {...props}>
+    <slot />
+</div>
+
+<script>
+    import Tabs from './Tabs';
+
+    Tabs.init();
+</script>

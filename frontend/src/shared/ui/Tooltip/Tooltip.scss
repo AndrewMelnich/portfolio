@@ -1,0 +1,94 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.tooltip {
+    --bg-color: #4e4e4e;
+    --border-color: #484848;
+
+    width: max-content;
+    max-width: 244px;
+    max-width: min(244px, 100vw);
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    color: #fff;
+    padding: 12px;
+    visibility: hidden;
+    pointer-events: none;
+    animation: fade-in-up $app-default-easing 0.4s backwards;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+    }
+
+    &::after {
+        --size: 16px;
+
+        content: '';
+        position: absolute;
+        z-index: 2;
+        top: calc(100% - 1px);
+        left: 50%;
+        width: var(--size);
+        height: var(--size);
+        background-color: var(--bg-color);
+        transform: translate(-50%, -50%) translateX(calc(var(--shift-x, 0px) * -1)) rotate(-45deg);
+        border-bottom: 1px solid var(--border-color);
+        border-left: 1px solid var(--border-color);
+    }
+
+    &.is-flipped {
+        &::after {
+            top: auto;
+            bottom: calc(100% - 1px);
+            transform: translate(-50%, 50%) translateX(calc(var(--shift-x, 0px) * -1)) rotate(135deg);
+        }
+    }
+
+    &.is-out {
+        animation: fade-out-up $app-default-easing 0.4s forwards;
+    }
+
+    &:not(.is-out) {
+        visibility: visible;
+    }
+}
+
+.tooltip__text {
+    position: relative;
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-out-up {
+    from {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(5px);
+    }
+}

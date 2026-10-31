@@ -1,0 +1,22 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.scrolling-list {
+    @include hidden-scrollbar();
+
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+}
+
+.scrolling-list__item {
+    display: flex;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    scroll-margin-left: var(--scroll-margin-left, var(--offset-x));
+
+    > :global(*) {
+        width: 100%;
+    }
+}

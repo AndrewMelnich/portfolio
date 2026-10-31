@@ -1,0 +1,33 @@
+.layout-grid {
+    --column-color: rgba(231, 64, 31, 0.04);
+    --gap-color: rgba(231, 64, 31, 0.13);
+
+    box-sizing: border-box;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    overflow: hidden;
+    color: transparent;
+    background-color: transparent;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--column-color),
+        var(--column-color) var(--grid-column-width),
+        var(--gap-color) var(--grid-column-width),
+        var(--gap-color) calc(var(--grid-column-width) + var(--grid-gap))
+    );
+    background-size: min(var(--wrapper-max-width), calc(100vw - var(--layout-scrollbar-width) - var(--offset-x) * 2))
+        100%;
+}

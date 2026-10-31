@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { PUBLIC_API_HOST } from 'astro:env/client';
+import type { IconName } from './types.generated';
+
+type IconBaseProps = HTMLAttributes<'i'> & {
+    class?: string;
+    style?: string;
+};
+
+export type Props = IconBaseProps & ({ path: string; name?: IconName } | { name: IconName; path?: never });
+
+const { name, path, style, class: className, ...props } = Astro.props;
+const transformedPath = path?.startsWith('/storage/') ? `${PUBLIC_API_HOST}${path}` : path;
+const iconPath = transformedPath ?? (name ? `/static/icons/${name}.svg` : '');
+---
+
+<i class:list={['icon bvi-no-styles', className]} style={`--path: url('${iconPath}');${style || ''}`} {...props}></i>
+
+<style lang="scss" is:global>
+    @use './Icon';
+</style>

@@ -1,0 +1,32 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+export type Props = HTMLAttributes<'div'>;
+
+const { ...props } = Astro.props;
+---
+
+<div class:list={['collapse js-collapse', props.class]} {...props}>
+    <button class="collapse__trigger js-collapse-trigger" aria-haspopup="true" aria-expanded="false">
+        <slot name="trigger" />
+    </button>
+    <div class="collapse__content">
+        <div class="collapse__animation">
+            <div class="collapse__transform-wrapper">
+                <div class="collapse__content-el">
+                    <slot />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style lang="scss" is:global>
+    @use './Collapse';
+</style>
+
+<script>
+    import collapse from './Collapse';
+
+    collapse.init();
+</script>

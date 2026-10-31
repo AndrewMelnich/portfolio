@@ -1,0 +1,31 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+export type Props = HTMLAttributes<'dialog'> & {
+    id: string;
+    mode?: 'toast' | 'modal';
+    ignoreHash?: boolean;
+};
+
+const { id, mode = 'modal', ignoreHash = false, ...props } = Astro.props;
+---
+
+<dialog
+    id={id}
+    class:list={['popup', props.class]}
+    data-mode={mode}
+    {...(ignoreHash ? { 'data-ignore-hash': '' } : {})}
+    {...props}
+>
+    <slot />
+</dialog>
+
+<style lang="scss" is:global>
+    @use './Popup';
+</style>
+
+<script>
+    import popups from './Popup';
+
+    popups.init();
+</script>

@@ -1,0 +1,133 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.file-uploader {
+    --padding-x: 30px;
+    --icon-size: 14px;
+
+    @include mobile {
+        --height: 50px;
+        --padding-x: 16px;
+    }
+
+    &:has(input:disabled) {
+        .file-uploader-icon {
+            opacity: $btn-disabled-opacity;
+        }
+    }
+}
+
+.file-uploader-label {
+    cursor: pointer;
+    text-align: left;
+    color: $primary;
+    display: flex;
+    align-items: center;
+    padding: 13px var(--padding-x);
+}
+
+.file-uploader-icon {
+    pointer-events: none;
+    transform: translate3d(0, -50%, 0) rotate(45deg);
+}
+
+.file-uploader-bottom {
+    padding-inline: var(--padding-x);
+}
+
+.file-uploader-status-bar {
+    margin-top: 20px;
+
+    &:empty {
+        display: none;
+    }
+}
+
+.file-uploader-list {
+    margin-top: 10px;
+    display: grid;
+}
+
+.file-uploader-list__item {
+    &:not(:last-child) {
+        margin-bottom: 10px;
+    }
+}
+
+.file-uploader-file {
+    display: flex;
+    align-items: center;
+}
+
+.file-uploader-file__content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.file-uploader-file__content-left {
+    display: flex;
+    margin-right: 5px;
+
+    .file-uploader-file__icon [stroke]:not([stroke='none']) {
+        stroke: $primary;
+    }
+}
+
+.file-uploader-file__content-right {
+    display: flex;
+    width: 100%;
+}
+
+.file-uploader-file__name {
+    margin-right: 9px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 100px);
+
+    @media screen and (max-width: 767px) {
+        max-width: calc(100% - 70px);
+    }
+}
+
+.file-uploader-file__size {
+    opacity: 0.5;
+}
+
+.file-uploader-file__remove-btn {
+    @include clickable;
+
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba($primary, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 9px;
+    transition:
+        background-color $app-default-duration $app-default-easing,
+        color $app-default-duration $app-default-easing;
+
+    @include hover {
+        background-color: $primary;
+        color: #fff;
+
+        .file-uploader-file__remove-icon {
+            transform: scale(1.4);
+        }
+    }
+
+    .file-uploader-file__remove-icon {
+        width: 8px;
+        height: auto;
+        transition: transform 0.3s $app-default-easing;
+
+        [fill] {
+            fill: currentColor;
+        }
+    }
+}

@@ -1,0 +1,42 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.marquee {
+    --gap: 0px;
+
+    overflow: hidden;
+    overflow: clip;
+    contain: content;
+    position: relative;
+    width: 100%;
+    touch-action: pan-y;
+    user-select: none;
+    display: flex;
+    gap: var(--gap);
+}
+
+.marquee--draggable {
+    cursor: grab;
+
+    &:active {
+        cursor: grabbing;
+    }
+
+    @include hover() {
+        cursor: grab;
+    }
+}
+
+.marquee__element {
+    display: flex;
+    will-change: transform;
+    min-width: 100%;
+}
+
+.marquee__container {
+    display: flex;
+    min-width: max-content;
+    align-items: center;
+    gap: var(--gap);
+    padding-right: var(--gap);
+}

@@ -1,0 +1,23 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.breadcrumbs__list-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumbs__link {
+    color: inherit;
+    text-decoration: none;
+
+    @include hover() {
+        text-decoration: underline;
+    }
+}

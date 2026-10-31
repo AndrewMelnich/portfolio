@@ -1,0 +1,45 @@
+---
+import Tabs from './Tabs.astro';
+import type { Props as TabsProps } from './Tabs.astro';
+
+type Props = TabsProps;
+
+const { ...tabsProps } = Astro.props;
+---
+
+<Tabs {...tabsProps}>
+    <ul role="tablist" aria-label="Пример вкладок">
+        <li>
+            <button
+                type="button"
+                role="tab"
+                id="storybook-tab-a"
+                data-tabs-toggler="storybook-panel-a"
+                aria-controls="storybook-panel-a"
+                aria-selected="true"
+                tabindex="0"
+            >
+                Вкладка A
+            </button>
+        </li>
+        <li>
+            <button
+                type="button"
+                role="tab"
+                id="storybook-tab-b"
+                data-tabs-toggler="storybook-panel-b"
+                aria-controls="storybook-panel-b"
+                aria-selected="false"
+                tabindex="-1"
+            >
+                Вкладка B
+            </button>
+        </li>
+    </ul>
+    <div id="storybook-panel-a" role="tabpanel" data-tabs-content aria-labelledby="storybook-tab-a" tabindex="0">
+        <p>Контент вкладки A</p>
+    </div>
+    <div id="storybook-panel-b" role="tabpanel" data-tabs-content aria-labelledby="storybook-tab-b" hidden>
+        <p>Контент вкладки B</p>
+    </div>
+</Tabs>

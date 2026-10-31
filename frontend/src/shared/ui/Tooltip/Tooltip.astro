@@ -1,0 +1,26 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+export type Props = HTMLAttributes<'div'>;
+
+const { ...props } = Astro.props;
+---
+
+<div class:list={['js-tooltip', props.class]} {...props}>
+    <slot />
+    <div class="tooltip is-out js-tooltip-el">
+        <div class="tooltip__text">
+            <slot name="tooltip" />
+        </div>
+    </div>
+</div>
+
+<style lang="scss" is:global>
+    @use './Tooltip';
+</style>
+
+<script>
+    import Tooltip from './Tooltip';
+
+    Tooltip.init();
+</script>

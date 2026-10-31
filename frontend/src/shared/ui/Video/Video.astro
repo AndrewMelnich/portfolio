@@ -1,0 +1,63 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { getImage } from 'astro:assets';
+import { SSR_ENABLED } from '@/../config.js';
+import { resolveStorageUrl } from '@/shared/api/resolve-storage-url';
+import { DEFAULT_LOCALE, type AppLocale } from '@/shared/config/i18n';
+import type { VideoShape } from '@/shared/model/types';
+import { imageLoader } from '@/shared/ui/Image';
+
+export type Props = HTMLAttributes<'video'> & {
+    sources: VideoShape;
+    lazy?: boolean;
+    posterWidth?: number;
+    posterHeight?: number;
+};
+
+const { sources, lazy = false, poster, posterWidth, posterHeight, ...props } = Astro.props;
+const locale = (Astro.currentLocale ?? DEFAULT_LOCALE) as AppLocale;
+const captions = sources.find((source) => source.captions?.src)?.captions;
+const captionsLang = captions?.srclang ?? locale;
+const captionsLabel =
+    captions?.label ?? new Intl.DisplayNames(locale, { type: 'language' }).of(captionsLang) ?? captionsLang;
+
+const optimizedPosterSrc = poster
+    ? SSR_ENABLED
+        ? imageLoader({ src: poster, width: posterWidth || 1920, quality: 70 })
+        : (
+              await getImage({
+                  src: { src: poster, width: posterWidth || 1920, height: posterHeight || 1080, format: 'webp' },
+                  quality: 70,
+              })
+          ).src
+    : poster;
+---
+
+<video
+    playsinline
+    poster={optimizedPosterSrc ? resolveStorageUrl(optimizedPosterSrc) : undefined}
+    data-lazy={lazy || undefined}
+    {...props}
+>
+    {sources.map((source) => {
+        const src = `${resolveStorageUrl(source.src)}${source.src.includes('#t=') ? '' : '#t=0.001'}`;
+        return (
+            <source
+                media={source.media}
+                src={lazy ? undefined : src}
+                data-src={lazy ? src : undefined}
+                type={source.type}
+            />
+        );
+    })}
+    {captions && (
+        <track kind="captions" src={resolveStorageUrl(captions.src)} srclang={captionsLang} label={captionsLabel} />
+    )}
+    <slot />
+</video>
+
+<script>
+    import Video from './Video';
+
+    Video.init();
+</script>

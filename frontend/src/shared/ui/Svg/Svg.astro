@@ -1,0 +1,43 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import type { HTMLAttributes } from 'astro/types';
+import { sanitizeHtml } from '@/shared/lib/utils';
+
+export interface Props extends HTMLAttributes<'svg'> {
+    path: string;
+}
+
+const { path: svgPath, ...props } = Astro.props;
+
+const rootDir = process.cwd().endsWith('frontend') ? process.cwd() : path.join(process.cwd(), 'frontend');
+const fullPath = path.join(rootDir, 'public', svgPath);
+
+let svgContent = '';
+
+try {
+    if (fs.existsSync(fullPath)) {
+        svgContent = fs.readFileSync(fullPath, 'utf-8');
+        // Очистка SVG от метаданных
+        svgContent = svgContent.replace(/<(?:\?xml|!DOCTYPE)[^>]*>/g, '').trim();
+
+        const attributes = Object.entries(props)
+            .filter(([, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => {
+                const attrName = key === 'className' ? 'class' : key;
+                return `${attrName}="${value}"`;
+            })
+            .join(' ');
+
+        if (attributes) {
+            svgContent = svgContent.replace('<svg', `<svg ${attributes}`);
+        }
+    } else {
+        console.warn(`[Svg.astro] File not found: ${fullPath}`);
+    }
+} catch (e) {
+    console.error(`[Svg.astro] Error reading SVG file at ${fullPath}:`, e);
+}
+---
+
+<Fragment set:html={sanitizeHtml(svgContent, { USE_PROFILES: { svg: true, svgFilters: true } })} />

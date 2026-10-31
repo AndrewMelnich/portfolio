@@ -1,0 +1,15 @@
+---
+/* eslint-disable custom/no-unsanitized-set-html -- the CSP hash covers these exact bytes; sanitizing would rewrite them */
+import { cspHash } from '@/shared/lib/utils';
+
+type Props = {
+    code: string;
+    type?: 'speculationrules';
+};
+
+const { code, type } = Astro.props;
+
+Astro.csp.insertScriptHash(cspHash(code));
+---
+
+<script is:inline type={type} set:html={code} />

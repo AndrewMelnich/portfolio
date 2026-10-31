@@ -3,12 +3,11 @@
 
 @layer {
     * {
-        @include scrollbar(#8a8a8a);
+        @include scrollbar;
     }
 
     :root {
         interpolate-size: allow-keywords;
-        color-scheme: dark;
     }
 
     html {

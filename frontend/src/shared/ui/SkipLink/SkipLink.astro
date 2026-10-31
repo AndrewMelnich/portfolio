@@ -1,0 +1,13 @@
+---
+import { tp } from '@/shared/lib/formatting';
+---
+
+<nav class="skip-links" aria-label="Ссылки для быстрого перехода">
+    <a class="skip-link" href="#main">
+        {tp('Перейти к основному содержанию')}
+    </a>
+</nav>
+
+<style lang="scss" is:global>
+    @use './SkipLink';
+</style>

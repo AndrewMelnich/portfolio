@@ -1,0 +1,49 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.collapse {
+    --transition-length: 0.3s;
+    --transition-timing: ease;
+
+    &.collapse--opened {
+        .collapse__content {
+            grid-template-rows: 1fr;
+        }
+
+        .collapse__transform-wrapper {
+            transform: translateY(0);
+            visibility: visible;
+            transition:
+                transform var(--transition-length) var(--transition-timing),
+                visibility 0s linear;
+        }
+    }
+}
+
+.collapse__content {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows var(--transition-length) var(--transition-timing);
+}
+
+.collapse__animation {
+    min-height: 0;
+}
+
+.collapse__transform-wrapper {
+    transform: translateY(-100%);
+    visibility: hidden;
+    transition:
+        transform var(--transition-length) var(--transition-timing),
+        visibility 0s var(--transition-length) var(--transition-timing);
+}
+
+/* Margins inside the container will throw animation height calculations off, better use paddings */
+.collapse__content-el > * {
+    margin: 0;
+}
+
+.collapse__trigger {
+    cursor: pointer;
+}

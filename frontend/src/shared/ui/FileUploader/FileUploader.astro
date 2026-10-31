@@ -1,0 +1,88 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+export type Props = HTMLAttributes<'input'> & {
+    inputId: string;
+    fieldName: string;
+    endpoint: string;
+    allowedFileTypes?: string[];
+    maxNumberOfFiles?: number;
+    /**
+     * Лейбл (описание)
+     */
+    label?: string;
+    /**
+     * Сообщение
+     */
+    message?: string;
+    /**
+     * Валиден ли инпут
+     */
+    valid?: boolean;
+};
+
+const {
+    inputId,
+    allowedFileTypes,
+    maxNumberOfFiles = 10,
+    label = 'Attach files',
+    message = '',
+    valid = true,
+    fieldName,
+    endpoint,
+    disabled = false,
+    required = false,
+} = Astro.props;
+---
+
+<div
+    class="text-default input-group file-uploader js-file-uploader"
+    data-uploader-id={inputId}
+    data-allowed-types={JSON.stringify(allowedFileTypes)}
+    data-max-files={maxNumberOfFiles}
+    data-field-name={fieldName}
+    data-endpoint={endpoint}
+    data-valid={valid}
+>
+    <div class="input-group__icon file-uploader-icon">
+        <slot class="file-uploader-slot" name="file-uploader-icon" />
+    </div>
+
+    <input
+        class="form-control js-file-input visually-hidden floated-labels"
+        id={inputId}
+        type="file"
+        multiple={maxNumberOfFiles !== 1}
+        accept={allowedFileTypes?.join(',')}
+        disabled={disabled}
+        required={required}
+    />
+
+    {label && (
+        <label
+            class="form-control floated-labels file-uploader-label js-file-uploader-label text-caption"
+            for={inputId}
+            aria-label="Upload file"
+        >
+            {label}
+        </label>
+    )}
+
+    <div class="app-message js-app-message text-caption-sm" aria-live="polite" aria-describedby={inputId}>
+        {message}
+    </div>
+
+    <div class="file-uploader-bottom js-file-uploader-bottom">
+        <div id={`${inputId}-status-bar`} class="file-uploader-status-bar js-file-uploader-status-bar"></div>
+    </div>
+</div>
+
+<style lang="scss" is:global>
+    @use './FileUploader';
+</style>
+
+<script>
+    import FileUploader from './FileUploader';
+
+    FileUploader.init();
+</script>

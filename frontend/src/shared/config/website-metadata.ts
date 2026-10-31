@@ -20,8 +20,8 @@ export const WEBSITE_METADATA = {
     shortName: 'portfolio',
     startUrl: '/?utm_source=pwa',
     display: 'standalone' as const,
-    themeColor: '#050505',
-    backgroundColor: '#050505',
+    themeColor: '#ffffff',
+    backgroundColor: '#ffffff',
     icons: {
         any192: '/static/img/icon-192.png',
         any512: '/static/img/icon-512.png',

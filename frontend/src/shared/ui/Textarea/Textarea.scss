@@ -1,0 +1,63 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+
+.input-group--textarea {
+    --active-label-transform: translate3d(0, -120%, 0);
+
+    &.is-error .app-message {
+        color: $danger;
+    }
+}
+
+.input-group__required-icon-wrapper {
+    --size: 10px;
+
+    position: absolute;
+    width: var(--size);
+
+    @include laptop {
+        --size: 6px;
+    }
+
+    @include tablet {
+        --size: 8px;
+    }
+
+    @include mobile {
+        --size: 6px;
+    }
+}
+
+.input-group__required-icon {
+    --size: 10px;
+
+    width: var(--size);
+    height: var(--size);
+    z-index: 1;
+    display: inline-block;
+    vertical-align: middle;
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    transform: translateX(0);
+
+    @include laptop {
+        --size: 6px;
+
+        transform: translateX(100%);
+    }
+
+    @include tablet {
+        --size: 8px;
+    }
+
+    @include mobile {
+        --size: 6px;
+    }
+}
+
+.form-label {
+    &.is-hidden {
+        opacity: 0;
+    }
+}

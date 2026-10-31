@@ -1,0 +1,21 @@
+---
+import { type HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'label'> & {
+    inputProps?: HTMLAttributes<'input'>;
+};
+
+const { inputProps = {}, ...props } = Astro.props;
+---
+
+<label class:list={['checkbox', props.class]}>
+    <input {...inputProps} type="checkbox" class:list={['visually-hidden', 'checkbox__input', inputProps.class]} />
+    <span class="checkbox__element"></span>
+    <span class="checkbox__text">
+        <slot />
+    </span>
+</label>
+
+<style lang="scss" is:global>
+    @use './Checkbox';
+</style>

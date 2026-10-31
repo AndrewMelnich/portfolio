@@ -1,0 +1,99 @@
+@use 'app/css/base/variables' as *;
+@use 'app/css/utils/mixins' as *;
+@use 'app/css/layout/common' as *;
+
+.checkbox {
+    @include clickable();
+
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: opacity $app-default-duration $app-default-easing;
+
+    input[type='checkbox'],
+    input[type='radio'] {
+        @extend %visually-hidden;
+
+        &:checked {
+            ~ .checkbox__element {
+                &::before {
+                    opacity: 1;
+                }
+            }
+        }
+
+        &:disabled {
+            ~ .checkbox__element,
+            ~ .checkbox__text {
+                opacity: $btn-disabled-opacity;
+                cursor: not-allowed;
+            }
+        }
+
+        &:focus-visible {
+            ~ .checkbox__element {
+                outline: 1px solid currentColor;
+                outline-offset: 2px;
+            }
+        }
+
+        &.is-error {
+            ~ .checkbox__element {
+                color: $danger;
+                border-width: 2px;
+                opacity: 1;
+            }
+
+            ~ .checkbox__text {
+                color: $danger;
+                opacity: 1;
+            }
+        }
+    }
+
+    @include hover {
+        .checkbox__text,
+        .checkbox__element {
+            opacity: 1;
+        }
+    }
+}
+
+.checkbox__element {
+    --size: 20px;
+
+    display: block;
+    flex-shrink: 0;
+    left: 0;
+    top: 0;
+    width: var(--size);
+    height: var(--size);
+    border: 1px solid currentColor;
+    will-change: transform;
+
+    .checkbox__input:checked ~ & {
+        opacity: 1;
+    }
+
+    .checkbox__input[type='radio'] ~ & {
+        border-radius: 50%;
+
+        &::before {
+            border-radius: 50%;
+        }
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 12px;
+        background-color: currentColor;
+        opacity: 0;
+    }
+}

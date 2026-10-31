@@ -1,0 +1,419 @@
+{
+  "version": 1,
+  "skills": {
+    "accessibility": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/accessibility/SKILL.md",
+      "computedHash": "f50ee8d109e64907506fe946c9bc37834afd17e720ce28db44c0f135654141f2"
+    },
+    "accessibility-audit": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/accessibility-audit/SKILL.md",
+      "computedHash": "8edc36244f99c8c56cd66aeb7375dc00146c4c95fea68818c56a166d30b46f1c"
+    },
+    "aria-patterns": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/aria-patterns/SKILL.md",
+      "computedHash": "465053ec50be35bfd6d75ab2db30d50dead64b2ff67fcdc8a06ba2b43fe3b28f"
+    },
+    "ask-matt": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/ask-matt/SKILL.md",
+      "computedHash": "d1c5b4151720e96135154bd593ac4986a1030a2bc81e2aaf129f8b11224af9a9"
+    },
+    "code-review": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/code-review/SKILL.md",
+      "computedHash": "57cfd4ceb011f05e58a1a4f4cad3b2e03419d371f8990f4bcb32ff0d435a039f"
+    },
+    "codebase-design": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/codebase-design/SKILL.md",
+      "computedHash": "b2888e4f4e8c0af3bfd557575a64b905c44e6248c3101d72077816882b3a92b9"
+    },
+    "create-wysiwyg-page": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/create-wysiwyg-page/SKILL.md",
+      "computedHash": "78bf5769c86debfcfa397b8ed795c9b2c0923c3743f93e97f0befd5d38afa60f"
+    },
+    "design-review": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/design-review/SKILL.md",
+      "computedHash": "0c6f59b7c573fa3353724be3a2a0e1933f9f3efa3b90d7adcb2ca2500b56caf6"
+    },
+    "deslop": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/deslop/SKILL.md",
+      "computedHash": "6d0d4ab284951b660ac2db5960b271e2be4bb951b5f0c284db43ea8a03f997ac"
+    },
+    "diagnosing-bugs": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
+      "computedHash": "ede7254edbd22fcab97a0941511f7d440d8f9a249348fea97c50987ad5501674"
+    },
+    "domain-modeling": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+      "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
+    },
+    "figma-design-to-code": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/figma-design-to-code/SKILL.md",
+      "computedHash": "3d13b3477399cd3a78232507395090baa0f814bccc697ec0e1c2bcf1d9339825"
+    },
+    "figma-diff": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/figma-diff/SKILL.md",
+      "computedHash": "483872dd20747151f0b3349387d8d9fdff54a55449f13d08fad1b4d06b3d364b"
+    },
+    "figma-reflow": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/figma-reflow/SKILL.md",
+      "computedHash": "81d22281b648165d9c90681de6af62f8d15c133fbdcb73cc4f334a64aa7beb18"
+    },
+    "figma-scale": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/figma-scale/SKILL.md",
+      "computedHash": "0d91018c126bdfc4dc43bb614a1667dc88dc5116fabc9d343926619149ff8859"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "computedHash": "9cdbb4b8f7a3aeaef82e6230c9e823500d4a8a1214c726cf342cf9829d34fc7d"
+    },
+    "grill-with-docs": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+      "computedHash": "35e62aa423aaeab6a414bcac273f56dfb17802ef2334b41b6a3b00f28196c8cf"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "computedHash": "ef1641a2047b71b60f1942cd35efb47d3afc9d584dff5a0b01f8c7db923aaa08"
+    },
+    "handoff": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/handoff/SKILL.md",
+      "computedHash": "8ebcf017c0a59681f3c2f1ebf90e32f481954a068181a75151c44aa2c55de4b4"
+    },
+    "hover": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/hover/SKILL.md",
+      "computedHash": "f85acfac8d344bc1f4d2eead5944946ed618ffb67cabb6a2a0fadfa8a6d08cd8"
+    },
+    "implement": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/implement/SKILL.md",
+      "computedHash": "b6371a0a6723bad551f3adc721e3729a6a97acfc3670dc2bdea198bbe78408c0"
+    },
+    "implement-spec": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/implement-spec/SKILL.md",
+      "computedHash": "b9d11539b4acff7fb0b3afd7461de161a5d902403fea2ab88f150399a26d6678"
+    },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "computedHash": "ac2c94885f34ff8492dc12aa4543182f661f32ea1722b8d6b6c2c7045af33ae3"
+    },
+    "in-your-own-words": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/in-your-own-words/SKILL.md",
+      "computedHash": "007710e015186dbc5a0258dffc22933a7e29c07a8c3ad0bbccb8109192b00c06"
+    },
+    "maintain-verify-ui": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/maintain-verify-ui/SKILL.md",
+      "computedHash": "707665baa01879e08de9a69f102755a2c586d407f1d33708e9edde48fcfbb70d"
+    },
+    "no-comments": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/no-comments/SKILL.md",
+      "computedHash": "70cf919e48fd4d566f884d1615aee4f376aca2509efad58c53c3e8fc44fea155"
+    },
+    "pr": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/pr/SKILL.md",
+      "computedHash": "22a15d4d469344b38e03eb0e95772478393975836289393b1bad3c0febcdc679"
+    },
+    "principle-attack-the-premise": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-attack-the-premise/SKILL.md",
+      "computedHash": "a573188d09f1ce9ff275ca9446d1d0091f7de42dc0ff8ad2a03a3db133bbd0dc"
+    },
+    "principle-boundary-discipline": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-boundary-discipline/SKILL.md",
+      "computedHash": "51f995752ff3bad613526eb7779872e01d01ac141a88c9ca050075a074ee5b70"
+    },
+    "principle-build-the-lever": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-build-the-lever/SKILL.md",
+      "computedHash": "3090c545b2a7c3a252514c9b522e69d3ee6cce25342fd3e4d10c9fe6bcaafd53"
+    },
+    "principle-encode-lessons-in-structure": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-encode-lessons-in-structure/SKILL.md",
+      "computedHash": "200f578bf772cff030e7b18c582c935686375ddb6ebfe96b97bfee663434da21"
+    },
+    "principle-exhaust-the-design-space": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-exhaust-the-design-space/SKILL.md",
+      "computedHash": "af0db9d13eb02db3bdab6e3ecb02bc44196c82dd7c487e1897bce4db11c8e37b"
+    },
+    "principle-experience-first": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-experience-first/SKILL.md",
+      "computedHash": "bd0254d8a460c145a148214cbc136f84dbba6edc9acc48c00a8af660efc88856"
+    },
+    "principle-explain-the-number": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-explain-the-number/SKILL.md",
+      "computedHash": "a266874f779972670f2cc9e0ed49d868eae06c301207c6deb80a90f205d12d61"
+    },
+    "principle-fix-root-causes": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-fix-root-causes/SKILL.md",
+      "computedHash": "cdc2baeffbc8e418686f721b4695cc1001adcd6844b670c3224f1e3776e8ce6a"
+    },
+    "principle-foundational-thinking": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-foundational-thinking/SKILL.md",
+      "computedHash": "bb6beaf165b3a3a454c20d243e5be96b0a7b2a8bc7b217be3d214a70a3bf3f14"
+    },
+    "principle-guard-the-context-window": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-guard-the-context-window/SKILL.md",
+      "computedHash": "242eab2560bade44af1de6709c1c2eaac168ee7fcb85e4fb7362cc9f23e6d5cf"
+    },
+    "principle-laziness-protocol": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-laziness-protocol/SKILL.md",
+      "computedHash": "abf419046bf6635136cb4b30d3d7e9263967b30c3a8f1fe3ed831776b1e5e67a"
+    },
+    "principle-make-operations-idempotent": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-make-operations-idempotent/SKILL.md",
+      "computedHash": "d09a4d5ab45839b034db6f04a7c9097bb69c430521bea2bd0415ca3a8e4e227b"
+    },
+    "principle-migrate-callers-then-delete-legacy-apis": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md",
+      "computedHash": "78cd7712383c2d891c614d68eb7f9b2ed2cd11f34928a947b458325549b0c423"
+    },
+    "principle-minimize-reader-load": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-minimize-reader-load/SKILL.md",
+      "computedHash": "31dddf8eec76cd18a3b314d7343d783e35166344b4a89f0c5a07a90ed1d26539"
+    },
+    "principle-model-the-domain": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-model-the-domain/SKILL.md",
+      "computedHash": "7bf96c26a8d4a064488a534e5a9e75cabafa6bdc8c486529ab02d746b8796801"
+    },
+    "principle-never-block-on-the-human": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-never-block-on-the-human/SKILL.md",
+      "computedHash": "2b684f3d6eb8ba1144d095217a0ccc68a66686a2fe0db01745a21e335207e0f4"
+    },
+    "principle-outcome-oriented-execution": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-outcome-oriented-execution/SKILL.md",
+      "computedHash": "c6ba3d622fe1e3d28a83d391ceaa150aaeafac9c935c154df9b1826f6423bc0b"
+    },
+    "principle-prove-it-works": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-prove-it-works/SKILL.md",
+      "computedHash": "6777a72ed3c15bbd73f0d264ba4eb701e5e733de70dd519c72fc2698a32379a2"
+    },
+    "principle-redesign-from-first-principles": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-redesign-from-first-principles/SKILL.md",
+      "computedHash": "f627292d04bdd447c5e1dcce7b8fbd28906d9cbab44498c81a9d8c017d055ae4"
+    },
+    "principle-separate-before-serializing-shared-state": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-separate-before-serializing-shared-state/SKILL.md",
+      "computedHash": "d372812c2617e5226df5bd60950dd9d3e8f5758a9a1e4fefc63114ad53253769"
+    },
+    "principle-sequence-verifiable-units": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-sequence-verifiable-units/SKILL.md",
+      "computedHash": "f72a42fb823a8531a6a243a2e8616813cc71cc2796f3bf775d7717b4e6a916bb"
+    },
+    "principle-subtract-before-you-add": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-subtract-before-you-add/SKILL.md",
+      "computedHash": "93ef4445c6dc6c71256f4c5d3e965097dccd037019041468298095670c112fe7"
+    },
+    "principle-test-behavior-not-implementation": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-test-behavior-not-implementation/SKILL.md",
+      "computedHash": "8e8cc20b50d4561a3fdcd10d7fc5cdc8d87af229fff4b0b819d5436f94f3681c"
+    },
+    "principle-type-system-discipline": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/principle-type-system-discipline/SKILL.md",
+      "computedHash": "3d9cd69afc4b41f99dd94b3dc169942995e721a73318f55412a858f9a66658fb"
+    },
+    "prototype": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/prototype/SKILL.md",
+      "computedHash": "d3fc74689bd993e39c44bfae510d014eecffbeec2922764b065377fd1327c0f6"
+    },
+    "qa-review": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/qa-review/SKILL.md",
+      "computedHash": "2664bdb13bdb615fbd4708a4ea69c319f6d676d68d77bdaf2a7e5e016fedcd93"
+    },
+    "research": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/research/SKILL.md",
+      "computedHash": "c8c1cba327a6f824b554cd978079a3dadd7406d73174f8fb9bfef58824691970"
+    },
+    "responsive-layout": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/responsive-layout/SKILL.md",
+      "computedHash": "7c14f2e08b48b8b173c22a2d0790fe3f9e243ec746dd234abd9d5f8119728fb3"
+    },
+    "retro": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/retro/SKILL.md",
+      "computedHash": "b8d55851a2909e26c2dbb2e8563719c87b3b700559f604e4df344f8c27e21047"
+    },
+    "setup-fstack": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/setup-fstack/SKILL.md",
+      "computedHash": "00d4152294cdafea311dc5d943388f301f8b97f6d6e4bc459c0cb722fd53c0d1"
+    },
+    "setup-matt-pocock-skills": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+      "computedHash": "1d35d0afa3ded88c9324d38db08b2cff91cd03e0e11d64786bee41385cd7b9fb"
+    },
+    "sharpen": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/sharpen/SKILL.md",
+      "computedHash": "e134d2d72e891cc003e7f03a09c2dc6148aeb43ffb6195d5cbe77b34300822f3"
+    },
+    "to-questionnaire": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/to-questionnaire/SKILL.md",
+      "computedHash": "befbec7005695163741a57bc94810dc5048fb766baaa485d5160b1d7f86335c1"
+    },
+    "to-spec": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/to-spec/SKILL.md",
+      "computedHash": "3fa1a0695d4ea242fae9e569e4d22aa1788623197abb33bfadafae7315789bbf"
+    },
+    "to-tickets": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/to-tickets/SKILL.md",
+      "computedHash": "5f871bdc46a9212222214ba399be4965374208af1bd7f48f1271bef72841dd31"
+    },
+    "triage": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/triage/SKILL.md",
+      "computedHash": "a683e69163e23630f39c05a50fb9d83a3795a6a6fbd317357669e082cd43a158"
+    },
+    "ui-mode": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/ui-mode/SKILL.md",
+      "computedHash": "f4ef8290e6ac9f8ce8644b80dbd057e97ab5eae935c52bd3b1466ba95b24f587"
+    },
+    "unslop": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/unslop/SKILL.md",
+      "computedHash": "bec12b959434449a1733b17935d3166ac9f413565d0a630d406720445d2e12b8"
+    },
+    "verify-ui": {
+      "source": "pavel-mazhuga/fstack",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/verify-ui/SKILL.md",
+      "computedHash": "0dd74434deaf8b682c4e383f4ca6fd13441550eae504963142ae39de2bdf964f"
+    },
+    "wait-what": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/wait-what/SKILL.md",
+      "computedHash": "1921c02ea4046fd8f9c219140780233fe6e22e2fe4442961378da2ac31f3f403"
+    },
+    "wayfinder": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/wayfinder/SKILL.md",
+      "computedHash": "71d1296ae9f1ea0397f385f72d11ca3473827f5d067df4d06c58eb03377a57ce"
+    },
+    "writing-for-agents": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/writing-for-agents/SKILL.md",
+      "computedHash": "95da47fc97af998e85b7d7e6d57b3ac76727c1e290cfe9ea09005aacb826959f"
+    }
+  }
+}

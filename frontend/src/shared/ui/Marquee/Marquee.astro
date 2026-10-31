@@ -1,0 +1,26 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { sanitizeHtml } from '@/shared/lib/utils';
+
+type Props = HTMLAttributes<'div'> & {
+    items: unknown[];
+};
+
+const { items, ...props } = Astro.props;
+---
+
+<div class:list={['marquee js-marquee', props.class]} {...props}>
+    {items.map(async (item) => (
+        <div class="marquee__item-wrapper" set:html={sanitizeHtml(await Astro.slots.render('default', [item]))} />
+    ))}
+</div>
+
+<style lang="scss" is:global>
+    @use './Marquee';
+</style>
+
+<script>
+    import Marquee from './Marquee';
+
+    Marquee.init();
+</script>

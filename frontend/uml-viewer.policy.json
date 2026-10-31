@@ -1,0 +1,38 @@
+{
+    "title": "portfolio",
+    "sources": [
+        {
+            "id": "frontend",
+            "lang": "ts",
+            "root": ".",
+            "dirs": ["src"],
+            "strip": "src",
+            "levels": [
+                ["shared"],
+                ["entities"],
+                ["features"],
+                ["widgets"],
+                ["_pages"],
+                ["app"],
+                ["pages", "middleware.ts"]
+            ],
+            "isolated": ["entities", "features", "widgets", "_pages"]
+        },
+        {
+            "id": "backend",
+            "lang": "php",
+            "root": "../backend",
+            "dirs": ["app", "routes"],
+            "strip": "app",
+            "levels": [
+                ["Enums", "Interfaces", "DTOs", "Exceptions", "Casts", "Helpers", "Support", "Facades", "Logging"],
+                ["Models"],
+                ["Services", "Actions", "Jobs", "Listeners", "Mail", "Observers", "Policies"],
+                ["Http", "Nova", "Console", "Health", "Providers"],
+                ["routes"]
+            ]
+        }
+    ],
+    "omit": [],
+    "proposals": []
+}
