@@ -1,7 +1,7 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import { DEFAULT_LOCALE, LOCALES, type AppLocale } from '@/shared/config';
+import { LOCALES, type AppLocale } from '@/shared/config';
 import { tp } from '@/shared/lib/formatting';
 
 type Props = HTMLAttributes<'header'>;
@@ -47,13 +47,7 @@ const navItems = [
 
 const pathWithoutLocale = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
 
-const localeHref = (target: AppLocale) => {
-    if (target === DEFAULT_LOCALE) {
-        return pathWithoutLocale;
-    }
-
-    return pathWithoutLocale === '/' ? `/${target}` : `/${target}${pathWithoutLocale}`;
-};
+const localeHref = (target: AppLocale) => getRelativeLocaleUrl(target, pathWithoutLocale);
 
 const localeLabels: Record<AppLocale, string> = {
     ru: 'RU',
@@ -349,5 +343,5 @@ const defaultLogoFile = '07-signal.svg';
         applyLogo();
         bootNavCurrent();
     });
-    document.querySelector('.js-header')?.addEventListener('click', onHeaderClick);
+    document.addEventListener('click', onHeaderClick);
 </script>

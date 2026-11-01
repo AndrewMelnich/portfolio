@@ -128,11 +128,11 @@ const speculationRules = JSON.stringify({
     <body>
         <SkipLink />
         {showKeyVisual && <KeyVisual transition:persist="key-visual" />}
-        {!htmlClass?.includes('error-page') && <Header transition:persist="site-header" />}
+        {!htmlClass?.includes('error-page') && <Header transition:persist={`site-header-${locale}`} />}
         <main id="main" class="main" tabindex="-1">
             <slot />
         </main>
-        {!htmlClass?.includes('error-page') && <Footer transition:persist="site-footer" />}
+        {!htmlClass?.includes('error-page') && <Footer transition:persist={`site-footer-${locale}`} />}
         {import.meta.env.DEV && (
             <>
                 <LayoutGrid />
