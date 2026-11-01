@@ -28,10 +28,14 @@ const Image = ({
     decoding = 'async',
     sizes = '100vw',
     priority = false,
+    widths: widthsProp,
     ...props
 }: Props) => {
+    const responsiveWidths = [...new Set([...(widthsProp ?? widths).filter((value) => value <= width), width])].sort(
+        (a, b) => a - b,
+    );
     const optimizedSrc = imageLoader({ src, width, quality, format });
-    const srcset = createSrcset(src, widths, quality, format);
+    const srcset = createSrcset(src, responsiveWidths, quality, format);
 
     return (
         <img

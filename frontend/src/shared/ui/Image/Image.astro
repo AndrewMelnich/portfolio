@@ -33,11 +33,15 @@ const {
     decoding = 'async',
     sizes = '100vw',
     priority = false,
+    widths: widthsProp,
     ...props
 } = Astro.props;
 
+const responsiveWidths = [...new Set([...(widthsProp ?? widths).filter((value) => value <= width), width])].sort(
+    (a, b) => a - b,
+);
 const optimizedSrc = imageLoader({ src, width, quality, format });
-const srcset = createSrcset(src, widths, quality, format);
+const srcset = createSrcset(src, responsiveWidths, quality, format);
 ---
 
 {SSR_ENABLED || src.endsWith('.svg') ? (
@@ -62,8 +66,13 @@ const srcset = createSrcset(src, widths, quality, format);
             format,
         }}
         alt={alt}
+        widths={responsiveWidths}
+        quality={quality}
         layout="full-width"
         sizes={sizes}
+        loading={priority ? 'eager' : loading}
+        decoding={decoding}
+        fetchpriority={priority ? 'high' : undefined}
         {...props}
     />
 )}

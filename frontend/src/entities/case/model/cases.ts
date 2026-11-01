@@ -25,7 +25,7 @@ export const CASES: ICase[] = [
         image: {
             src: '/static/img/cases/ren/cover.jpg',
             width: 1024,
-            height: 594,
+            height: 612,
             alt: 'Российская энергетическая неделя — главная страница',
         },
     },
@@ -53,7 +53,7 @@ export const CASES: ICase[] = [
         image: {
             src: '/static/img/cases/tnf/cover.jpg',
             width: 1024,
-            height: 594,
+            height: 603,
             alt: 'Международный промышленно-энергетический форум TNF',
         },
     },
@@ -80,38 +80,84 @@ export const CASES: ICase[] = [
         featured: true,
         image: {
             src: '/static/img/cases/vileda/cover.jpg',
-            width: 1440,
-            height: 900,
+            width: 1024,
+            height: 611,
             alt: 'Vileda Professional — главная страница сайта',
         },
     },
     {
-        slug: 'iiko',
-        title: { ru: 'iiko', en: 'iiko' },
+        slug: 'chillbase',
+        title: { ru: 'Chillbase', en: 'Chillbase' },
         teaser: {
-            ru: 'Продуктовый сайт экосистемы iiko — точечные фронт-задачи в живом продукте.',
-            en: 'iiko product ecosystem site — focused frontend work in a live product.',
+            ru: 'Продуктовый Chillbase — доработки UI в проде.',
+            en: 'Chillbase product site — UI updates in production.',
         },
         description: {
-            ru: [
-                'Корпоративно-продуктовый сайт экосистемы iiko.',
-                'Не сборка с нуля: точечные экраны, правки и обновления в уже работающем фронте.',
-            ],
-            en: [
-                'Corporate product site for the iiko ecosystem.',
-                'Not a from-scratch build: focused screens, fixes, and updates in a live frontend.',
-            ],
+            ru: ['Продуктовый сайт Chillbase.', 'Поддержка живого UI: правки экранов и блоков без полной пересборки.'],
+            en: ['Chillbase product site.', 'Live UI support: screen and block updates without a full rebuild.'],
         },
         role: 'support',
         tags: ['product', 'corporate'],
-        liveUrl: 'https://iiko.ru/',
+        liveUrl: 'https://chillbase.net/',
         image: {
-            src: '/static/img/cases/iiko/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'iiko — главная страница сайта',
+            src: '/static/img/cases/chillbase/cover.jpg',
+            width: 1024,
+            height: 611,
+            alt: 'Chillbase — главная страница сайта',
         },
     },
+    {
+        slug: 'chipsa',
+        title: { ru: 'Chipsa', en: 'Chipsa' },
+        teaser: {
+            ru: 'Сайт агентства Chipsa — правки своего рабочего дома.',
+            en: "Chipsa agency site — updates to the studio's own home.",
+        },
+        description: {
+            ru: [
+                'Сайт дизайн-студии Chipsa, где я работаю.',
+                'Поддержка и правки интерфейса: как у клиента, только свой продукт студии.',
+            ],
+            en: [
+                'Site for Chipsa design studio, where I work.',
+                "UI support and fixes — same bar as client work, on the studio's own product.",
+            ],
+        },
+        role: 'support',
+        tags: ['agency', 'corporate'],
+        liveUrl: 'https://chipsa.ru/',
+        image: {
+            src: '/static/img/cases/chipsa/cover.jpg',
+            width: 1024,
+            height: 585,
+            alt: 'Chipsa — главная страница сайта',
+        },
+    },
+    {
+        slug: 'vki',
+        title: { ru: 'VKI', en: 'VKI' },
+        teaser: {
+            ru: 'Корпоративный VKI — доработки строго по макету.',
+            en: 'VKI corporate site — mockup-driven updates.',
+        },
+        description: {
+            ru: ['Корпоративный сайт VKI.', 'Точечные доработки фронта по макету — без переписывания всего проекта.'],
+            en: [
+                'VKI corporate site.',
+                'Focused frontend updates from the mockup — without rewriting the whole project.',
+            ],
+        },
+        role: 'support',
+        tags: ['corporate'],
+        liveUrl: 'https://vk-ing.ru/',
+        image: {
+            src: '/static/img/cases/vki/cover.jpg',
+            width: 1024,
+            height: 587,
+            alt: 'VKI — главная страница сайта',
+        },
+    },
+
     {
         slug: 'composit',
         title: { ru: 'Composit', en: 'Composit' },
@@ -134,63 +180,33 @@ export const CASES: ICase[] = [
         liveUrl: 'https://kompozit.online',
         image: {
             src: '/static/img/cases/composit/cover.jpg',
-            width: 1440,
-            height: 900,
+            width: 1024,
+            height: 611,
             alt: 'Composit — главная страница сайта',
         },
     },
     {
-        slug: 'sgk-epp',
-        title: { ru: 'СГК · ЕПП', en: 'SGK · EPP' },
+        slug: 'zagranitsa',
+        title: { ru: 'Заграница', en: 'Zagranitsa' },
         teaser: {
-            ru: 'Кабинет и платежи СГК (ЕПП) — формы и личный кабинет.',
-            en: 'SGK account and payments (EPP) — forms and cabinet UI.',
+            ru: 'Медиа «Заграница» — поддержка страниц и вёрстки.',
+            en: 'Zagranitsa media — page and layout support.',
         },
         description: {
             ru: [
-                'Кабинетный и платёжный контур СГК в рамках ЕПП.',
-                'Доработки форм, кабинетов и связанных экранов — без пересборки всего сайта.',
+                'Контентный медиа-сайт с регулярными публикациями.',
+                'Поддержка вёрстки и отдельных страниц под новые материалы.',
             ],
-            en: [
-                'SGK account and payment flow within EPP.',
-                'Updates to forms, cabinets, and related screens — not a full site rebuild.',
-            ],
+            en: ['Content media site with regular publications.', 'Layout and page support as new materials go live.'],
         },
         role: 'support',
-        tags: ['cabinet', 'forms', 'payments'],
-        liveUrl: 'https://sibgenco.ru',
+        tags: ['media', 'content'],
+        liveUrl: 'https://zagranitsa.pro/',
         image: {
-            src: '/static/img/cases/sgk-epp/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'СГК — главная страница сайта',
-        },
-    },
-    {
-        slug: 'gtenergo',
-        title: { ru: 'GT Energo', en: 'GT Energo' },
-        teaser: {
-            ru: 'Корпоративный сайт энергокомпании — сопровождение интерфейса.',
-            en: 'Energy company corporate site — ongoing UI support.',
-        },
-        description: {
-            ru: [
-                'Корпоративный сайт GT Energo в энергетике.',
-                'Поддержка и точечные правки интерфейса по мере задач от команды.',
-            ],
-            en: [
-                'GT Energo corporate site in the energy sector.',
-                "Support and focused UI fixes as the team's tasks come in.",
-            ],
-        },
-        role: 'support',
-        tags: ['corporate', 'energy'],
-        liveUrl: 'https://www.gtenergo.ru',
-        image: {
-            src: '/static/img/cases/gtenergo/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'GT Energo — главная страница сайта',
+            src: '/static/img/cases/zagranitsa/cover.jpg',
+            width: 1024,
+            height: 611,
+            alt: 'Заграница — главная страница сайта',
         },
     },
     {
@@ -215,8 +231,8 @@ export const CASES: ICase[] = [
         liveUrl: 'https://biotech.artlife.ru/',
         image: {
             src: '/static/img/cases/artlife/cover.jpg',
-            width: 1440,
-            height: 900,
+            width: 1024,
+            height: 611,
             alt: 'Artlife — главная страница сайта',
         },
     },
@@ -242,36 +258,9 @@ export const CASES: ICase[] = [
         liveUrl: 'https://kdc-hm.ru/',
         image: {
             src: '/static/img/cases/october/cover.jpg',
-            width: 1440,
-            height: 900,
+            width: 1024,
+            height: 611,
             alt: 'КДЦ Октябрь — главная страница сайта',
-        },
-    },
-    {
-        slug: 'daigo',
-        title: { ru: 'Daigo', en: 'Daigo' },
-        teaser: {
-            ru: 'Контентный Daigo — правки блоков и вёрстки.',
-            en: 'Daigo content project — block and layout updates.',
-        },
-        description: {
-            ru: [
-                'Контентный проект с набором типовых блоков.',
-                'Правки вёрстки и блоков по мере обновления материалов.',
-            ],
-            en: [
-                'Content project built from a set of recurring blocks.',
-                'Layout and block updates as materials change.',
-            ],
-        },
-        role: 'support',
-        tags: ['media', 'content'],
-        liveUrl: 'https://daigo.chipsa.design',
-        image: {
-            src: '/static/img/cases/daigo/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'Daigo — главная страница сайта',
         },
     },
     {
@@ -296,8 +285,8 @@ export const CASES: ICase[] = [
         liveUrl: 'https://dvizhenie.school',
         image: {
             src: '/static/img/cases/dvizh/cover.jpg',
-            width: 1440,
-            height: 900,
+            width: 1024,
+            height: 611,
             alt: 'Dvizh Online School — главная страница сайта',
         },
     },
@@ -326,99 +315,58 @@ export const CASES: ICase[] = [
         },
     },
     {
-        slug: 'zagranitsa',
-        title: { ru: 'Заграница', en: 'Zagranitsa' },
+        slug: 'gtenergo',
+        title: { ru: 'GT Energo', en: 'GT Energo' },
         teaser: {
-            ru: 'Медиа «Заграница» — поддержка страниц и вёрстки.',
-            en: 'Zagranitsa media — page and layout support.',
+            ru: 'Корпоративный сайт энергокомпании — сопровождение интерфейса.',
+            en: 'Energy company corporate site — ongoing UI support.',
         },
         description: {
             ru: [
-                'Контентный медиа-сайт с регулярными публикациями.',
-                'Поддержка вёрстки и отдельных страниц под новые материалы.',
+                'Корпоративный сайт GT Energo в энергетике.',
+                'Поддержка и точечные правки интерфейса по мере задач от команды.',
             ],
-            en: ['Content media site with regular publications.', 'Layout and page support as new materials go live.'],
+            en: [
+                'GT Energo corporate site in the energy sector.',
+                "Support and focused UI fixes as the team's tasks come in.",
+            ],
+        },
+        role: 'support',
+        tags: ['corporate', 'energy'],
+        liveUrl: 'https://www.gtenergo.ru',
+        image: {
+            src: '/static/img/cases/gtenergo/cover.jpg',
+            width: 1024,
+            height: 611,
+            alt: 'GT Energo — главная страница сайта',
+        },
+    },
+
+    {
+        slug: 'daigo',
+        title: { ru: 'Daigo', en: 'Daigo' },
+        teaser: {
+            ru: 'Контентный Daigo — правки блоков и вёрстки.',
+            en: 'Daigo content project — block and layout updates.',
+        },
+        description: {
+            ru: [
+                'Контентный проект с набором типовых блоков.',
+                'Правки вёрстки и блоков по мере обновления материалов.',
+            ],
+            en: [
+                'Content project built from a set of recurring blocks.',
+                'Layout and block updates as materials change.',
+            ],
         },
         role: 'support',
         tags: ['media', 'content'],
-        liveUrl: 'https://zagranitsa.pro/',
+        liveUrl: 'https://daigo.chipsa.design',
         image: {
-            src: '/static/img/cases/zagranitsa/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'Заграница — главная страница сайта',
-        },
-    },
-    {
-        slug: 'chillbase',
-        title: { ru: 'Chillbase', en: 'Chillbase' },
-        teaser: {
-            ru: 'Продуктовый Chillbase — доработки UI в проде.',
-            en: 'Chillbase product site — UI updates in production.',
-        },
-        description: {
-            ru: ['Продуктовый сайт Chillbase.', 'Поддержка живого UI: правки экранов и блоков без полной пересборки.'],
-            en: ['Chillbase product site.', 'Live UI support: screen and block updates without a full rebuild.'],
-        },
-        role: 'support',
-        tags: ['product', 'corporate'],
-        liveUrl: 'https://chillbase.net/',
-        image: {
-            src: '/static/img/cases/chillbase/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'Chillbase — главная страница сайта',
-        },
-    },
-    {
-        slug: 'chipsa',
-        title: { ru: 'Chipsa', en: 'Chipsa' },
-        teaser: {
-            ru: 'Сайт агентства Chipsa — правки своего рабочего дома.',
-            en: "Chipsa agency site — updates to the studio's own home.",
-        },
-        description: {
-            ru: [
-                'Сайт дизайн-студии Chipsa, где я работаю.',
-                'Поддержка и правки интерфейса: как у клиента, только свой продукт студии.',
-            ],
-            en: [
-                'Site for Chipsa design studio, where I work.',
-                "UI support and fixes — same bar as client work, on the studio's own product.",
-            ],
-        },
-        role: 'support',
-        tags: ['agency', 'corporate'],
-        liveUrl: 'https://chipsa.ru/',
-        image: {
-            src: '/static/img/cases/chipsa/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'Chipsa — главная страница сайта',
-        },
-    },
-    {
-        slug: 'vki',
-        title: { ru: 'VKI', en: 'VKI' },
-        teaser: {
-            ru: 'Корпоративный VKI — доработки строго по макету.',
-            en: 'VKI corporate site — mockup-driven updates.',
-        },
-        description: {
-            ru: ['Корпоративный сайт VKI.', 'Точечные доработки фронта по макету — без переписывания всего проекта.'],
-            en: [
-                'VKI corporate site.',
-                'Focused frontend updates from the mockup — without rewriting the whole project.',
-            ],
-        },
-        role: 'support',
-        tags: ['corporate'],
-        liveUrl: 'https://vk-ing.ru/',
-        image: {
-            src: '/static/img/cases/vki/cover.jpg',
-            width: 1440,
-            height: 900,
-            alt: 'VKI — главная страница сайта',
+            src: '/static/img/cases/daigo/cover.jpg',
+            width: 1024,
+            height: 611,
+            alt: 'Daigo — главная страница сайта',
         },
     },
 ];

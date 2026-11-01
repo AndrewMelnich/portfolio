@@ -42,10 +42,11 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
                     class="case-view__image"
                     src={item.image.src}
                     alt={item.image.alt ?? title}
-                    width={item.image.width ?? 800}
-                    height={item.image.height ?? 600}
+                    width={item.image.width ?? 1440}
+                    height={item.image.height ?? 900}
                     title={item.image.title}
-                    sizes="(max-width: 767px) 100vw, 66vw"
+                    sizes="(max-width: 767px) 100vw, 50vw"
+                    quality={90}
                     priority
                     transition:name={imageTransition}
                 />
