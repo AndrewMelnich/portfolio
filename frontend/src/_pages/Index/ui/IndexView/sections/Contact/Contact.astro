@@ -8,11 +8,11 @@ type Props = HTMLAttributes<'section'> & RawProps;
 
 const { locale, class: className, ...props } = Astro.props;
 
-const title = locale === 'ru' ? 'Написать' : 'Get in touch';
+const title = locale === 'ru' ? 'Связаться со мной' : 'Get in touch';
 const text =
     locale === 'ru'
-        ? 'Напишите в Telegram или на почту — отвечу быстро.'
-        : 'Write on Telegram or email — I reply quickly.';
+        ? 'Напишите идею или задачу — разберёмся, оценю объём и отвечу в Telegram или на почту.'
+        : "Share an idea or a task — we'll sort it out, I'll estimate the scope, and reply on Telegram or email.";
 
 const telegram = SOCIALS.find((item) => item.id === 'telegram');
 

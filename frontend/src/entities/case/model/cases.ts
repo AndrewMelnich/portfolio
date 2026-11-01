@@ -5,21 +5,27 @@ export const CASES: ICase[] = [
         slug: 'ren',
         title: { ru: 'Ren', en: 'Ren' },
         teaser: {
-            ru: 'Сайт мероприятия: программа, участники, сервисы. Собрал фронт по макету с нуля.',
-            en: 'Event site — programme, participants, services. Built the frontend from the mockup.',
+            ru: 'Сайт Российской энергетической недели: программа, спикеры, сервисы для участников.',
+            en: 'Russian Energy Week site — programme, speakers, participant services.',
         },
         description: {
-            ru: ['Сайт мероприятия: программа, участники, сервисы.', 'Собрал фронт по макету с нуля.'],
-            en: ['Event site — programme, participants, services.', 'Built the frontend from the mockup.'],
+            ru: [
+                'Пришёл, когда была только сырая главная. Дальше конвейер: макет → страница → результат — так прошли все экраны.',
+                'После сборки — круг оптимизации: PageSpeed, a11y, правки заказчика, снова по кругу. Сдан в октябре 2025. Стек — PHP.',
+            ],
+            en: [
+                'Joined when only a rough homepage existed. Then a factory loop: mockup → page → ship — every screen that way.',
+                'After build came the optimization loop: PageSpeed, a11y, client fixes, repeat. Delivered October 2025. Stack: PHP.',
+            ],
         },
         role: 'built',
-        tags: ['event', 'forum', 'i18n'],
+        tags: ['PHP', 'PageSpeed', 'a11y'],
         featured: true,
         liveUrl: 'https://rusenergyweek.com/',
         image: {
             src: '/static/img/cases/ren/cover.jpg',
-            width: 1440,
-            height: 900,
+            width: 1024,
+            height: 594,
             alt: 'Российская энергетическая неделя — главная страница',
         },
     },
@@ -27,24 +33,27 @@ export const CASES: ICase[] = [
         slug: 'tnf',
         title: { ru: 'TNF', en: 'TNF' },
         teaser: {
-            ru: 'Сайт технологического форума TNF: экраны, регистрация, сервисы для участников. Фронт с нуля по макету.',
-            en: 'TNF tech forum site — pages, registration, participant services. Frontend from scratch.',
+            ru: 'Промышленно-энергетический форум: регистрация, сервисы участников, плотная сетка страниц.',
+            en: 'Industrial energy forum — registration, participant services, a dense set of pages.',
         },
         description: {
             ru: [
-                'Сайт технологического форума TNF: экраны, регистрация, сервисы для участников.',
-                'Фронт с нуля по макету.',
+                'Забрал проект с готовой главной и несколькими страницами — ведущий разработчик уволился. Дальше месяцы срочных экранов. Это был мой первый проект на Next.js.',
+                'Потом около двух лет поддержки с задачами «надо вчера», особенно перед форумами. Темп жёсткий — а сайт один из тех, чем горжусь.',
             ],
-            en: ['TNF tech forum site — pages, registration, participant services.', 'Frontend from scratch.'],
+            en: [
+                'Took over a site with a homepage and a few pages after the lead left. Months of urgent screens followed. My first Next.js project.',
+                'Then about two years of support with "needed yesterday" tasks, especially before each forum. Tough pace — and a site I\'m proud of.',
+            ],
         },
         role: 'built',
-        tags: ['event', 'forum', 'forms'],
+        tags: ['Next.js', 'support'],
         featured: true,
         liveUrl: 'https://oilgasforum.ru/',
         image: {
             src: '/static/img/cases/tnf/cover.jpg',
             width: 1024,
-            height: 544,
+            height: 594,
             alt: 'Международный промышленно-энергетический форум TNF',
         },
     },
@@ -52,15 +61,21 @@ export const CASES: ICase[] = [
         slug: 'vileda',
         title: { ru: 'Vileda Professional', en: 'Vileda Professional' },
         teaser: {
-            ru: 'B2B-сайт: каталог, решения для бизнеса, контентные разделы. Собрал по макету.',
-            en: 'B2B site — catalog, business solutions, content sections. Built from the mockup.',
+            ru: 'B2B-сайт Vileda Professional: каталог, решения для бизнеса, контентные разделы.',
+            en: 'Vileda Professional B2B site — catalog, business solutions, content sections.',
         },
         description: {
-            ru: ['B2B-сайт: каталог, решения для бизнеса, контентные разделы.', 'Собрал по макету.'],
-            en: ['B2B site — catalog, business solutions, content sections.', 'Built from the mockup.'],
+            ru: [
+                'Пришёл на PHP-проект с готовой, но сломанной вёрсткой части страниц — не на нашем стеке. По сути переписал сайт с нуля.',
+                'Главная менялась уже несколько раз: заказчик любит новые идеи, и с каждым редизайном продукт становится свежее. Много работы по оптимизации и микроразметке — здесь многому научился.',
+            ],
+            en: [
+                'Joined a PHP project with broken pages already in place — off our stack. Effectively rewrote the site from scratch.',
+                'The homepage has been redesigned several times: the client brings new ideas, and each round makes the product fresher. Lots of optimization and structured data — I learned a lot here.',
+            ],
         },
         role: 'built',
-        tags: ['catalog', 'b2b', 'corporate'],
+        tags: ['PHP', 'microdata', 'PageSpeed'],
         liveUrl: 'https://vileda-prof.ru',
         featured: true,
         image: {
@@ -74,12 +89,18 @@ export const CASES: ICase[] = [
         slug: 'iiko',
         title: { ru: 'iiko', en: 'iiko' },
         teaser: {
-            ru: 'Сайт продуктовой экосистемы iiko. Поддержка и точечные фронт-задачи.',
-            en: 'iiko product site — frontend support and updates.',
+            ru: 'Продуктовый сайт экосистемы iiko — точечные фронт-задачи в живом продукте.',
+            en: 'iiko product ecosystem site — focused frontend work in a live product.',
         },
         description: {
-            ru: ['Сайт продуктовой экосистемы iiko.', 'Поддержка и точечные фронт-задачи.'],
-            en: ['iiko product site.', 'Frontend support and updates.'],
+            ru: [
+                'Корпоративно-продуктовый сайт экосистемы iiko.',
+                'Не сборка с нуля: точечные экраны, правки и обновления в уже работающем фронте.',
+            ],
+            en: [
+                'Corporate product site for the iiko ecosystem.',
+                'Not a from-scratch build: focused screens, fixes, and updates in a live frontend.',
+            ],
         },
         role: 'support',
         tags: ['product', 'corporate'],
@@ -95,12 +116,18 @@ export const CASES: ICase[] = [
         slug: 'composit',
         title: { ru: 'Composit', en: 'Composit' },
         teaser: {
-            ru: 'Каталог Composit: карточки, разделы. Доработки и поддержка фронта.',
-            en: 'Composit catalog — listings and sections. Frontend support.',
+            ru: 'Каталог Composit — карточки и разделы, доработки листингов.',
+            en: 'Composit catalog — listings and sections, listing UI updates.',
         },
         description: {
-            ru: ['Каталог Composit: карточки, разделы.', 'Доработки и поддержка фронта.'],
-            en: ['Composit catalog — listings and sections.', 'Frontend support.'],
+            ru: [
+                'Каталожный сайт с карточками товаров и разделами.',
+                'Поддержка фронта: правки листингов, карточек и навигации по разделам.',
+            ],
+            en: [
+                'Catalog site with product cards and sections.',
+                'Frontend support: listing, card, and section-navigation updates.',
+            ],
         },
         role: 'support',
         tags: ['catalog', 'corporate'],
@@ -116,12 +143,18 @@ export const CASES: ICase[] = [
         slug: 'sgk-epp',
         title: { ru: 'СГК · ЕПП', en: 'SGK · EPP' },
         teaser: {
-            ru: 'Кабинетный и платёжный контур СГК (ЕПП). Формы, кабинеты, доработки интерфейса.',
-            en: 'SGK account and payment UI (EPP). Forms and cabinet updates.',
+            ru: 'Кабинет и платежи СГК (ЕПП) — формы и личный кабинет.',
+            en: 'SGK account and payments (EPP) — forms and cabinet UI.',
         },
         description: {
-            ru: ['Кабинетный и платёжный контур СГК (ЕПП).', 'Формы, кабинеты, доработки интерфейса.'],
-            en: ['SGK account and payment UI (EPP).', 'Forms and cabinet updates.'],
+            ru: [
+                'Кабинетный и платёжный контур СГК в рамках ЕПП.',
+                'Доработки форм, кабинетов и связанных экранов — без пересборки всего сайта.',
+            ],
+            en: [
+                'SGK account and payment flow within EPP.',
+                'Updates to forms, cabinets, and related screens — not a full site rebuild.',
+            ],
         },
         role: 'support',
         tags: ['cabinet', 'forms', 'payments'],
@@ -137,12 +170,18 @@ export const CASES: ICase[] = [
         slug: 'gtenergo',
         title: { ru: 'GT Energo', en: 'GT Energo' },
         teaser: {
-            ru: 'Корпоративный сайт GT Energo. Поддержка интерфейса.',
-            en: 'GT Energo corporate site — UI support.',
+            ru: 'Корпоративный сайт энергокомпании — сопровождение интерфейса.',
+            en: 'Energy company corporate site — ongoing UI support.',
         },
         description: {
-            ru: ['Корпоративный сайт GT Energo.', 'Поддержка интерфейса.'],
-            en: ['GT Energo corporate site.', 'UI support.'],
+            ru: [
+                'Корпоративный сайт GT Energo в энергетике.',
+                'Поддержка и точечные правки интерфейса по мере задач от команды.',
+            ],
+            en: [
+                'GT Energo corporate site in the energy sector.',
+                "Support and focused UI fixes as the team's tasks come in.",
+            ],
         },
         role: 'support',
         tags: ['corporate', 'energy'],
@@ -158,12 +197,18 @@ export const CASES: ICase[] = [
         slug: 'artlife',
         title: { ru: 'Artlife', en: 'Artlife' },
         teaser: {
-            ru: 'Корпоративный сайт Artlife. Сопровождение фронта.',
-            en: 'Artlife corporate site — frontend support.',
+            ru: 'Биотех Artlife — корпоративный сайт на сопровождении.',
+            en: 'Artlife biotech — corporate site under ongoing support.',
         },
         description: {
-            ru: ['Корпоративный сайт Artlife.', 'Сопровождение фронта.'],
-            en: ['Artlife corporate site.', 'Frontend support.'],
+            ru: [
+                'Корпоративный сайт биотех-направления Artlife.',
+                'Сопровождение фронта: контентные и интерфейсные правки без смены основы.',
+            ],
+            en: [
+                "Corporate site for Artlife's biotech line.",
+                'Frontend support: content and UI updates without rebuilding the foundation.',
+            ],
         },
         role: 'support',
         tags: ['biotech', 'corporate'],
@@ -179,12 +224,18 @@ export const CASES: ICase[] = [
         slug: 'october',
         title: { ru: 'КДЦ Октябрь', en: 'KDC October' },
         teaser: {
-            ru: 'Сайт культурного центра: афиша, билеты, сервисы. Поддержка фронта.',
-            en: 'Cultural center site — programme, tickets, services. Frontend support.',
+            ru: 'Культурный центр: афиша, билеты, сервисы — поддержка UI.',
+            en: 'Cultural center — programme, tickets, services; UI support.',
         },
         description: {
-            ru: ['Сайт культурного центра: афиша, билеты, сервисы.', 'Поддержка фронта.'],
-            en: ['Cultural center site — programme, tickets, services.', 'Frontend support.'],
+            ru: [
+                'Сайт КДЦ с афишей, билетами и сервисами для посетителей.',
+                'Поддержка фронта: правки сценариев афиши и связанных экранов.',
+            ],
+            en: [
+                'Cultural center site with programme, tickets, and visitor services.',
+                'Frontend support: programme flows and related screen updates.',
+            ],
         },
         role: 'support',
         tags: ['culture', 'events'],
@@ -200,12 +251,18 @@ export const CASES: ICase[] = [
         slug: 'daigo',
         title: { ru: 'Daigo', en: 'Daigo' },
         teaser: {
-            ru: 'Контентный проект Daigo. Правки вёрстки и блоков.',
-            en: 'Daigo content project — layout and block updates.',
+            ru: 'Контентный Daigo — правки блоков и вёрстки.',
+            en: 'Daigo content project — block and layout updates.',
         },
         description: {
-            ru: ['Контентный проект Daigo.', 'Правки вёрстки и блоков.'],
-            en: ['Daigo content project.', 'Layout and block updates.'],
+            ru: [
+                'Контентный проект с набором типовых блоков.',
+                'Правки вёрстки и блоков по мере обновления материалов.',
+            ],
+            en: [
+                'Content project built from a set of recurring blocks.',
+                'Layout and block updates as materials change.',
+            ],
         },
         role: 'support',
         tags: ['media', 'content'],
@@ -221,12 +278,18 @@ export const CASES: ICase[] = [
         slug: 'dvizh',
         title: { ru: 'Dvizh Online School', en: 'Dvizh Online School' },
         teaser: {
-            ru: 'Онлайн-школа: страницы курсов, формы. Поддержка и доработки UI.',
-            en: 'Online school — course pages and forms. UI support.',
+            ru: 'Онлайн-школа: курсы и формы — доработки UI.',
+            en: 'Online school — course pages and forms; UI updates.',
         },
         description: {
-            ru: ['Онлайн-школа: страницы курсов, формы.', 'Поддержка и доработки UI.'],
-            en: ['Online school — course pages and forms.', 'UI support.'],
+            ru: [
+                'Образовательный сайт со страницами курсов и формами записи.',
+                'Поддержка и доработки UI под новые запуски и правки программ.',
+            ],
+            en: [
+                'Education site with course pages and signup forms.',
+                'UI support and updates for new launches and programme changes.',
+            ],
         },
         role: 'support',
         tags: ['education', 'forms'],
@@ -242,12 +305,15 @@ export const CASES: ICase[] = [
         slug: 'eldis',
         title: { ru: 'Eldis', en: 'Eldis' },
         teaser: {
-            ru: 'Корпоративный сайт Eldis. Сопровождение интерфейса.',
-            en: 'Eldis corporate site — ongoing UI work.',
+            ru: 'Корпоративный Eldis — регулярные правки интерфейса.',
+            en: 'Eldis corporate site — regular interface updates.',
         },
         description: {
-            ru: ['Корпоративный сайт Eldis.', 'Сопровождение интерфейса.'],
-            en: ['Eldis corporate site.', 'Ongoing UI work.'],
+            ru: [
+                'Корпоративный сайт Eldis.',
+                'Постоянное сопровождение: небольшие и средние правки интерфейса по запросу.',
+            ],
+            en: ['Eldis corporate site.', 'Ongoing support: small and mid-size interface updates on request.'],
         },
         role: 'support',
         tags: ['corporate'],
@@ -263,12 +329,15 @@ export const CASES: ICase[] = [
         slug: 'zagranitsa',
         title: { ru: 'Заграница', en: 'Zagranitsa' },
         teaser: {
-            ru: 'Контентный сайт. Поддержка вёрстки и страниц.',
-            en: 'Content site — layout and page support.',
+            ru: 'Медиа «Заграница» — поддержка страниц и вёрстки.',
+            en: 'Zagranitsa media — page and layout support.',
         },
         description: {
-            ru: ['Контентный сайт.', 'Поддержка вёрстки и страниц.'],
-            en: ['Content site.', 'Layout and page support.'],
+            ru: [
+                'Контентный медиа-сайт с регулярными публикациями.',
+                'Поддержка вёрстки и отдельных страниц под новые материалы.',
+            ],
+            en: ['Content media site with regular publications.', 'Layout and page support as new materials go live.'],
         },
         role: 'support',
         tags: ['media', 'content'],
@@ -284,12 +353,12 @@ export const CASES: ICase[] = [
         slug: 'chillbase',
         title: { ru: 'Chillbase', en: 'Chillbase' },
         teaser: {
-            ru: 'Продуктовый сайт Chillbase. Поддержка и доработки UI.',
-            en: 'Chillbase product site — UI support.',
+            ru: 'Продуктовый Chillbase — доработки UI в проде.',
+            en: 'Chillbase product site — UI updates in production.',
         },
         description: {
-            ru: ['Продуктовый сайт Chillbase.', 'Поддержка и доработки UI.'],
-            en: ['Chillbase product site.', 'UI support.'],
+            ru: ['Продуктовый сайт Chillbase.', 'Поддержка живого UI: правки экранов и блоков без полной пересборки.'],
+            en: ['Chillbase product site.', 'Live UI support: screen and block updates without a full rebuild.'],
         },
         role: 'support',
         tags: ['product', 'corporate'],
@@ -305,12 +374,18 @@ export const CASES: ICase[] = [
         slug: 'chipsa',
         title: { ru: 'Chipsa', en: 'Chipsa' },
         teaser: {
-            ru: 'Сайт агентства Chipsa. Поддержка и правки интерфейса.',
-            en: 'Chipsa agency site — UI support.',
+            ru: 'Сайт агентства Chipsa — правки своего рабочего дома.',
+            en: "Chipsa agency site — updates to the studio's own home.",
         },
         description: {
-            ru: ['Сайт агентства Chipsa.', 'Поддержка и правки интерфейса.'],
-            en: ['Chipsa agency site.', 'UI support.'],
+            ru: [
+                'Сайт дизайн-студии Chipsa, где я работаю.',
+                'Поддержка и правки интерфейса: как у клиента, только свой продукт студии.',
+            ],
+            en: [
+                'Site for Chipsa design studio, where I work.',
+                "UI support and fixes — same bar as client work, on the studio's own product.",
+            ],
         },
         role: 'support',
         tags: ['agency', 'corporate'],
@@ -326,12 +401,15 @@ export const CASES: ICase[] = [
         slug: 'vki',
         title: { ru: 'VKI', en: 'VKI' },
         teaser: {
-            ru: 'Корпоративный сайт VKI. Доработки по макету.',
+            ru: 'Корпоративный VKI — доработки строго по макету.',
             en: 'VKI corporate site — mockup-driven updates.',
         },
         description: {
-            ru: ['Корпоративный сайт VKI.', 'Доработки по макету.'],
-            en: ['VKI corporate site.', 'Mockup-driven updates.'],
+            ru: ['Корпоративный сайт VKI.', 'Точечные доработки фронта по макету — без переписывания всего проекта.'],
+            en: [
+                'VKI corporate site.',
+                'Focused frontend updates from the mockup — without rewriting the whole project.',
+            ],
         },
         role: 'support',
         tags: ['corporate'],

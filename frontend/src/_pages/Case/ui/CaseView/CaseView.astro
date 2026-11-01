@@ -19,7 +19,7 @@ const backLabel = locale === 'en' ? 'All cases' : 'Все кейсы';
 const roleLabel =
     item.role === 'built' ? (locale === 'en' ? 'From scratch' : 'С нуля') : locale === 'en' ? 'Support' : 'Поддержка';
 const liveLabel = locale === 'en' ? 'Visit site' : 'Смотреть сайт';
-const ctaLabel = locale === 'en' ? 'Discuss a similar project' : 'Обсудить похожий проект';
+const ctaLabel = locale === 'en' ? 'Discuss a project like this' : 'Обсудить похожий проект';
 const imageTransition = `case-image-${item.slug}`;
 const titleTransition = `case-title-${item.slug}`;
 const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURIComponent(item.liveUrl)}` : '';
