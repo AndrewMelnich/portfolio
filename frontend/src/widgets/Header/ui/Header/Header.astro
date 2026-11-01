@@ -71,17 +71,9 @@ const defaultLogoFile = '07-signal.svg';
                 href={homeHref}
                 aria-label={homeLabel}
                 data-default-logo={defaultLogoId}
-                style="
-
---header-logo-w: 142px; --header-logo-h: 36px"
+                style={`--header-logo-w: 142px; --header-logo-h: 36px; --header-logo-src: url('/static/img/logos/${defaultLogoFile}')`}
             >
-                <img
-                    class="header__logo-mark js-header-logo-mark"
-                    src={`/static/img/logos/${defaultLogoFile}`}
-                    alt=""
-                    width="142"
-                    height="36"
-                />
+                <span class="header__logo-mark js-header-logo-mark" aria-hidden="true"></span>
             </a>
         </span>
         <div class="header__end">
@@ -186,18 +178,15 @@ const defaultLogoFile = '07-signal.svg';
 
     const applyLogo = () => {
         const link = document.querySelector<HTMLElement>('.js-header-logo');
-        const mark = document.querySelector<HTMLImageElement>('.js-header-logo-mark');
 
-        if (!link || !mark) return;
+        if (!link) return;
 
         const id = localStorage.getItem(STORAGE_KEY) || link.dataset.defaultLogo || '07-signal';
         const wide = WIDE_LOGOS.has(id);
         const file = LOGO_FILES[id] ?? `${id}.svg`;
         const size = LOGO_SIZE[id] ?? { width: 36, height: 36 };
 
-        mark.src = `/static/img/logos/${file}`;
-        mark.width = size.width;
-        mark.height = size.height;
+        link.style.setProperty('--header-logo-src', `url('/static/img/logos/${file}')`);
         link.style.setProperty('--header-logo-w', `${size.width}px`);
         link.style.setProperty('--header-logo-h', `${size.height}px`);
         link.classList.toggle('header__logo--wide', wide);

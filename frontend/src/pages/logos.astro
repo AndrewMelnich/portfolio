@@ -360,9 +360,8 @@ const logos = [
 
     const applyHeaderLogo = (id: string) => {
         const link = document.querySelector<HTMLAnchorElement>('.js-header-logo');
-        const mark = document.querySelector<HTMLImageElement>('.js-header-logo-mark');
 
-        if (!link || !mark) return;
+        if (!link) return;
 
         const wide = WIDE_LOGOS.has(id);
         const file = LOGO_FILES[id] ?? `${id}.svg`;
@@ -374,9 +373,7 @@ const logos = [
                   ? { width: 142, height: 36 }
                   : { width: 36, height: 36 };
 
-        mark.src = `/static/img/logos/${file}`;
-        mark.width = size.width;
-        mark.height = size.height;
+        link.style.setProperty('--header-logo-src', `url('/static/img/logos/${file}')`);
         link.style.setProperty('--header-logo-w', `${size.width}px`);
         link.style.setProperty('--header-logo-h', `${size.height}px`);
         link.classList.toggle('header__logo--wide', wide);

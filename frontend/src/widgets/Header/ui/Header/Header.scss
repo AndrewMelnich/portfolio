@@ -63,18 +63,24 @@
     align-items: center;
     color: #fff;
     opacity: 0.82;
-    transition: opacity $app-default-duration $app-default-easing;
+    transition:
+        color $app-default-duration $app-default-easing,
+        opacity $app-default-duration $app-default-easing;
 
     @include hover() {
+        color: var(--neon);
         opacity: 1;
     }
 
+    &:active,
     &:focus-visible {
+        color: var(--neon);
         opacity: 1;
     }
 
     &.header__logo--current {
         pointer-events: none;
+        color: #fff;
         opacity: 1;
     }
 
@@ -95,6 +101,9 @@
     flex-shrink: 0;
     width: 36px;
     height: 36px;
+    background-color: currentcolor;
+    mask: var(--header-logo-src) center / contain no-repeat;
+    -webkit-mask: var(--header-logo-src) center / contain no-repeat;
 }
 
 .header__end {
