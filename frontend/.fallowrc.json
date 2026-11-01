@@ -4,7 +4,7 @@
         "scripts/sync-figma-colors.mjs",
         "scripts/generate-zod-schemas-openapi.mjs",
         "scripts/check-empty-style-blocks.js",
-        "steiger.config.ts",
+        "steiger.config.mjs",
         "global-setup.ts",
         "src/shared/ui/**/*.astro",
         "src/shared/ui/**/*.ts",
