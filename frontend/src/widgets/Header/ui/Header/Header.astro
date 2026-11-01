@@ -9,11 +9,27 @@ type Props = HTMLAttributes<'header'>;
 const { class: className, ...props } = Astro.props;
 const locale = Astro.currentLocale as AppLocale;
 const homeHref = getRelativeLocaleUrl(locale, '/');
+const currentPath = Astro.url.pathname;
+const currentHash = Astro.url.hash.replace(/^#/, '');
+const homeLabel = locale === 'en' ? 'Home' : 'Главная';
+const isHomeCurrent = homeHref === currentPath;
+
+const isNavCurrent = (href: string) => {
+    const hashIndex = href.indexOf('#');
+
+    if (hashIndex !== -1) {
+        return Boolean(currentHash) && href.slice(hashIndex + 1) === currentHash;
+    }
+
+    if (currentHash) return false;
+
+    return href === currentPath;
+};
 
 const navItems = [
     {
         href: homeHref,
-        label: locale === 'en' ? 'Home' : 'Главная',
+        label: homeLabel,
     },
     {
         href: getRelativeLocaleUrl(locale, '/cases'),
@@ -52,9 +68,14 @@ const defaultLogoFile = '07-signal.svg';
     <div class="header__inner wrapper">
         <span class="header__logo-reveal" data-reveal="instant" data-reveal-sticky>
             <a
-                class="header__logo header__logo--wide js-header-logo"
+                class:list={[
+                    'header__logo',
+                    'header__logo--wide',
+                    'js-header-logo',
+                    { 'header__logo--current': isHomeCurrent },
+                ]}
                 href={homeHref}
-                aria-label={locale === 'en' ? 'Home' : 'Главная'}
+                aria-label={homeLabel}
                 data-default-logo={defaultLogoId}
                 style="
 
@@ -70,13 +91,25 @@ const defaultLogoFile = '07-signal.svg';
             </a>
         </span>
         <div class="header__end">
-            <nav class="header__nav" aria-label="Primary">
+            <nav class="header__nav js-header-nav" aria-label="Primary">
                 <ul class="header__list list-unstyled">
                     {navItems.map((item) => (
                         <li>
                             <a
-                                class="header__link label-m"
+                                class:list={[
+                                    'header__link',
+                                    'js-header__link',
+                                    'label-m',
+                                    { 'header__link--current': isNavCurrent(item.href) },
+                                ]}
                                 href={item.href}
+                                aria-current={
+                                    isNavCurrent(item.href)
+                                        ? item.href.includes('#')
+                                            ? 'location'
+                                            : 'page'
+                                        : undefined
+                                }
                                 data-press
                                 data-reveal="scatter-instant"
                                 data-reveal-sticky
@@ -149,9 +182,16 @@ const defaultLogoFile = '07-signal.svg';
         '06-focus-square': '06-focus-square.svg',
         '07-signal': '07-signal.svg',
     };
+    const LINK_CURRENT = 'header__link--current';
+    const LOGO_CURRENT = 'header__logo--current';
+    const SECTION_IDS = ['about', 'contact'] as const;
+
+    let sectionObserver: IntersectionObserver | null = null;
+    let activeSection: string | null = null;
+    let visibleSections = new Set<string>();
 
     const applyLogo = () => {
-        const link = document.querySelector<HTMLAnchorElement>('.js-header-logo');
+        const link = document.querySelector<HTMLElement>('.js-header-logo');
         const mark = document.querySelector<HTMLImageElement>('.js-header-logo-mark');
 
         if (!link || !mark) return;
@@ -169,6 +209,145 @@ const defaultLogoFile = '07-signal.svg';
         link.classList.toggle('header__logo--wide', wide);
     };
 
+    const navLinks = () => [...document.querySelectorAll<HTMLAnchorElement>('.js-header-nav .js-header__link')];
+
+    const applyCurrent = (sectionId: string | null) => {
+        const path = window.location.pathname;
+
+        for (const link of navLinks()) {
+            const url = new URL(link.href, window.location.href);
+            const hash = url.hash.slice(1);
+            const on = sectionId ? hash === sectionId : !hash && url.pathname === path;
+
+            if (link.classList.contains(LINK_CURRENT) === on) continue;
+
+            link.classList.toggle(LINK_CURRENT, on);
+
+            if (on) {
+                link.setAttribute('aria-current', hash ? 'location' : 'page');
+            } else {
+                link.removeAttribute('aria-current');
+            }
+        }
+
+        const logo = document.querySelector<HTMLAnchorElement>('.js-header-logo');
+
+        if (!logo) return;
+
+        const homePath = new URL(logo.href, window.location.href).pathname;
+
+        logo.classList.toggle(LOGO_CURRENT, homePath === path);
+    };
+
+    const resolveVisibleSection = () => {
+        let next: string | null = null;
+
+        for (const id of SECTION_IDS) {
+            if (visibleSections.has(id)) next = id;
+        }
+
+        if (next === activeSection) return;
+
+        activeSection = next;
+        applyCurrent(next);
+    };
+
+    const syncFromHash = () => {
+        const hash = window.location.hash.slice(1);
+
+        if (hash && (SECTION_IDS as readonly string[]).includes(hash) && document.getElementById(hash)) {
+            activeSection = hash;
+            applyCurrent(hash);
+
+            return;
+        }
+
+        activeSection = null;
+        applyCurrent(null);
+    };
+
+    const setupNavCurrent = () => {
+        sectionObserver?.disconnect();
+        sectionObserver = null;
+        visibleSections = new Set();
+        activeSection = null;
+
+        const sections = SECTION_IDS.map((id) => document.getElementById(id)).filter((node): node is HTMLElement =>
+            Boolean(node),
+        );
+
+        if (!sections.length) {
+            syncFromHash();
+
+            return;
+        }
+
+        const headerHeight = Number.parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue('--header-height'),
+        );
+        const topInset = Number.isFinite(headerHeight) ? headerHeight : 94;
+
+        sectionObserver = new IntersectionObserver(
+            (entries) => {
+                for (const entry of entries) {
+                    if (entry.isIntersecting) {
+                        visibleSections.add(entry.target.id);
+                    } else {
+                        visibleSections.delete(entry.target.id);
+                    }
+                }
+
+                resolveVisibleSection();
+            },
+            {
+                rootMargin: `-${topInset}px 0px -45% 0px`,
+                threshold: 0,
+            },
+        );
+
+        for (const section of sections) {
+            sectionObserver.observe(section);
+        }
+
+        syncFromHash();
+    };
+
+    const onHeaderClick = (event: MouseEvent) => {
+        const target = event.target;
+
+        if (!(target instanceof Element)) return;
+
+        const link = target.closest<HTMLAnchorElement>('a.js-header-logo, .js-header-nav a.js-header__link');
+
+        if (!link) return;
+
+        const url = new URL(link.href, window.location.href);
+
+        if (url.pathname !== window.location.pathname || url.hash.length > 1) return;
+
+        event.preventDefault();
+
+        if (window.scrollY > 0 || window.location.hash) {
+            window.history.replaceState(null, '', url.pathname + url.search);
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+            activeSection = null;
+            applyCurrent(null);
+        }
+    };
+
+    const bootNavCurrent = () => {
+        requestAnimationFrame(() => {
+            setupNavCurrent();
+        });
+    };
+
     applyLogo();
+    bootNavCurrent();
     window.addEventListener('storage', applyLogo);
+    window.addEventListener('hashchange', syncFromHash);
+    document.addEventListener('astro:page-load', () => {
+        applyLogo();
+        bootNavCurrent();
+    });
+    document.querySelector('.js-header')?.addEventListener('click', onHeaderClick);
 </script>
