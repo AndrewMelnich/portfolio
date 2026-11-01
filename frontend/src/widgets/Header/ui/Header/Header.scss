@@ -141,7 +141,11 @@
     display: inline-block;
     padding: 4px 0;
     color: rgb(255 255 255 / 62%);
-    transition: color $app-default-duration $app-default-easing;
+    transition:
+        color $app-default-duration $app-default-easing,
+        transform $app-press-duration $app-default-easing;
+
+    @include press;
 
     &::after {
         content: '';

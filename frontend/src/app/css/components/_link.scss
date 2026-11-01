@@ -17,7 +17,8 @@
     transition:
         background-size 0.4s $app-default-easing,
         color $app-default-duration $app-default-easing,
-        opacity $app-default-duration $app-default-easing;
+        opacity $app-default-duration $app-default-easing,
+        transform $app-press-duration $app-default-easing;
 
     @include hover {
         background-size: var(--bg-size-hover);
@@ -34,6 +35,8 @@
         color: $neon;
     }
 
+    @include press;
+
     &.link--underlined {
         @extend %link-underlined;
     }
@@ -42,6 +45,10 @@
         pointer-events: none;
         user-select: none;
         opacity: $btn-disabled-opacity;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
     }
 }
 

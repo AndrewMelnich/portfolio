@@ -1,10 +1,12 @@
 import { calculateScrollbarWidth, vhMobileFix } from '@/shared/lib/dom';
+import { initPress } from '@/shared/lib/press';
 import reveal from '@/shared/lib/reveal';
 
 document.documentElement.classList.add('js-ready');
 
 calculateScrollbarWidth();
 vhMobileFix();
+initPress();
 reveal.init();
 
 const SMOOTH_SCROLL_CLASS = 'is-smooth-scroll';

@@ -18,7 +18,7 @@ const imageTransition = `case-image-${item.slug}`;
 const titleTransition = `case-title-${item.slug}`;
 ---
 
-<a class:list={['case-card', className]} href={href} {...props}>
+<a class:list={['case-card', className]} href={href} {...props} data-press>
     <span class="case-card__media" aria-hidden="true">
         {item.image && (
             <img

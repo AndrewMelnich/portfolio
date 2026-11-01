@@ -32,7 +32,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
     data-key-visual-shape-fallback={item.image?.src}
 >
     <div class="case-view__inner wrapper">
-        <a class="case-view__back label-m link" href={casesHref}>
+        <a class="case-view__back label-m link" href={casesHref} data-press>
             {tp(backLabel, locale)}
         </a>
 
@@ -83,6 +83,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
                     href={item.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-press
                 >
                     {tp(liveLabel, locale)}
                 </a>
@@ -95,6 +96,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
                 href={telegramHref}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-press
             >
                 {tp(ctaLabel, locale)}
             </a>

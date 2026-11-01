@@ -31,7 +31,9 @@
 
 .featured-cases__all {
     color: #fff;
-    transition: opacity $app-default-duration $app-default-easing;
+    transition:
+        opacity $app-default-duration $app-default-easing,
+        transform $app-press-duration $app-default-easing;
 
     @include hover() {
         opacity: 0.72;
@@ -41,6 +43,8 @@
     &:focus-visible {
         opacity: 0.72;
     }
+
+    @include press;
 
     @media (prefers-reduced-motion: reduce) {
         transition: none;
@@ -52,8 +56,6 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
     width: 100%;
-    padding-right: var(--offset-x);
-    padding-left: var(--offset-x);
 
     @include mobile() {
         grid-template-columns: 1fr;

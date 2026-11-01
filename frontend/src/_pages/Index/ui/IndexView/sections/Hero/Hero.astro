@@ -47,10 +47,10 @@ const casesHref = getRelativeLocaleUrl(locale, '/cases');
         {tp(copy.subline, locale)}
     </p>
     <div class="hero__actions" data-reveal="instant" data-reveal-delay="0.24">
-        <a class="hero__cta label-m link" href={casesHref}>
+        <a class="hero__cta label-m link" href={casesHref} data-press>
             {tp(copy.cases, locale)}
         </a>
-        <a class="hero__cta label-m link" href="#contact">
+        <a class="hero__cta label-m link" href="#contact" data-press>
             {tp(copy.contact, locale)}
         </a>
     </div>
