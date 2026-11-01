@@ -14,6 +14,32 @@
     animation-name: vt-root-in;
 }
 
+::view-transition-group(case-active-image) {
+    animation-duration: 280ms;
+    animation-timing-function: $app-default-easing;
+}
+
+::view-transition-old(case-active-image),
+::view-transition-new(case-active-image) {
+    // stylelint-disable-next-line declaration-no-important -- keep solid snapshots during group morph
+    mix-blend-mode: normal !important;
+    width: 100%;
+    height: 100%;
+    overflow: clip;
+    object-fit: cover;
+    object-position: center top;
+}
+
+::view-transition-old(case-active-image) {
+    // stylelint-disable-next-line declaration-no-important -- beat UA VT crossfade; hand off late to avoid crop/filter pop
+    animation: vt-case-image-out 280ms $app-default-easing both !important;
+}
+
+::view-transition-new(case-active-image) {
+    // stylelint-disable-next-line declaration-no-important -- beat UA VT crossfade; hand off late to avoid crop/filter pop
+    animation: vt-case-image-in 280ms $app-default-easing both !important;
+}
+
 @keyframes vt-root-out {
     to {
         opacity: 0;
@@ -23,6 +49,28 @@
 @keyframes vt-root-in {
     from {
         opacity: 0;
+    }
+}
+
+@keyframes vt-case-image-out {
+    0%,
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes vt-case-image-in {
+    0%,
+    70% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }
 

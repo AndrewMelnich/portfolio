@@ -29,11 +29,12 @@
 }
 
 .case-view__media {
+    position: relative;
     width: 100%;
     max-width: 50%;
-    height: auto;
+    aspect-ratio: 15 / 9;
     margin-block: 12px 8px;
-    overflow: clip;
+    overflow: hidden;
     background: rgb(255 255 255 / 4%);
     border: 1px solid rgb(255 255 255 / 8%);
     border-radius: var(--base-border-radius);
@@ -43,11 +44,15 @@
     }
 
     .case-view__image {
+        position: absolute;
+        inset: 0;
         display: block;
         width: 100%;
+        max-width: none;
         height: 100%;
-        object-fit: contain;
-        object-position: top;
+        object-fit: cover;
+        object-position: center top;
+        border-radius: var(--base-border-radius);
     }
 }
 

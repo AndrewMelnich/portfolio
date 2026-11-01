@@ -14,11 +14,9 @@ const { item, locale, class: className, ...props } = Astro.props;
 
 const title = item.title[locale];
 const href = getRelativeLocaleUrl(locale, `cases/${item.slug}`);
-const imageTransition = `case-image-${item.slug}`;
-const titleTransition = `case-title-${item.slug}`;
 ---
 
-<a class:list={['case-card', 'js-case-card', className]} href={href} {...props} data-press>
+<a class:list={['case-card', 'js-case-card', className]} href={href} {...props} data-press data-case-slug={item.slug}>
     <span class="case-card__media" aria-hidden="true">
         {item.image && (
             <img
@@ -29,14 +27,11 @@ const titleTransition = `case-title-${item.slug}`;
                 height={item.image.height ?? 900}
                 loading="lazy"
                 decoding="async"
-                transition:name={imageTransition}
             />
         )}
     </span>
     <span class="case-card__content">
-        <span class="case-card__title js-case-card__title h4" transition:name={titleTransition}>
-            {tp(title, locale)}
-        </span>
+        <span class="case-card__title h4">{tp(title, locale)}</span>
         <span class="case-card__teaser text-s">{tp(item.teaser[locale], locale)}</span>
     </span>
 </a>

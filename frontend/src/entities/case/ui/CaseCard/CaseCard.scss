@@ -55,6 +55,7 @@
     filter: grayscale(1);
     transition: filter 0.55s $app-default-easing;
     overflow: hidden;
+    border-radius: 16px;
 
     @media (prefers-reduced-motion: reduce) {
         transition: none;

@@ -3,6 +3,7 @@ const charSelector = '.js-reveal-char';
 const spaceClass = 'js-reveal-space';
 const charClassName = 'js-reveal-char reveal-char';
 const preparedAttr = 'revealPrepared';
+const cloakedAttr = 'revealCloaked';
 const reducedMotionQuery = '(prefers-reduced-motion: reduce)';
 
 type MotionMode = 'enter' | 'explode';
@@ -95,6 +96,7 @@ function isSticky(element: HTMLElement) {
 function showCardWithoutMotion(element: HTMLElement) {
     clearRevealTimeout(element);
     observer.unobserve(element);
+    uncloakCard(element);
     element.classList.remove('is-exploding');
     element.style.setProperty('transition', 'none');
     element.classList.add('is-revealed');
@@ -111,6 +113,37 @@ function maybeShowCardWithoutMotion(element: HTMLElement, skipCardMotion: boolea
     showCardWithoutMotion(element);
 
     return true;
+}
+
+function isCardRevealInFlight(element: HTMLElement) {
+    return (
+        isCard(element.dataset.reveal) &&
+        (revealTimeouts.has(element) ||
+            element.classList.contains('is-revealed') ||
+            element.classList.contains('is-reveal-complete'))
+    );
+}
+
+function cloakCard(element: HTMLElement) {
+    clearRevealTimeout(element);
+    observer.unobserve(element);
+    element.classList.remove('is-revealed');
+    element.classList.remove('is-reveal-complete');
+    element.classList.remove('is-exploding');
+    element.dataset[cloakedAttr] = 'true';
+    prepare(element);
+}
+
+function uncloakCard(element: HTMLElement) {
+    delete element.dataset[cloakedAttr];
+}
+
+function cloakCards(container: Element | Document) {
+    collectRevealElements(container).forEach((element) => {
+        if (isCard(element.dataset.reveal)) {
+            cloakCard(element);
+        }
+    });
 }
 
 function scheduleHashReveal(delayMs = 0) {
@@ -374,26 +407,39 @@ function collectRevealElements(root: Element | Document) {
     return [...new Set(elements)];
 }
 
+// fallow-ignore-next-line complexity -- prepare skip: sticky / card motion / in-flight / cloaked
+function prepareRevealElement(element: HTMLElement, skipCardMotion: boolean) {
+    if (isSticky(element) || maybeShowCardWithoutMotion(element, skipCardMotion)) {
+        return;
+    }
+
+    if (isCardRevealInFlight(element) || element.dataset[cloakedAttr] === 'true') {
+        return;
+    }
+
+    clearRevealTimeout(element);
+    observer.unobserve(element);
+    element.classList.remove('is-revealed');
+    element.classList.remove('is-reveal-complete');
+    element.classList.remove('is-exploding');
+    prepare(element);
+}
+
 function prepareAll(container: Element | Document = document) {
     const skipCardMotion = shouldSkipCardMotion();
 
     collectRevealElements(container).forEach((element) => {
-        if (isSticky(element) || maybeShowCardWithoutMotion(element, skipCardMotion)) {
-            return;
-        }
-
-        clearRevealTimeout(element);
-        observer.unobserve(element);
-        element.classList.remove('is-revealed');
-        element.classList.remove('is-reveal-complete');
-        element.classList.remove('is-exploding');
-        prepare(element);
+        prepareRevealElement(element, skipCardMotion);
     });
 }
 
 function prepareIncomingDocument(doc: Document) {
     doc.documentElement.classList.remove('no-js');
     doc.documentElement.classList.add('js');
+
+    if (activePath !== null && !shouldSkipCardMotion()) {
+        cloakCards(doc);
+    }
 }
 
 function resetRevealState(element: HTMLElement) {
@@ -555,8 +601,13 @@ function bindRevealElement(el: HTMLElement, skipCardMotion = false) {
         return;
     }
 
+    if (isCardRevealInFlight(el)) {
+        return;
+    }
+
     clearRevealTimeout(el);
     observer.unobserve(el);
+    uncloakCard(el);
     el.classList.remove('is-revealed');
     el.classList.remove('is-reveal-complete');
     el.classList.remove('is-exploding');

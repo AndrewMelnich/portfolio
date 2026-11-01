@@ -1,3 +1,4 @@
+import { armIncomingCaseCard, initCaseCardTransition } from '@/entities/case';
 import { calculateScrollbarWidth, vhMobileFix } from '@/shared/lib/dom';
 import { initPress } from '@/shared/lib/press';
 import reveal from '@/shared/lib/reveal';
@@ -7,6 +8,7 @@ document.documentElement.classList.add('js-ready');
 calculateScrollbarWidth();
 vhMobileFix();
 initPress();
+initCaseCardTransition();
 reveal.init();
 
 const SMOOTH_SCROLL_CLASS = 'is-smooth-scroll';
@@ -84,6 +86,22 @@ function isSamePageHashLink(link: HTMLAnchorElement) {
     return url.pathname === window.location.pathname && url.hash.length > 1;
 }
 
+function clearAnchorHash() {
+    const id = window.location.hash.slice(1);
+
+    if (!id) {
+        return;
+    }
+
+    const target = document.getElementById(id);
+
+    if (!target || target instanceof HTMLDialogElement) {
+        return;
+    }
+
+    history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+}
+
 function armSmoothScrollForHash() {
     const root = document.documentElement;
 
@@ -92,6 +110,7 @@ function armSmoothScrollForHash() {
 
     const clear = () => {
         lockInstantScroll();
+        clearAnchorHash();
         window.removeEventListener('scrollend', clear);
     };
 
@@ -111,6 +130,7 @@ function scrollToHashTarget() {
     }
 
     target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    clearAnchorHash();
 
     return true;
 }
@@ -123,32 +143,37 @@ function shouldRestoreCasesListScroll(type: string | null, previousPath: string 
     return type === 'traverse' || isCaseDetailPath(previousPath ?? '');
 }
 
-// fallow-ignore-next-line complexity -- cases list restore: path + nav type + stored Y
-function restoreCasesListScroll(type: string | null, previousPath: string | null) {
-    const pathname = window.location.pathname;
-
-    if (!isCasesIndexPath(pathname) || !shouldRestoreCasesListScroll(type, previousPath)) {
-        return;
-    }
-
+function readStoredCasesListScroll(pathname: string) {
     const top = Number(sessionStorage.getItem(casesListScrollKey(pathname)));
 
     if (!Number.isFinite(top) || top <= 0) {
-        return;
+        return null;
     }
 
-    scrollInstant({ left: 0, top });
+    return top;
 }
 
-// fallow-ignore-next-line complexity -- soft-nav restore: traverse → hash → pending
-function applyPendingScroll() {
+// fallow-ignore-next-line complexity -- soft-nav scroll: cases restore → traverse → hash → pending
+function flushTransitionScroll() {
     suppressTransitionScroll = false;
 
-    const next = pendingScroll;
     const type = navigationType;
+    const previousPath = fromPath;
+    const next = pendingScroll;
 
     pendingScroll = null;
-    navigationType = null;
+
+    const pathname = window.location.pathname;
+
+    if (isCasesIndexPath(pathname) && shouldRestoreCasesListScroll(type, previousPath)) {
+        const top = readStoredCasesListScroll(pathname);
+
+        if (top !== null) {
+            scrollInstant({ left: 0, top });
+
+            return;
+        }
+    }
 
     if (type === 'traverse' && next) {
         scrollInstant(next);
@@ -184,8 +209,10 @@ document.addEventListener(
 );
 
 document.addEventListener('astro:before-preparation', (event) => {
-    saveCasesListScroll(window.location.pathname);
-    fromPath = window.location.pathname;
+    const previousPath = 'from' in event && event.from instanceof URL ? event.from.pathname : window.location.pathname;
+
+    saveCasesListScroll(previousPath);
+    fromPath = previousPath;
     suppressTransitionScroll = true;
     pendingScroll = null;
     navigationType = 'navigationType' in event ? String(event.navigationType) : null;
@@ -196,23 +223,21 @@ document.addEventListener('astro:before-swap', (event) => {
     suppressTransitionScroll = true;
     lockInstantScroll();
     reveal.prepareIncomingDocument(event.newDocument);
+    armIncomingCaseCard(event.newDocument, fromPath);
 });
 
 document.addEventListener('astro:after-swap', () => {
     lockInstantScroll();
     document.documentElement.classList.remove('no-js');
     document.documentElement.classList.add('js');
+    flushTransitionScroll();
     reveal.veil();
     reveal.prepareAll();
 });
 
 document.addEventListener('astro:page-load', () => {
-    const type = navigationType;
-    const previousPath = fromPath;
-
     lockInstantScroll();
-    applyPendingScroll();
-    restoreCasesListScroll(type, previousPath);
     fromPath = null;
+    navigationType = null;
     void reveal.startAfterTransitions();
 });

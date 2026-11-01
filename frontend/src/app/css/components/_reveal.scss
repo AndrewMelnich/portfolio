@@ -38,10 +38,22 @@ html[data-astro-transition] [data-reveal='card'] {
         transform: none;
     }
 
+    &[data-reveal-cloaked] {
+        visibility: hidden;
+        opacity: 0;
+        transform: none;
+        transition: none;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         opacity: 1;
         transform: none;
         transition: none;
+
+        &[data-reveal-cloaked] {
+            visibility: hidden;
+            opacity: 0;
+        }
     }
 }
 

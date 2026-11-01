@@ -19,8 +19,6 @@ const roleLabel =
     item.role === 'built' ? (locale === 'en' ? 'From scratch' : 'С нуля') : locale === 'en' ? 'Support' : 'Поддержка';
 const liveLabel = locale === 'en' ? 'Visit site' : 'Смотреть сайт';
 const ctaLabel = locale === 'en' ? 'Discuss a project like this' : 'Обсудить похожий проект';
-const imageTransition = `case-image-${item.slug}`;
-const titleTransition = `case-title-${item.slug}`;
 const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURIComponent(item.liveUrl)}` : '';
 ---
 
@@ -47,7 +45,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
                     loading="eager"
                     fetchpriority="high"
                     decoding="async"
-                    transition:name={imageTransition}
+                    transition:name="case-active-image"
                 />
             </div>
         )}
@@ -55,9 +53,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
         <p class="case-view__role label" data-reveal data-reveal-delay={0.04}>
             {tp(roleLabel, locale)}
         </p>
-        <h1 class="case-view__title h1" transition:name={titleTransition}>
-            {tp(title, locale)}
-        </h1>
+        <h1 class="case-view__title h1">{tp(title, locale)}</h1>
         <p class="case-view__lead text-lead-l" data-reveal data-reveal-delay={0.1}>
             {tp(item.teaser[locale], locale)}
         </p>
