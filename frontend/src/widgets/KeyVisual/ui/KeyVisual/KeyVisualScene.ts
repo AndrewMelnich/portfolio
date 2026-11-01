@@ -27,6 +27,11 @@ const BREATH_AMOUNT = 0.022;
 const MORPH_BURST_PEAK = 0.38;
 const MORPH_BURST_MIN = 42;
 const MORPH_BURST_SPAN = 110;
+const CLICK_BURST_MS = 500;
+const CLICK_BURST_PEAK = 0.35;
+const CLICK_BURST_MIN = 60;
+const CLICK_BURST_SPAN = 100;
+const CLICK_BURST_JITTER = 24;
 const MORPH_RECONNECT_AT = 0.48;
 const MORPH_LINK_OUT = 1.6;
 const MORPH_PARTICLE_SHARE = 0.4;
@@ -68,6 +73,8 @@ type Particle = {
     fade: number;
     burstX: number;
     burstY: number;
+    impulseX: number;
+    impulseY: number;
 };
 
 type SampleMode = 'photo' | 'ink';
@@ -183,6 +190,8 @@ function createParticle(ox: number, oy: number, brightness: number, ambient = fa
         fade: 1,
         burstX: 0,
         burstY: 0,
+        impulseX: 0,
+        impulseY: 0,
     };
 }
 
@@ -769,6 +778,39 @@ function morphBurstAmount(t: number) {
     return 1 - easeOutCubic((t - MORPH_BURST_PEAK) / (1 - MORPH_BURST_PEAK));
 }
 
+function clickBurstAmount(t: number) {
+    if (t <= 0 || t >= 1) {
+        return 0;
+    }
+
+    if (t < CLICK_BURST_PEAK) {
+        return easeOutCubic(t / CLICK_BURST_PEAK);
+    }
+
+    return 1 - easeOutCubic((t - CLICK_BURST_PEAK) / (1 - CLICK_BURST_PEAK));
+}
+
+function applyClickImpulse(particle: Particle, clickX: number, clickY: number, radius: number) {
+    const dx = particle.x - clickX;
+    const dy = particle.y - clickY;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist >= radius) {
+        particle.impulseX = 0;
+        particle.impulseY = 0;
+
+        return;
+    }
+
+    const ux = dist > 0.001 ? dx / dist : Math.cos(particle.phase);
+    const uy = dist > 0.001 ? dy / dist : Math.sin(particle.phase);
+    const falloff = (1 - dist / radius) ** 2;
+    const power = (CLICK_BURST_MIN + Math.random() * CLICK_BURST_SPAN) * falloff;
+
+    particle.impulseX = ux * power + (Math.random() - 0.5) * CLICK_BURST_JITTER;
+    particle.impulseY = uy * power + (Math.random() - 0.5) * CLICK_BURST_JITTER;
+}
+
 function introBurstAmount(t: number) {
     if (t <= 0) {
         return 1;
@@ -1036,6 +1078,7 @@ class KeyVisualScene {
     private linkStaggerStart = 0;
     private morphWasExploding = false;
     private introAssembling = false;
+    private clickBurstStart = 0;
 
     private readonly onPointerMove = (event: PointerEvent) => {
         if (!this.isHover || this.destroyed || event.pointerType === 'touch') {
@@ -1053,6 +1096,16 @@ class KeyVisualScene {
         this.pointerTarget.y = -9999;
     };
 
+    private readonly onPointerDown = (event: PointerEvent) => {
+        if (this.destroyed || !this.animateAllowed || !this.ready) {
+            return;
+        }
+
+        const rect = this.parent.getBoundingClientRect();
+
+        this.seedClickImpulse(event.clientX - rect.left, event.clientY - rect.top);
+    };
+
     private readonly onVisibilityChange = () => {
         if (document.hidden) {
             this.pause();
@@ -1068,7 +1121,7 @@ class KeyVisualScene {
     };
 
     private redrawStatic() {
-        this.layoutParticles(0);
+        this.layoutParticles(0, performance.now());
         this.drawFrame(1 / 60, true);
         this.reveal();
     }
@@ -1313,6 +1366,16 @@ class KeyVisualScene {
         }
     }
 
+    private seedClickImpulse(clickX: number, clickY: number) {
+        const radius = this.cursorRadius;
+
+        for (const particle of this.particles) {
+            applyClickImpulse(particle, clickX, clickY, radius);
+        }
+
+        this.clickBurstStart = performance.now();
+    }
+
     private assignIntroEdgeBursts(particles: Particle[]) {
         const cx = this.fit.left + this.fit.width * 0.5;
         const cy = this.fit.top + this.fit.height * 0.5;
@@ -1381,7 +1444,9 @@ class KeyVisualScene {
         this.morphT = 0;
         this.morphing = true;
         this.particles = [...outgoing, ...incoming, ...ambient];
-        this.layoutParticles(this.running ? (performance.now() - this.startTime) / 1000 : 0);
+        const morphNow = performance.now();
+
+        this.layoutParticles(this.running ? (morphNow - this.startTime) / 1000 : 0, morphNow);
         this.assignMorphBursts([...outgoing, ...incoming]);
         this.seedMorphExplosion();
         this.ready = true;
@@ -1409,9 +1474,11 @@ class KeyVisualScene {
         this.introAssembling = true;
         this.particles = [...shape, ...ambient];
         this.linkStates.clear();
-        this.layoutParticles(0);
+        const introNow = performance.now();
+
+        this.layoutParticles(0, introNow);
         this.assignIntroEdgeBursts(shape);
-        this.layoutParticles(0);
+        this.layoutParticles(0, introNow);
         this.cachedLinkTargets = EMPTY_LINK_TARGETS;
         this.linkRebuildCooldown = 0;
         this.linkStaggerStart = 0;
@@ -1434,7 +1501,9 @@ class KeyVisualScene {
         this.refreshFitTokens();
         this.syncMobileFlags();
         this.fit = this.resolveCurrentFit(aspect);
-        this.layoutParticles(this.running ? (performance.now() - this.startTime) / 1000 : 0);
+        const commitNow = performance.now();
+
+        this.layoutParticles(this.running ? (commitNow - this.startTime) / 1000 : 0, commitNow);
 
         if (this.animateAllowed) {
             this.resume();
@@ -1544,7 +1613,7 @@ class KeyVisualScene {
     }
 
     // fallow-ignore-next-line complexity
-    private layoutParticles(time: number) {
+    private layoutParticles(time: number, now: number) {
         const { left, top, width, height } = this.fit;
         const pointerActive = this.pointerCurrent.x > -9000;
         const t = time * DRIFT_SPEED;
@@ -1554,6 +1623,14 @@ class KeyVisualScene {
         if (this.morphing) {
             burst = this.introAssembling ? introBurstAmount(this.morphT) : morphBurstAmount(this.morphT);
         }
+
+        const clickT = this.clickBurstStart > 0 ? (now - this.clickBurstStart) / CLICK_BURST_MS : 1;
+        const clickBurst = clickBurstAmount(clickT);
+
+        if (clickT >= 1 && this.clickBurstStart > 0) {
+            this.clickBurstStart = 0;
+        }
+
         const shapeAnchorX = left + width * 0.5;
         const shapeAnchorY = top + height * 0.5;
         const viewAnchorX = this.cssWidth * 0.5;
@@ -1579,8 +1656,8 @@ class KeyVisualScene {
                 ? pushFromPointer(baseX, baseY, this.pointerCurrent.x, this.pointerCurrent.y, this.cursorRadius)
                 : { x: baseX, y: baseY };
 
-            particle.x = next.x + particle.burstX * burst;
-            particle.y = next.y + particle.burstY * burst;
+            particle.x = next.x + particle.burstX * burst + particle.impulseX * clickBurst;
+            particle.y = next.y + particle.burstY * burst + particle.impulseY * clickBurst;
         }
     }
 
@@ -1817,6 +1894,7 @@ class KeyVisualScene {
         window.addEventListener('resize', this.debouncedResize);
         document.addEventListener('visibilitychange', this.onVisibilityChange);
         window.addEventListener('pageshow', this.onPageShow);
+        document.addEventListener('pointerdown', this.onPointerDown, { passive: true });
 
         if (this.isHover) {
             document.addEventListener('pointermove', this.onPointerMove, {
@@ -1831,6 +1909,7 @@ class KeyVisualScene {
         window.removeEventListener('resize', this.debouncedResize);
         document.removeEventListener('visibilitychange', this.onVisibilityChange);
         window.removeEventListener('pageshow', this.onPageShow);
+        document.removeEventListener('pointerdown', this.onPointerDown);
         document.removeEventListener('pointermove', this.onPointerMove);
         document.documentElement.removeEventListener('pointerleave', this.onPointerReset);
         window.removeEventListener('blur', this.onPointerReset);
@@ -1856,7 +1935,7 @@ class KeyVisualScene {
         this.pointerCurrent.y +=
             (this.pointerTarget.y - this.pointerCurrent.y) * (1 - Math.exp(-POINTER_LERP * 60 * delta));
         this.updateMorph(now);
-        this.layoutParticles((now - this.startTime) / 1000);
+        this.layoutParticles((now - this.startTime) / 1000, now);
         this.drawFrame(delta, false, now);
         this.reveal();
         this.rafId = requestAnimationFrame(this.tick);
