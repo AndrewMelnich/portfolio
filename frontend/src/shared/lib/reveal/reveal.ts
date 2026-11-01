@@ -12,6 +12,18 @@ let listenersBound = false;
 let activePath: string | null = null;
 let startToken = 0;
 
+// fallow-ignore-next-line complexity -- axis checks are boolean, not branching
+function isInViewport(element: HTMLElement) {
+    const rect = element.getBoundingClientRect();
+
+    if (!rect.width || !rect.height) {
+        return false;
+    }
+
+    return rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+}
+
+// fallow-ignore-next-line complexity -- IO settle/explode guard against false leave
 function handleRevealEntry(entry: IntersectionObserverEntry) {
     if (!(entry.target instanceof HTMLElement)) {
         return;
@@ -26,7 +38,11 @@ function handleRevealEntry(entry: IntersectionObserverEntry) {
 
     if (entry.isIntersecting) {
         settleElement(element);
-    } else {
+
+        return;
+    }
+
+    if (!isInViewport(element)) {
         explodeElement(element);
     }
 }
@@ -417,7 +433,7 @@ function bindListeners() {
     );
 }
 
-function waitForViewTransitions() {
+function waitForViewTransitionAnimations() {
     const animations = document.documentElement.getAnimations({ subtree: true }).filter((animation) => {
         const effect = animation.effect;
 
@@ -435,6 +451,59 @@ function waitForViewTransitions() {
     return Promise.allSettled(animations.map((animation) => animation.finished)).then(() => undefined);
 }
 
+function waitForAstroTransitionAttribute() {
+    if (!document.documentElement.hasAttribute('data-astro-transition')) {
+        return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
+        const finish = () => {
+            attrObserver.disconnect();
+            window.clearTimeout(timeoutId);
+            resolve();
+        };
+
+        const attrObserver = new MutationObserver(() => {
+            if (!document.documentElement.hasAttribute('data-astro-transition')) {
+                finish();
+            }
+        });
+
+        attrObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-astro-transition'],
+        });
+
+        const timeoutId = window.setTimeout(finish, 1000);
+    });
+}
+
+function waitForViewTransitions() {
+    return waitForViewTransitionAnimations().then(() => waitForAstroTransitionAttribute());
+}
+
+// fallow-ignore-next-line complexity -- page-bind reset + eager-in-view + observe
+function bindRevealElement(el: HTMLElement) {
+    if (isSticky(el) && el.classList.contains('is-revealed')) {
+        return;
+    }
+
+    clearRevealTimeout(el);
+    observer.unobserve(el);
+    el.classList.remove('is-revealed');
+    el.classList.remove('is-reveal-complete');
+    el.classList.remove('is-exploding');
+    prepare(el);
+
+    if (isInstant(el.dataset.reveal) && (isSticky(el) || isInViewport(el))) {
+        revealElement(el);
+    }
+
+    if (!isSticky(el)) {
+        observer.observe(el);
+    }
+}
+
 function init(container: Element | Document = document) {
     bindListeners();
 
@@ -450,24 +519,7 @@ function init(container: Element | Document = document) {
 
     activePath = path;
 
-    const elements = collectRevealElements(container);
-
-    elements.forEach((el) => {
-        clearRevealTimeout(el);
-        observer.unobserve(el);
-        el.classList.remove('is-revealed');
-        el.classList.remove('is-reveal-complete');
-        el.classList.remove('is-exploding');
-        prepare(el);
-
-        if (isInstant(el.dataset.reveal)) {
-            revealElement(el);
-        }
-
-        if (!isSticky(el)) {
-            observer.observe(el);
-        }
-    });
+    collectRevealElements(container).forEach(bindRevealElement);
 
     if (window.location.hash) {
         window.setTimeout(() => {
