@@ -39,11 +39,6 @@
         opacity: 0.72;
     }
 
-    &:active,
-    &:focus-visible {
-        opacity: 0.72;
-    }
-
     @include press;
 
     @media (prefers-reduced-motion: reduce) {

@@ -72,12 +72,6 @@
         opacity: 1;
     }
 
-    &:active,
-    &:focus-visible {
-        color: var(--neon);
-        opacity: 1;
-    }
-
     &.header__logo--current {
         pointer-events: none;
         color: #fff;
@@ -179,17 +173,12 @@
     }
 
     @include hover() {
-        color: rgb(255 255 255 / 100%);
         color: var(--neon);
 
         &::after {
             transform: scaleX(1);
             transform-origin: left center;
         }
-    }
-
-    &:focus-visible {
-        color: #fff;
     }
 
     &.header__link--current {

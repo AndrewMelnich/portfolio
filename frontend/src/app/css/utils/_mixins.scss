@@ -76,9 +76,10 @@
     }
 }
 
-@mixin outline($color: currentColor) {
+@mixin outline($color: $neon) {
     outline: 1px solid $color;
     outline-offset: 2px;
+    border-radius: 4px;
 }
 
 @mixin recalculate-grid($columns: 16) {
@@ -160,6 +161,11 @@
         &:not(:disabled):hover {
             @content;
         }
+    }
+
+    &:not(:disabled):active,
+    &:not(:disabled):focus-visible {
+        @content;
     }
 }
 

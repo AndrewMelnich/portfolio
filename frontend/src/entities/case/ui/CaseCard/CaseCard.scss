@@ -24,15 +24,6 @@
         }
     }
 
-    &:active,
-    &:focus-visible {
-        background-color: color-mix(in srgb, #{$neon} 40%, transparent);
-
-        .case-card__image {
-            filter: grayscale(0.2);
-        }
-    }
-
     @include press($app-press-scale-card);
 
     @media (prefers-reduced-motion: reduce) {

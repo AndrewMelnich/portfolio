@@ -25,16 +25,6 @@
         color: $neon;
     }
 
-    &:active {
-        background-size: var(--bg-size-hover);
-        color: $neon;
-    }
-
-    &:focus-visible {
-        background-size: var(--bg-size-hover);
-        color: $neon;
-    }
-
     @include press;
 
     &.link--underlined {

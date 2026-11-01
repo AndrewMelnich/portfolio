@@ -18,7 +18,12 @@ A link or a chip changes `color` and `background-color`. `transform` on a link o
 
 ## Mixin
 
-The project's hover mixin (`project.md`, Styles) — by default an SCSS `@mixin hover`. It emits `@media (any-hover: hover), (hover: hover) and (pointer: fine)` and `&:not(:disabled):hover`. Touch never sees the rule, so the state does not stick. A project without that mixin writes the same media query and selector by hand, or in its own styling mechanism.
+The project's hover mixin (`project.md`, Styles) — by default an SCSS `@mixin hover`. It emits:
+
+1. `@media (any-hover: hover), (hover: hover) and (pointer: fine)` + `&:not(:disabled):hover` — touch never sees this rule, so the state does not stick.
+2. Outside that media: `&:not(:disabled):active` and `&:not(:disabled):focus-visible` with the same `@content` — keyboard / press get the same look without depending on hover capability.
+
+A project without that mixin writes the same media query and selectors by hand, or in its own styling mechanism. Do **not** manually duplicate declarations into `&:active, &:focus-visible` when the project mixin already emits them.
 
 ```scss
 @use "<project mixins module>" as *;
@@ -30,18 +35,13 @@ The project's hover mixin (`project.md`, Styles) — by default an SCSS `@mixin 
     color: $accent;
   }
 
-  &:active,
-  &:focus-visible {
-    color: $accent;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
 }
 ```
 
-`:active` and `:focus-visible` repeat the hover declarations. `prefers-reduced-motion` sits next to `transition` and only drops the animation. The color change stays.
+`prefers-reduced-motion` sits next to `transition` and only drops the animation. The color change stays.
 
 ## Rules
 
@@ -49,5 +49,6 @@ The project's hover mixin (`project.md`, Styles) — by default an SCSS `@mixin 
 - Name the properties that change in `transition` on that element. For a link or a chip those properties are `color` and `background-color`.
 - Nest the mixin under the BEM selector. A parent `@include hover` may target a child (`.product-card` reveals `.product-card__fav`).
 - Raw `&:hover` outside that media query breaks the convention. When the project lints it (`project.md`, Styles names the rule), do not silence the rule.
+- Separate `:focus-visible` / `:focus` only when the focus look must differ from hover (e.g. form control that kills the global outline).
 
-**Done when:** each new interactive control has `@include hover` and the same declarations on `:active, :focus-visible`. A link or chip hover sets `color` and `background-color`. `transform` is copied from a same-kind control that already moves.
+**Done when:** each new interactive control has `@include hover`. A link or chip hover sets `color` and `background-color`. `transform` is copied from a same-kind control that already moves.
