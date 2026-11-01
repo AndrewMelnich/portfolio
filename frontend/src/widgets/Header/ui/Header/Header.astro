@@ -32,13 +32,14 @@ const navItems = [
         label: homeLabel,
     },
     {
-        href: getRelativeLocaleUrl(locale, '/cases'),
-        label: locale === 'en' ? 'Cases' : 'Кейсы',
-    },
-    {
         href: `${homeHref}#about`,
         label: locale === 'en' ? 'About' : 'Обо мне',
     },
+    {
+        href: `${homeHref}#work`,
+        label: locale === 'en' ? 'Cases' : 'Кейсы',
+    },
+
     {
         href: `${homeHref}#contact`,
         label: locale === 'en' ? 'Contact' : 'Контакт',
@@ -170,7 +171,7 @@ const defaultLogoFile = '07-signal.svg';
     };
     const LINK_CURRENT = 'header__link--current';
     const LOGO_CURRENT = 'header__logo--current';
-    const SECTION_IDS = ['about', 'contact'] as const;
+    const SECTION_IDS = ['work', 'about', 'contact'] as const;
 
     let sectionObserver: IntersectionObserver | null = null;
     let activeSection: string | null = null;
