@@ -52,15 +52,19 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
             </div>
         )}
 
-        <p class="case-view__role label">{tp(roleLabel, locale)}</p>
+        <p class="case-view__role label" data-reveal data-reveal-delay={0.04}>
+            {tp(roleLabel, locale)}
+        </p>
         <h1 class="case-view__title h1" transition:name={titleTransition}>
             {tp(title, locale)}
         </h1>
-        <p class="case-view__lead text-lead-l">{tp(item.teaser[locale], locale)}</p>
+        <p class="case-view__lead text-lead-l" data-reveal data-reveal-delay={0.1}>
+            {tp(item.teaser[locale], locale)}
+        </p>
 
         <div class="case-view__description">
-            {item.description[locale].map((paragraph) => (
-                <p class="case-view__text text-m" data-reveal>
+            {item.description[locale].map((paragraph, index) => (
+                <p class="case-view__text text-m" data-reveal data-reveal-delay={(index + 1) * 0.15}>
                     {tp(paragraph, locale)}
                 </p>
             ))}
