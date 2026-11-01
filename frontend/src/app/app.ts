@@ -10,11 +10,43 @@ initPress();
 reveal.init();
 
 const SMOOTH_SCROLL_CLASS = 'is-smooth-scroll';
+const CASES_LIST_SCROLL_KEY = 'cases-list-scroll:';
 const nativeScrollTo = window.scrollTo.bind(window);
 
 let suppressTransitionScroll = false;
 let pendingScroll: { left: number; top: number } | null = null;
 let navigationType: string | null = null;
+let fromPath: string | null = null;
+
+function casesPathIndex(pathname: string) {
+    return pathname.split('/').filter(Boolean).indexOf('cases');
+}
+
+function isCasesIndexPath(pathname: string) {
+    const parts = pathname.split('/').filter(Boolean);
+    const casesIndex = casesPathIndex(pathname);
+
+    return casesIndex >= 0 && parts.length === casesIndex + 1;
+}
+
+function isCaseDetailPath(pathname: string) {
+    const parts = pathname.split('/').filter(Boolean);
+    const casesIndex = casesPathIndex(pathname);
+
+    return casesIndex >= 0 && parts.length === casesIndex + 2;
+}
+
+function casesListScrollKey(pathname: string) {
+    return `${CASES_LIST_SCROLL_KEY}${pathname}`;
+}
+
+function saveCasesListScroll(pathname: string) {
+    if (!isCasesIndexPath(pathname)) {
+        return;
+    }
+
+    sessionStorage.setItem(casesListScrollKey(pathname), String(window.scrollY));
+}
 
 function lockInstantScroll() {
     const root = document.documentElement;
@@ -87,6 +119,27 @@ function scrollInstant(point: { left: number; top: number }) {
     nativeScrollTo({ left: point.left, top: point.top, behavior: 'instant' });
 }
 
+function shouldRestoreCasesListScroll(type: string | null, previousPath: string | null) {
+    return type === 'traverse' || isCaseDetailPath(previousPath ?? '');
+}
+
+// fallow-ignore-next-line complexity -- cases list restore: path + nav type + stored Y
+function restoreCasesListScroll(type: string | null, previousPath: string | null) {
+    const pathname = window.location.pathname;
+
+    if (!isCasesIndexPath(pathname) || !shouldRestoreCasesListScroll(type, previousPath)) {
+        return;
+    }
+
+    const top = Number(sessionStorage.getItem(casesListScrollKey(pathname)));
+
+    if (!Number.isFinite(top) || top <= 0) {
+        return;
+    }
+
+    scrollInstant({ left: 0, top });
+}
+
 // fallow-ignore-next-line complexity -- soft-nav restore: traverse → hash → pending
 function applyPendingScroll() {
     suppressTransitionScroll = false;
@@ -131,6 +184,8 @@ document.addEventListener(
 );
 
 document.addEventListener('astro:before-preparation', (event) => {
+    saveCasesListScroll(window.location.pathname);
+    fromPath = window.location.pathname;
     suppressTransitionScroll = true;
     pendingScroll = null;
     navigationType = 'navigationType' in event ? String(event.navigationType) : null;
@@ -152,7 +207,12 @@ document.addEventListener('astro:after-swap', () => {
 });
 
 document.addEventListener('astro:page-load', () => {
+    const type = navigationType;
+    const previousPath = fromPath;
+
     lockInstantScroll();
     applyPendingScroll();
+    restoreCasesListScroll(type, previousPath);
+    fromPath = null;
     void reveal.startAfterTransitions();
 });
