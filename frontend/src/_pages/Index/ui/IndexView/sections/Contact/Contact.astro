@@ -2,8 +2,6 @@
 import type { HTMLAttributes } from 'astro/types';
 import { SOCIALS } from '@/shared/config';
 import { tp } from '@/shared/lib/formatting';
-import Input from '@/shared/ui/Input';
-import Textarea from '@/shared/ui/Textarea';
 import type { RawProps } from './types';
 
 type Props = HTMLAttributes<'section'> & RawProps;
@@ -13,96 +11,59 @@ const { locale, class: className, ...props } = Astro.props;
 const title = locale === 'ru' ? 'Написать' : 'Get in touch';
 const text =
     locale === 'ru'
-        ? 'Расскажите про задачу и сроки — отвечу в Telegram или по почте.'
-        : 'Tell me about the task and timeline — I will reply on Telegram or by email.';
-const nameLabel = locale === 'ru' ? 'Имя' : 'Name';
-const contactLabel = locale === 'ru' ? 'Email или Telegram' : 'Email or Telegram';
-const messageLabel = locale === 'ru' ? 'Сообщение' : 'Message';
-const submitLabel = locale === 'ru' ? 'Отправить' : 'Send';
-const socialsNote = locale === 'ru' ? 'Или сразу:' : 'Or directly:';
-const statusSuccess =
-    locale === 'ru'
-        ? 'Спасибо! Форма пока работает в демо-режиме — быстрее написать в Telegram.'
-        : 'Thanks! This form is in demo mode for now — Telegram is the fastest way to reach me.';
-const statusInvalid = locale === 'ru' ? 'Заполните обязательные поля.' : 'Please fill in the required fields.';
+        ? 'Напишите в Telegram или на почту — отвечу быстро.'
+        : 'Write on Telegram or email — I reply quickly.';
 
-const socials = SOCIALS.filter((item) => item.id === 'telegram' || item.id === 'instagram');
+const telegram = SOCIALS.find((item) => item.id === 'telegram');
+
+const channels = [
+    {
+        id: 'email',
+        label: 'Email',
+        href: 'mailto:andrew.melnich@yandex.ru',
+        value: 'andrew.melnich@yandex.ru',
+        external: false,
+    },
+    {
+        id: 'telegram',
+        label: 'Telegram',
+        href: telegram?.href ?? 'https://t.me/andrew_melnich',
+        value: '@andrew_melnich',
+        external: true,
+    },
+] as const;
 ---
 
-<section class:list={['contact', 'wrapper', className]} {...props} id="contact">
-    <h2 class="contact__title" id="contact-title" data-reveal="scatter">
+<section
+    class:list={['contact', 'wrapper', className]}
+    data-key-visual-shape="/static/img/key-visual-contact.jpg"
+    {...props}
+    id="contact"
+>
+    <h2 class="contact__title h2" id="contact-title" data-reveal="scatter" data-reveal-delay="0.08">
         {tp(title, locale)}
     </h2>
-    <p class="contact__text" data-reveal>
+    <p class="contact__text text-m" data-reveal="instant" data-reveal-delay="0.16">
         {tp(text, locale)}
     </p>
 
-    <form
-        class="contact__form js-contact-form"
-        novalidate
-        data-reveal
-        data-status-success={statusSuccess}
-        data-status-invalid={statusInvalid}
-    >
-        <Input id="contact-name" name="name" label={nameLabel} autocomplete="name" required />
-        <Input id="contact-contact" name="contact" label={contactLabel} required />
-        <Textarea id="contact-message" name="message" label={messageLabel} required variant="dark" rows={6} />
-        <button class="contact__submit" type="submit">
-            {tp(submitLabel, locale)}
-        </button>
-        <p class="contact__status js-contact-status" aria-live="polite"></p>
-    </form>
-
-    <div class="contact__socials" data-reveal>
-        <p class="contact__socials-note">{tp(socialsNote, locale)}</p>
-        <ul class="contact__socials-list list-unstyled">
-            {socials.map((item) => (
-                <li>
-                    <a class="contact__social-link link" href={item.href} target="_blank" rel="noopener noreferrer">
-                        {item.label}
-                    </a>
-                </li>
-            ))}
-        </ul>
-    </div>
+    <ul class="contact__channels list-unstyled">
+        {channels.map((item, index) => (
+            <li class="contact__channel" data-reveal="instant" data-reveal-delay={0.24 + index * 0.08}>
+                <span class="contact__channel-label label">{item.label}</span>
+                <a
+                    class="contact__channel-link text-xl link"
+                    href={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener noreferrer' : undefined}
+                >
+                    {item.value}
+                </a>
+            </li>
+        ))}
+    </ul>
 </section>
 
 <style lang="scss" is:global>
     @use './Contact';
 </style>
-
-<script>
-    document.querySelectorAll<HTMLFormElement>('.js-contact-form').forEach((form) => {
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            const status = form.querySelector<HTMLParagraphElement>('.js-contact-status');
-            const fields = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]');
-            let firstInvalid: HTMLInputElement | HTMLTextAreaElement | null = null;
-
-            fields.forEach((field) => {
-                const empty = field.value.trim() === '';
-
-                field.setAttribute('aria-invalid', String(empty));
-
-                if (empty && firstInvalid === null) {
-                    firstInvalid = field;
-                }
-            });
-
-            if (firstInvalid) {
-                if (status) {
-                    status.textContent = form.dataset.statusInvalid ?? '';
-                }
-
-                firstInvalid.focus();
-
-                return;
-            }
-
-            if (status) {
-                status.textContent = form.dataset.statusSuccess ?? '';
-            }
-        });
-    });
-</script>

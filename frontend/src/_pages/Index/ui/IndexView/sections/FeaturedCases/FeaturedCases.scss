@@ -1,8 +1,11 @@
 @use 'app/css/base/variables' as *;
 @use 'app/css/utils/mixins' as *;
-@use 'app/css/layout/typography-placeholders' as *;
 
 .featured-cases {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 85lvh;
     width: 100%;
     padding-top: 96px;
     scroll-margin-top: 96px;
@@ -23,14 +26,10 @@
 }
 
 .featured-cases__title {
-    @extend %h2;
-
     color: #fff;
 }
 
 .featured-cases__all {
-    @extend %text-lead;
-
     color: #fff;
     transition: opacity $app-default-duration $app-default-easing;
 

@@ -1,5 +1,4 @@
 @use 'app/css/utils/mixins' as *;
-@use 'app/css/layout/typography-placeholders' as *;
 
 .case-view {
     position: relative;
@@ -24,8 +23,6 @@
 }
 
 .case-view__back {
-    @extend %label-m;
-
     margin-bottom: 12px;
     letter-spacing: 0.06em;
     color: rgb(255 255 255 / 62%);
@@ -55,21 +52,15 @@
 }
 
 .case-view__role {
-    @extend %label;
-
     color: rgb(255 255 255 / 48%);
 }
 
 .case-view__title {
-    @extend %h1;
-
     max-width: 18ch;
     color: #fff;
 }
 
 .case-view__lead {
-    @extend %text-lead-l;
-
     max-width: 42ch;
     color: rgb(255 255 255 / 72%);
 }
@@ -82,10 +73,7 @@
 }
 
 .case-view__text {
-    @extend %text-m;
-
     color: rgb(255 255 255 / 62%);
-    line-height: 1.55;
 }
 
 .case-view__tags {
@@ -96,11 +84,8 @@
 }
 
 .case-view__tag {
-    @extend %label-m;
-
     letter-spacing: 0.06em;
     color: rgb(255 255 255 / 48%);
-    text-transform: uppercase;
 }
 
 .case-view__live-wrap,
@@ -110,8 +95,5 @@
 
 .case-view__live,
 .case-view__cta {
-    @extend %text-m;
-
     color: #fff;
-    line-height: 1.4;
 }

@@ -14,15 +14,18 @@
     html {
         background-color: $body-bg;
         color: $body-color;
-        scroll-behavior: smooth;
 
         &.no-scroll {
             overflow: hidden;
             padding-right: var(--layout-scrollbar-width);
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            scroll-behavior: auto;
+        &.is-smooth-scroll {
+            scroll-behavior: smooth;
+
+            @media (prefers-reduced-motion: reduce) {
+                scroll-behavior: auto;
+            }
         }
     }
 

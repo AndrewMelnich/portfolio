@@ -1,7 +1,8 @@
 .key-visual {
-    --kv-fit-bleed: 1.08;
-    --kv-fit-frame-inline: 0.5;
-    --kv-fit-frame-aspect: 1.7778;
+    //   --kv-fit-bleed: 1.08;
+    --kv-fit-bleed: 0.9;
+    --kv-fit-frame-inline: 0.925;
+    --kv-fit-frame-aspect: 1;
     --kv-morph-ms: 900ms;
 
     position: fixed;

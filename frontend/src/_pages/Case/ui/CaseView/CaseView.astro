@@ -31,7 +31,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
     data-key-visual-shape-fallback={item.image?.src}
 >
     <div class="case-view__inner wrapper">
-        <a class="case-view__back link" href={casesHref}>
+        <a class="case-view__back label-m link" href={casesHref}>
             {tp(backLabel, locale)}
         </a>
 
@@ -51,15 +51,15 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
             </div>
         )}
 
-        <p class="case-view__role">{tp(roleLabel, locale)}</p>
-        <h1 class="case-view__title" transition:name={titleTransition}>
+        <p class="case-view__role label">{tp(roleLabel, locale)}</p>
+        <h1 class="case-view__title h1" transition:name={titleTransition}>
             {tp(title, locale)}
         </h1>
-        <p class="case-view__lead">{tp(item.teaser[locale], locale)}</p>
+        <p class="case-view__lead text-lead-l">{tp(item.teaser[locale], locale)}</p>
 
         <div class="case-view__description">
             {item.description[locale].map((paragraph) => (
-                <p class="case-view__text" data-reveal>
+                <p class="case-view__text text-m" data-reveal>
                     {tp(paragraph, locale)}
                 </p>
             ))}
@@ -68,7 +68,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
         {item.tags.length > 0 && (
             <ul class="case-view__tags list-unstyled" data-reveal>
                 {item.tags.map((tag) => (
-                    <li class="case-view__tag">{tp(tag, locale)}</li>
+                    <li class="case-view__tag label-m">{tp(tag, locale)}</li>
                 ))}
             </ul>
         )}
@@ -76,7 +76,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
         {item.liveUrl && (
             <p class="case-view__live-wrap" data-reveal>
                 <a
-                    class="case-view__live link link--underlined"
+                    class="case-view__live text-m link link--underlined"
                     href={item.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -87,7 +87,7 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
         )}
 
         <p class="case-view__cta-wrap" data-reveal>
-            <a class="case-view__cta link link--underlined" href={contactHref}>
+            <a class="case-view__cta text-m link link--underlined" href={contactHref}>
                 {tp(ctaLabel, locale)}
             </a>
         </p>

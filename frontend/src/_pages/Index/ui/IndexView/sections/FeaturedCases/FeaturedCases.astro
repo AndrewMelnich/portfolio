@@ -25,13 +25,19 @@ const copy = {
 const casesHref = getRelativeLocaleUrl(locale, '/cases');
 ---
 
-<section class:list={['featured-cases', props.class]} {...props} id="work" aria-labelledby="featured-cases-title">
+<section
+    class:list={['featured-cases', props.class]}
+    id="work"
+    data-key-visual-shape="/static/img/key-visual-hands.jpg"
+    aria-labelledby="featured-cases-title"
+    {...props}
+>
     <div class="featured-cases__head wrapper">
-        <h2 class="featured-cases__title" id="featured-cases-title" data-reveal="scatter">
+        <h2 class="featured-cases__title h2" id="featured-cases-title" data-reveal="scatter">
             {tp(copy.title, locale)}
         </h2>
-        <a class="featured-cases__all link" href={casesHref}>
-            {tp(copy.all, locale)}
+        <a class="featured-cases__all text-lead" href={casesHref}>
+            <span class="link">{tp(copy.all, locale)}</span>
         </a>
     </div>
     <ul class="featured-cases__list list-unstyled">

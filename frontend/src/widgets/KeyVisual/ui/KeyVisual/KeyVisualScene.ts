@@ -47,6 +47,7 @@ const MAX_PARTICLES_DESKTOP = 4000;
 const MAX_PARTICLES_MOBILE = 700;
 const MIN_INK_SHAPE_DESKTOP = 1400;
 const MIN_INK_SHAPE_MOBILE = 420;
+// const IMAGE_URL = '/static/img/key-visual-sticker.jpg';
 const IMAGE_URL = '/static/img/key-visual-hero.jpg';
 const ANCHOR_SELECTOR = '.js-key-visual-anchor';
 const SHAPE_MARKER = '[data-key-visual-shape]';

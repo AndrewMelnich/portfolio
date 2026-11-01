@@ -17,32 +17,21 @@
 
 .hero__eyebrow {
     color: rgb(255 255 255 / 48%);
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
 }
 
 .hero__title {
     max-width: 12ch;
     color: #fff;
-    font-size: clamp(40px, 6vw, 72px);
-    font-weight: 400;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
 }
 
 .hero__lead {
     max-width: 36ch;
     color: rgb(255 255 255 / 62%);
-    font-size: clamp(15px, 1.4vw, 18px);
-    line-height: 1.45;
 }
 
 .hero__subline {
     max-width: 42ch;
     color: rgb(255 255 255 / 48%);
-    font-size: 15px;
-    line-height: 1.5;
 }
 
 .hero__actions {
@@ -54,12 +43,6 @@
 
 .hero__cta {
     color: #fff;
-    font-size: 15px;
-    transition: color $app-default-duration $app-default-easing;
-
-    @include hover() {
-        color: rgb(255 255 255 / 72%);
-    }
 
     &:active,
     &:focus-visible {

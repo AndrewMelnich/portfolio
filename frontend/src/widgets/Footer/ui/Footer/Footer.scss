@@ -21,24 +21,18 @@
 
 .footer__name {
     color: #fff;
-    font-size: 18px;
-    letter-spacing: 0.02em;
-    line-height: 1.3;
-
-    @include mobile() {
-        font-size: 16px;
-    }
 }
 
 .footer__tagline {
     max-width: 42ch;
-    font-size: 14px;
-    letter-spacing: 0.01em;
-    line-height: 1.5;
+}
 
-    @include mobile() {
-        font-size: 13px;
-    }
+.footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px 24px;
 }
 
 .footer__socials {
@@ -49,17 +43,7 @@
 
 .footer__social {
     display: inline-block;
-    padding: 4px 0;
     color: rgb(255 255 255 / 62%);
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    line-height: 1.2;
-    text-transform: uppercase;
-    transition: color $app-default-duration $app-default-easing;
-
-    @include hover() {
-        color: #fff;
-    }
 
     &:focus-visible {
         color: #fff;
@@ -71,9 +55,5 @@
 }
 
 .footer__copy {
-    margin-top: 8px;
     color: rgb(255 255 255 / 42%);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    line-height: 1.4;
 }

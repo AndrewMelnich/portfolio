@@ -18,18 +18,29 @@ const tagline =
 
 <footer class:list={['footer', className]} {...props}>
     <div class="footer__inner wrapper">
-        <p class="footer__name">{tp('Andrew Melnichenko', locale)}</p>
-        <p class="footer__tagline">{tp(tagline, locale)}</p>
-        <ul class="footer__socials list-unstyled">
-            {SOCIALS.map((item) => (
-                <li>
-                    <a class="footer__social" href={item.href} target="_blank" rel="noopener noreferrer">
-                        {tp(item.label, locale)}
-                    </a>
-                </li>
-            ))}
-        </ul>
-        <p class="footer__copy">{tp(`© ${year} Andrew Melnichenko.`, locale)}</p>
+        <p class="footer__name text-l" data-reveal="instant" data-reveal-delay="0.08">
+            {tp('Andrew Melnichenko', locale)}
+        </p>
+        <p class="footer__tagline text-s" data-reveal="instant" data-reveal-delay="0.16">
+            {tp(tagline, locale)}
+        </p>
+        <div class="footer__meta">
+            <ul class="footer__socials list-unstyled">
+                {SOCIALS.map((item, index) => (
+                    <li data-reveal="instant" data-reveal-delay={0.24 + index * 0.08}>
+                        <a
+                            class="footer__social link label-m"
+                            href={item.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {tp(item.label, locale)}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+            <p class="footer__copy text-xs">{tp(`© ${year} Andrew Melnichenko.`, locale)}</p>
+        </div>
     </div>
 </footer>
 

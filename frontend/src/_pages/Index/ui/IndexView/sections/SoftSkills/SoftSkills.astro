@@ -2,6 +2,7 @@
 import type { HTMLAttributes } from 'astro/types';
 import type { AppLocale } from '@/shared/config';
 import { tp } from '@/shared/lib/formatting';
+import { sanitizeHtml } from '@/shared/lib/utils';
 import type { RawProps } from './types';
 
 type Props = HTMLAttributes<'section'> & RawProps;
@@ -12,41 +13,27 @@ const locale = Astro.currentLocale as AppLocale;
 const copy = {
     ru: {
         title: 'Как со мной работать',
-        items: [
-            'Спокойно уточняю детали по макету, пока всё не ясно',
-            'Держу сроки и пишу, если что-то съезжает',
-            'Легко работаю с дизайнером и менеджером',
-            'Не пропадаю на правках — довожу до конца',
-        ],
+        description:
+            'Определитесь какую задачу вы хотите решить.<br>Я подберу решение, которое будет оптимально для вас.<br>Я помогу вам реализовать вашу задачу.',
     },
     en: {
         title: 'Working with me',
-        items: [
-            'I ask until the mockup is clear',
-            'I keep deadlines and flag risks early',
-            'Easy to work with for designers and PMs',
-            'I stay through feedback rounds',
-        ],
+        description:
+            'Decide what problem you want to solve.<br>I will pick a solution that fits you best.<br>I will help you ship the task.',
     },
 }[locale];
 ---
 
-<section
-    class:list={['soft-skills', 'wrapper', props.class]}
-    data-key-visual-shape="/static/img/key-visual-about.jpg"
-    {...props}
-    aria-labelledby="soft-skills-title"
->
-    <h2 class="soft-skills__title" id="soft-skills-title" data-reveal="scatter">
+<section class:list={['soft-skills', props.class]} {...props} aria-labelledby="soft-skills-title">
+    <h2 class="soft-skills__title h2" id="soft-skills-title" data-reveal="scatter">
         {tp(copy.title, locale)}
     </h2>
-    <ul class="soft-skills__list list-unstyled">
-        {copy.items.map((item, index) => (
-            <li class="soft-skills__item" data-reveal data-reveal-delay={index * 0.06}>
-                {tp(item, locale)}
-            </li>
-        ))}
-    </ul>
+    <p
+        class="soft-skills__text text-m"
+        data-reveal="instant"
+        data-reveal-delay="0.16"
+        set:html={sanitizeHtml(tp(copy.description, locale))}
+    />
 </section>
 
 <style lang="scss" is:global>

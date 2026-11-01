@@ -33,6 +33,10 @@ body {
     @extend %h4;
 }
 
+.h5 {
+    @extend %h5;
+}
+
 .text-lead {
     @extend %text-lead;
 }
@@ -41,12 +45,28 @@ body {
     @extend %text-lead-l;
 }
 
+.text-xl {
+    @extend %text-xl;
+}
+
+.text-l {
+    @extend %text-l;
+}
+
 .text-m {
     @extend %text-m;
 }
 
 .text-s {
     @extend %text-s;
+}
+
+.text-xs {
+    @extend %text-xs;
+}
+
+.text-tag {
+    @extend %text-tag;
 }
 
 .label {

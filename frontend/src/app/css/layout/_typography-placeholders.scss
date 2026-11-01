@@ -39,6 +39,14 @@
     line-height: 1.1;
 }
 
+%h5 {
+    @include responsive-font-size(20px, 28px, 1280px, 1920px);
+
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
 %text-lead {
     @include responsive-font-size(15px, 18px, 1280px, 1920px);
 
@@ -53,6 +61,21 @@
     line-height: 1.45;
 }
 
+%text-xl {
+    @include responsive-font-size(22px, 40px, 768px, 1920px);
+
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+%text-l {
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+}
+
 %text-m {
     font-size: 16px;
     font-weight: 400;
@@ -63,6 +86,20 @@
     font-size: 14px;
     font-weight: 400;
     line-height: 1.4;
+}
+
+%text-xs {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+}
+
+%text-tag {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
 }
 
 %label {

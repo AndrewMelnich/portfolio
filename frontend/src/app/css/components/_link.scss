@@ -6,6 +6,7 @@
     --bg-size-hover: 100% 100%;
     --underline-height: 1px;
 
+    padding-block: 4px;
     background-image: linear-gradient(
         transparent calc(100% - var(--underline-height)),
         currentColor var(--underline-height)
@@ -20,14 +21,17 @@
 
     @include hover {
         background-size: var(--bg-size-hover);
+        color: $neon;
     }
 
     &:active {
         background-size: var(--bg-size-hover);
+        color: $neon;
     }
 
     &:focus-visible {
         background-size: var(--bg-size-hover);
+        color: $neon;
     }
 
     &.link--underlined {

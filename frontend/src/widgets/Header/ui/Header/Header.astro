@@ -56,12 +56,15 @@ const defaultLogoFile = '07-signal.svg';
                 href={homeHref}
                 aria-label={locale === 'en' ? 'Home' : 'Главная'}
                 data-default-logo={defaultLogoId}
+                style="
+
+--header-logo-w: 142px; --header-logo-h: 36px"
             >
                 <img
                     class="header__logo-mark js-header-logo-mark"
                     src={`/static/img/logos/${defaultLogoFile}`}
                     alt=""
-                    width="148"
+                    width="142"
                     height="36"
                 />
             </a>
@@ -69,14 +72,14 @@ const defaultLogoFile = '07-signal.svg';
         <div class="header__end">
             <nav class="header__nav" aria-label="Primary">
                 <ul class="header__list list-unstyled">
-                    {navItems.map((item, index) => (
+                    {navItems.map((item) => (
                         <li>
                             <a
-                                class="header__link"
+                                class="header__link label-m"
                                 href={item.href}
                                 data-reveal="scatter-instant"
                                 data-reveal-sticky
-                                data-reveal-delay={0.06 + index * 0.05}
+                                data-reveal-delay="0.12"
                             >
                                 {tp(item.label, locale)}
                             </a>
@@ -86,27 +89,27 @@ const defaultLogoFile = '07-signal.svg';
             </nav>
             <nav class="header__langs" aria-label={locale === 'en' ? 'Language' : 'Язык'}>
                 <ul class="header__langs-list list-unstyled">
-                    {LOCALES.map((item, index) => (
+                    {LOCALES.map((item) => (
                         <li>
                             {item === locale ? (
                                 <span
-                                    class="header__link header__link--current"
+                                    class="header__link header__link--current label-m"
                                     aria-current="true"
                                     data-reveal="scatter-instant"
                                     data-reveal-sticky
-                                    data-reveal-delay={0.06 + navItems.length * 0.05 + index * 0.05}
+                                    data-reveal-delay="0.12"
                                 >
                                     {localeLabels[item]}
                                 </span>
                             ) : (
                                 <a
-                                    class="header__link"
+                                    class="header__link label-m"
                                     href={localeHref(item)}
                                     hreflang={item}
                                     lang={item}
                                     data-reveal="scatter-instant"
                                     data-reveal-sticky
-                                    data-reveal-delay={0.06 + navItems.length * 0.05 + index * 0.05}
+                                    data-reveal-delay="0.12"
                                 >
                                     {localeLabels[item]}
                                 </a>
@@ -126,6 +129,15 @@ const defaultLogoFile = '07-signal.svg';
 <script>
     const STORAGE_KEY = 'portfolio-logo-id-v2';
     const WIDE_LOGOS = new Set(['04-wordmark', '07-signal']);
+    const LOGO_SIZE: Record<string, { width: number; height: number }> = {
+        '01-framed-square': { width: 36, height: 36 },
+        '02-am-monogram': { width: 36, height: 36 },
+        '03-touch-nodes': { width: 36, height: 36 },
+        '04-wordmark': { width: 140, height: 20 },
+        '05-letter-m': { width: 36, height: 36 },
+        '06-focus-square': { width: 36, height: 36 },
+        '07-signal': { width: 142, height: 36 },
+    };
     const LOGO_FILES: Record<string, string> = {
         '01-framed-square': '01-framed-square.svg',
         '02-am-monogram': '02-am-monogram.svg',
@@ -145,10 +157,13 @@ const defaultLogoFile = '07-signal.svg';
         const id = localStorage.getItem(STORAGE_KEY) || link.dataset.defaultLogo || '07-signal';
         const wide = WIDE_LOGOS.has(id);
         const file = LOGO_FILES[id] ?? `${id}.svg`;
+        const size = LOGO_SIZE[id] ?? { width: 36, height: 36 };
 
         mark.src = `/static/img/logos/${file}`;
-        mark.width = wide ? 148 : 36;
-        mark.height = 36;
+        mark.width = size.width;
+        mark.height = size.height;
+        link.style.setProperty('--header-logo-w', `${size.width}px`);
+        link.style.setProperty('--header-logo-h', `${size.height}px`);
         link.classList.toggle('header__logo--wide', wide);
     };
 

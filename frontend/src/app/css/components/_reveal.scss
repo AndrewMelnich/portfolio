@@ -36,6 +36,7 @@ html[data-astro-transition] [data-reveal^='scatter'] {
         overflow: visible;
         white-space: nowrap;
         vertical-align: baseline;
+        pointer-events: none;
     }
 
     .reveal-char {

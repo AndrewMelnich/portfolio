@@ -1,6 +1,5 @@
 @use 'app/css/base/variables' as *;
 @use 'app/css/utils/mixins' as *;
-@use 'app/css/layout/typography-placeholders' as *;
 
 .case-card {
     display: flex;
@@ -76,14 +75,12 @@
 }
 
 .case-card__title {
-    @extend %h4;
     @include clamp(2);
 
     min-height: calc(1.1em * 2);
 }
 
 .case-card__teaser {
-    @extend %text-s;
     @include clamp(3);
 
     min-height: calc(1.4em * 3);

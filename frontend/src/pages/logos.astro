@@ -367,9 +367,18 @@ const logos = [
         const wide = WIDE_LOGOS.has(id);
         const file = LOGO_FILES[id] ?? `${id}.svg`;
 
+        const size =
+            id === '04-wordmark'
+                ? { width: 140, height: 20 }
+                : id === '07-signal'
+                  ? { width: 142, height: 36 }
+                  : { width: 36, height: 36 };
+
         mark.src = `/static/img/logos/${file}`;
-        mark.width = wide ? 148 : 36;
-        mark.height = 36;
+        mark.width = size.width;
+        mark.height = size.height;
+        link.style.setProperty('--header-logo-w', `${size.width}px`);
+        link.style.setProperty('--header-logo-h', `${size.height}px`);
         link.classList.toggle('header__logo--wide', wide);
     };
 

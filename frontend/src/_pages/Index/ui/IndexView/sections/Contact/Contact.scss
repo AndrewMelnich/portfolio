@@ -1,17 +1,13 @@
-@use 'app/css/base/variables' as *;
 @use 'app/css/utils/mixins' as *;
 
 .contact {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     min-height: 85lvh;
     padding-top: 96px;
     padding-bottom: 96px;
     scroll-margin-top: 96px;
-
-    .input-group {
-        --bg-color: rgb(255 255 255 / 4%);
-        --color: #fff;
-        --border-color: rgb(255 255 255 / 14%);
-    }
 
     @include mobile() {
         min-height: 70lvh;
@@ -24,98 +20,39 @@
 .contact__title {
     max-width: 12ch;
     color: #fff;
-    font-size: clamp(28px, 3.5vw, 42px);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
 }
 
 .contact__text {
     margin-top: 16px;
     max-width: 42ch;
     color: rgb(255 255 255 / 58%);
-    font-size: 16px;
-    line-height: 1.5;
 }
 
-.contact__form {
+.contact__channels {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 40px;
-    max-width: 36rem;
+    gap: 28px;
+    margin-top: 48px;
+    max-width: 48rem;
+
+    @include mobile() {
+        gap: 24px;
+        margin-top: 36px;
+    }
 }
 
-.contact__submit {
-    align-self: flex-start;
-    margin-top: 8px;
-    padding: 14px 28px;
-    border: 1px solid rgb(255 255 255 / 28%);
-    background-color: rgb(255 255 255 / 8%);
+.contact__channel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.contact__channel-label {
+    color: rgb(255 255 255 / 42%);
+}
+
+.contact__channel-link {
     color: #fff;
-    letter-spacing: 0.06em;
-    line-height: 1.2;
-    text-transform: uppercase;
-    transition:
-        border-color $app-default-duration $app-default-easing,
-        background-color $app-default-duration $app-default-easing,
-        color $app-default-duration $app-default-easing;
-
-    @include hover() {
-        border-color: rgb(255 255 255 / 48%);
-        background-color: rgb(255 255 255 / 14%);
-    }
-
-    &:focus-visible {
-        border-color: rgb(255 255 255 / 58%);
-        background-color: rgb(255 255 255 / 14%);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        transition: none;
-    }
-}
-
-.contact__status {
-    min-height: 1.5em;
-    max-width: 48ch;
-    color: rgb(255 255 255 / 62%);
-    font-size: 14px;
-    line-height: 1.45;
-}
-
-.contact__socials {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 8px 20px;
-    margin-top: 40px;
-}
-
-.contact__socials-note {
-    max-width: 20ch;
-    color: rgb(255 255 255 / 48%);
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-.contact__socials-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 20px;
-}
-
-.contact__social-link {
-    color: rgb(255 255 255 / 82%);
-    font-size: 14px;
-    letter-spacing: 0.04em;
-    line-height: 1.4;
-
-    @include hover() {
-        color: #fff;
-    }
-
-    &:focus-visible {
-        color: #fff;
-    }
+    overflow-wrap: anywhere;
 }

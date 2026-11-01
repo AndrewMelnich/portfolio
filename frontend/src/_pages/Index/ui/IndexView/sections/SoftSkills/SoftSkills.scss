@@ -1,39 +1,21 @@
-@use 'app/css/base/variables' as *;
 @use 'app/css/utils/mixins' as *;
 
 .soft-skills {
-    min-height: 85lvh;
-    padding-top: 96px;
-    padding-bottom: 96px;
-    scroll-margin-top: 96px;
+    @include grid-columns(3);
 
-    @include mobile() {
-        min-height: 70lvh;
-        padding-top: 72px;
-        padding-bottom: 72px;
-        scroll-margin-top: 80px;
+    @include tablet() {
+        width: auto;
+        margin-left: 0;
     }
 }
 
 .soft-skills__title {
     margin-bottom: 16px;
     color: #fff;
-    font-size: clamp(28px, 3.5vw, 42px);
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
 }
 
-.soft-skills__list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.soft-skills__text {
     max-width: 48ch;
     margin-top: 24px;
-}
-
-.soft-skills__item {
     color: rgb(255 255 255 / 58%);
-    font-size: 16px;
-    line-height: 1.5;
 }

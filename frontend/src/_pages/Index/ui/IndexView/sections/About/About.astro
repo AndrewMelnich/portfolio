@@ -2,6 +2,8 @@
 import type { HTMLAttributes } from 'astro/types';
 import type { AppLocale } from '@/shared/config';
 import { tp } from '@/shared/lib/formatting';
+import SoftSkills from '../SoftSkills';
+import TechStack from '../TechStack';
 import type { RawProps } from './types';
 
 type Props = HTMLAttributes<'section'> & RawProps;
@@ -12,11 +14,47 @@ const locale = Astro.currentLocale as AppLocale;
 const copy = {
     ru: {
         title: 'О себе',
-        text: 'Верстаю и собираю интерфейсы по макету: адаптив, состояния, анимации, формы. Довожу до рабочего фронта без сюрпризов на сдаче — удобно, когда уже есть Figma и нужно сделать как в макете.',
+        text: 'На данный момент работаю в дизайн студии chipsa - разрабатываю цифровые продукты и интерфейсы для клиентов. В индустрии с 2021 года.',
+        techStack: {
+            title: 'Tech stack:',
+            items: [
+                'HTML',
+                'CSS',
+                'JavaScript',
+                'TypeScript',
+                'React',
+                'Vue',
+                'Astro',
+                'Laravel',
+                'BEM',
+                'i18n',
+                'CSS/JS-анимации',
+                'Canvas',
+                'Адаптивная вёрстка',
+            ],
+        },
     },
     en: {
         title: 'About',
         text: 'I build interfaces from design files: responsive layout, states, motion, forms. Shipped as working frontend, no surprises at handoff — best fit when you already have a Figma file.',
+        techStack: {
+            title: 'Tech stack:',
+            items: [
+                'HTML',
+                'CSS',
+                'JavaScript',
+                'TypeScript',
+                'React',
+                'Vue',
+                'Astro',
+                'Laravel',
+                'BEM',
+                'i18n',
+                'CSS/JS animation',
+                'Canvas',
+                'Responsive layout',
+            ],
+        },
     },
 }[locale];
 ---
@@ -24,16 +62,26 @@ const copy = {
 <section
     class:list={['about', 'wrapper', props.class]}
     id="about"
-    data-key-visual-shape="/static/img/key-visual-hands.jpg"
+    data-key-visual-shape="/static/img/key-visual-about.jpg"
     aria-labelledby="about-title"
     {...props}
 >
-    <h2 class="about__title" id="about-title" data-reveal="scatter">
-        {tp(copy.title, locale)}
-    </h2>
-    <p class="about__text" data-reveal>
-        {tp(copy.text, locale)}
-    </p>
+    <SoftSkills />
+
+    <div class="about__inner">
+        <h2 class="about__title h2" id="about-title" data-reveal="scatter">
+            {tp(copy.title, locale)}
+        </h2>
+        <p class="about__text text-m" data-reveal="instant" data-reveal-delay="0.08">
+            {tp(copy.text, locale)}
+        </p>
+        <TechStack
+            title={copy.techStack.title}
+            items={copy.techStack.items}
+            data-reveal="instant"
+            data-reveal-delay="0.16"
+        />
+    </div>
 </section>
 
 <style lang="scss" is:global>

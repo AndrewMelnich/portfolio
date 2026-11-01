@@ -34,23 +34,23 @@ const casesHref = getRelativeLocaleUrl(locale, '/cases');
     aria-label="Intro"
     {...props}
 >
-    <p class="hero__eyebrow" data-reveal="instant">
+    <p class="hero__eyebrow label" data-reveal="instant">
         {tp('Portfolio', locale)}
     </p>
-    <h1 class="hero__title" data-reveal="scatter-instant">
+    <h1 class="hero__title h1" data-reveal="scatter-instant">
         {tp('Andrew Melnichenko', locale)}
     </h1>
-    <p class="hero__lead" data-reveal="instant" data-reveal-delay="0.08">
+    <p class="hero__lead text-lead" data-reveal="instant" data-reveal-delay="0.08">
         {tp(copy.lead, locale)}
     </p>
-    <p class="hero__subline" data-reveal="instant" data-reveal-delay="0.16">
+    <p class="hero__subline text-default" data-reveal="instant" data-reveal-delay="0.16">
         {tp(copy.subline, locale)}
     </p>
     <div class="hero__actions" data-reveal="instant" data-reveal-delay="0.24">
-        <a class="hero__cta link" href={casesHref}>
+        <a class="hero__cta label-m link" href={casesHref}>
             {tp(copy.cases, locale)}
         </a>
-        <a class="hero__cta link" href="#contact">
+        <a class="hero__cta label-m link" href="#contact">
             {tp(copy.contact, locale)}
         </a>
     </div>

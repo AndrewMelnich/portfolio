@@ -34,10 +34,10 @@ const titleTransition = `case-title-${item.slug}`;
         )}
     </span>
     <span class="case-card__content">
-        <span class="case-card__title" transition:name={titleTransition}>
+        <span class="case-card__title h4" transition:name={titleTransition}>
             {tp(title, locale)}
         </span>
-        <span class="case-card__teaser">{tp(item.teaser[locale], locale)}</span>
+        <span class="case-card__teaser text-s">{tp(item.teaser[locale], locale)}</span>
     </span>
 </a>
 

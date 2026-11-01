@@ -1,0 +1,28 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { AppLocale } from '@/shared/config';
+import { tp } from '@/shared/lib/formatting';
+import type { RawProps } from './types';
+
+type Props = HTMLAttributes<'div'> & RawProps;
+
+const { title, items, ...props } = Astro.props;
+const locale = Astro.currentLocale as AppLocale;
+---
+
+<div class:list={['tech-stack', props.class]} {...props}>
+    <h3 class="tech-stack__title text-m" data-reveal>
+        {tp(title, locale)}
+    </h3>
+    <ul class="tech-stack__list list-unstyled">
+        {items.map((item, index) => (
+            <li class="tech-stack__item text-tag" data-reveal data-reveal-delay={index * 0.04}>
+                {tp(item, locale)}
+            </li>
+        ))}
+    </ul>
+</div>
+
+<style lang="scss" is:global>
+    @use './TechStack';
+</style>
