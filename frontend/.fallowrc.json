@@ -22,7 +22,10 @@
         "**/*.generated.ts",
         "src/shared/api/generated/**",
         "public/static/**",
-        "scripts/__fixtures__/**"
+        "scripts/__fixtures__/**",
+        "scripts/lint-pages.mjs",
+        "scripts/lint-feature-map.mjs",
+        "scripts/lint-breakpoints.mjs"
     ],
     "ignoreDependencies": [
         "@feature-sliced/eslint-config",

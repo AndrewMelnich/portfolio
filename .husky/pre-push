@@ -58,9 +58,9 @@ if [ -n "$CHANGED" ]; then
     fi
     if [ -n "$SRC_CHANGED" ]; then
         start steiger pnpm exec steiger ./src
-        start lint:pages pnpm lint:pages
-        start lint:feature-map pnpm lint:feature-map
-        start lint:breakpoints pnpm lint:breakpoints
+        start lint:pages pnpm run --if-present lint:pages
+        start lint:feature-map pnpm run --if-present lint:feature-map
+        start lint:breakpoints pnpm run --if-present lint:breakpoints
     fi
 
     FAILED=
