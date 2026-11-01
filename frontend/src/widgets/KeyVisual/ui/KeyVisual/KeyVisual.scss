@@ -1,5 +1,4 @@
 .key-visual {
-    //   --kv-fit-bleed: 1.08;
     --kv-fit-bleed: 0.9;
     --kv-fit-frame-inline: 0.925;
     --kv-fit-frame-aspect: 1;
@@ -23,6 +22,16 @@
 
     @media (prefers-reduced-motion: reduce) {
         transition: none;
+    }
+}
+
+.key-visual--case {
+    --kv-fit-bleed: 1.08;
+    --kv-fit-frame-inline: 0.5;
+    --kv-fit-frame-aspect: 1.7778;
+
+    @media (max-width: 1024px) {
+        --kv-fit-frame-inline: 1;
     }
 }
 

@@ -769,6 +769,70 @@ function morphBurstAmount(t: number) {
     return 1 - easeOutCubic((t - MORPH_BURST_PEAK) / (1 - MORPH_BURST_PEAK));
 }
 
+function introBurstAmount(t: number) {
+    if (t <= 0) {
+        return 1;
+    }
+
+    if (t >= 1) {
+        return 0;
+    }
+
+    return 1 - easeOutCubic(t);
+}
+
+// fallow-ignore-next-line complexity
+function rayToViewportEdge(
+    originX: number,
+    originY: number,
+    pointX: number,
+    pointY: number,
+    viewportW: number,
+    viewportH: number,
+    pad: number,
+) {
+    let ux = pointX - originX;
+    let uy = pointY - originY;
+    const len = Math.hypot(ux, uy);
+
+    if (len < 0.001) {
+        const angle = Math.random() * Math.PI * 2;
+
+        ux = Math.cos(angle);
+        uy = Math.sin(angle);
+    } else {
+        ux /= len;
+        uy /= len;
+    }
+
+    const left = -pad;
+    const right = viewportW + pad;
+    const top = -pad;
+    const bottom = viewportH + pad;
+    let tHit = Infinity;
+
+    if (ux > 0.001) {
+        tHit = Math.min(tHit, (right - originX) / ux);
+    } else if (ux < -0.001) {
+        tHit = Math.min(tHit, (left - originX) / ux);
+    }
+
+    if (uy > 0.001) {
+        tHit = Math.min(tHit, (bottom - originY) / uy);
+    } else if (uy < -0.001) {
+        tHit = Math.min(tHit, (top - originY) / uy);
+    }
+
+    if (!Number.isFinite(tHit) || tHit < 0) {
+        tHit = Math.max(viewportW, viewportH) + pad;
+    }
+
+    return {
+        x: originX + ux * tHit,
+        y: originY + uy * tHit,
+    };
+}
+
 function pushFromPointer(x: number, y: number, pointerX: number, pointerY: number, cursorRadius: number) {
     const dx = x - pointerX;
     const dy = y - pointerY;
@@ -971,6 +1035,7 @@ class KeyVisualScene {
     private cachedLinkTargets = EMPTY_LINK_TARGETS;
     private linkStaggerStart = 0;
     private morphWasExploding = false;
+    private introAssembling = false;
 
     private readonly onPointerMove = (event: PointerEvent) => {
         if (!this.isHover || this.destroyed || event.pointerType === 'touch') {
@@ -1131,6 +1196,7 @@ class KeyVisualScene {
         this.morphT = 0;
         this.morphOutgoingCount = 0;
         this.morphWasExploding = false;
+        this.introAssembling = false;
         this.fit = this.fitTo;
         this.particles = [...incoming, ...ambient];
     }
@@ -1247,6 +1313,25 @@ class KeyVisualScene {
         }
     }
 
+    private assignIntroEdgeBursts(particles: Particle[]) {
+        const cx = this.fit.left + this.fit.width * 0.5;
+        const cy = this.fit.top + this.fit.height * 0.5;
+        const pad = Math.max(48, Math.min(this.cssWidth, this.cssHeight) * 0.04);
+
+        for (const particle of particles) {
+            if (particle.ambient) {
+                particle.burstX = 0;
+                particle.burstY = 0;
+                continue;
+            }
+
+            const edge = rayToViewportEdge(cx, cy, particle.x, particle.y, this.cssWidth, this.cssHeight, pad);
+
+            particle.burstX = edge.x - particle.x + (Math.random() - 0.5) * 18;
+            particle.burstY = edge.y - particle.y + (Math.random() - 0.5) * 18;
+        }
+    }
+
     private seedMorphExplosion() {
         this.cachedLinkTargets = EMPTY_LINK_TARGETS;
         this.linkRebuildCooldown = 0;
@@ -1287,6 +1372,7 @@ class KeyVisualScene {
 
         this.refreshFitTokens();
         this.syncMobileFlags();
+        this.introAssembling = false;
         this.fitFrom = { ...this.fit };
         this.aspect = aspect;
         this.fitTo = this.resolveCurrentFit(aspect);
@@ -1303,10 +1389,43 @@ class KeyVisualScene {
         this.resume();
     }
 
+    private beginIntroAssemble(shape: Particle[], aspect: number) {
+        const ambient = createAmbientParticles(this.isMobile);
+
+        for (const particle of shape) {
+            particle.fade = 0;
+        }
+
+        this.refreshFitTokens();
+        this.syncMobileFlags();
+        this.aspect = aspect;
+        this.fit = this.resolveCurrentFit(aspect);
+        this.fitFrom = { ...this.fit };
+        this.fitTo = { ...this.fit };
+        this.morphOutgoingCount = 0;
+        this.morphStart = performance.now();
+        this.morphT = 0;
+        this.morphing = true;
+        this.introAssembling = true;
+        this.particles = [...shape, ...ambient];
+        this.linkStates.clear();
+        this.layoutParticles(0);
+        this.assignIntroEdgeBursts(shape);
+        this.layoutParticles(0);
+        this.cachedLinkTargets = EMPTY_LINK_TARGETS;
+        this.linkRebuildCooldown = 0;
+        this.linkStaggerStart = 0;
+        this.morphWasExploding = true;
+        this.ready = true;
+        this.parent.hidden = false;
+        this.resume();
+    }
+
     private commitParticles(shape: Particle[], aspect: number) {
         this.morphing = false;
         this.morphT = 0;
         this.morphOutgoingCount = 0;
+        this.introAssembling = false;
         this.particles = [...shape, ...this.ensureAmbient()];
         this.aspect = aspect;
         this.linkStates.clear();
@@ -1325,9 +1444,16 @@ class KeyVisualScene {
         }
     }
 
+    // fallow-ignore-next-line complexity
     private applyShape(shape: Particle[], aspect: number) {
         if (this.ready && this.animateAllowed && this.hasShapeParticles()) {
             this.beginMorph(shape, aspect);
+
+            return;
+        }
+
+        if (this.animateAllowed && shape.length > 0) {
+            this.beginIntroAssemble(shape, aspect);
 
             return;
         }
@@ -1423,7 +1549,11 @@ class KeyVisualScene {
         const pointerActive = this.pointerCurrent.x > -9000;
         const t = time * DRIFT_SPEED;
         const breath = 1 + Math.sin(time * BREATH_SPEED) * BREATH_AMOUNT;
-        const burst = this.morphing ? morphBurstAmount(this.morphT) : 0;
+        let burst = 0;
+
+        if (this.morphing) {
+            burst = this.introAssembling ? introBurstAmount(this.morphT) : morphBurstAmount(this.morphT);
+        }
         const shapeAnchorX = left + width * 0.5;
         const shapeAnchorY = top + height * 0.5;
         const viewAnchorX = this.cssWidth * 0.5;
@@ -1895,8 +2025,17 @@ export function init(container: Element | Document = document) {
     });
 }
 
+function syncCaseFitClass(container: ParentNode = document) {
+    const isCasePage = document.documentElement.classList.contains('case-page');
+
+    for (const root of container.querySelectorAll<HTMLElement>('.js-key-visual')) {
+        root.classList.toggle('key-visual--case', isCasePage);
+    }
+}
+
 export async function syncFromPage(container: ParentNode = document) {
     stopSectionShapeSync();
+    syncCaseFitClass(container);
 
     const markers = listShapeMarkers(container);
 
