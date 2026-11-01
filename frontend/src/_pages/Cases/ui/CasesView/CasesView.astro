@@ -34,8 +34,8 @@ const supportTitle = locale === 'en' ? 'Support & updates' : 'Поддержка
             {tp(builtTitle, locale)}
         </h2>
         <ul class="cases-view__grid list-unstyled">
-            {BUILT_CASES.map((item) => (
-                <li class="cases-view__item">
+            {BUILT_CASES.map((item, index) => (
+                <li class="cases-view__item" data-reveal="card" data-reveal-delay={index * 0.08}>
                     <CaseCard item={item} locale={locale} />
                 </li>
             ))}
@@ -47,8 +47,8 @@ const supportTitle = locale === 'en' ? 'Support & updates' : 'Поддержка
             {tp(supportTitle, locale)}
         </h2>
         <ul class="cases-view__grid list-unstyled">
-            {SUPPORT_CASES.map((item) => (
-                <li class="cases-view__item">
+            {SUPPORT_CASES.map((item, index) => (
+                <li class="cases-view__item" data-reveal="card" data-reveal-delay={index * 0.08}>
                     <CaseCard item={item} locale={locale} />
                 </li>
             ))}

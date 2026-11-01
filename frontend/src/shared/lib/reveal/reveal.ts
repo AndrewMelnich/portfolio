@@ -31,6 +31,7 @@ function handleRevealEntry(entry: IntersectionObserverEntry) {
 
     const element = entry.target;
     const revealed = element.classList.contains('is-revealed');
+    const card = isCard(element.dataset.reveal);
 
     if (entry.isIntersecting === revealed) {
         return;
@@ -39,6 +40,14 @@ function handleRevealEntry(entry: IntersectionObserverEntry) {
     if (entry.isIntersecting) {
         settleElement(element);
 
+        if (card) {
+            observer.unobserve(element);
+        }
+
+        return;
+    }
+
+    if (card) {
         return;
     }
 
@@ -64,8 +73,60 @@ function isInstant(value: string | undefined) {
     return value === 'instant' || value === 'scatter-instant';
 }
 
+function isCard(value: string | undefined) {
+    return value === 'card';
+}
+
+function isCaseDetailPath(pathname: string) {
+    const parts = pathname.split('/').filter(Boolean);
+    const casesIndex = parts.indexOf('cases');
+
+    return casesIndex >= 0 && parts.length === casesIndex + 2;
+}
+
+function shouldSkipCardMotion() {
+    return activePath !== null && isCaseDetailPath(activePath);
+}
+
 function isSticky(element: HTMLElement) {
     return element.dataset.revealSticky === '' || element.dataset.revealSticky === 'true';
+}
+
+function showCardWithoutMotion(element: HTMLElement) {
+    clearRevealTimeout(element);
+    observer.unobserve(element);
+    element.classList.remove('is-exploding');
+    element.style.setProperty('transition', 'none');
+    element.classList.add('is-revealed');
+    element.classList.add('is-reveal-complete');
+    forceReflow(element);
+    element.style.removeProperty('transition');
+}
+
+function maybeShowCardWithoutMotion(element: HTMLElement, skipCardMotion: boolean) {
+    if (!skipCardMotion || !isCard(element.dataset.reveal)) {
+        return false;
+    }
+
+    showCardWithoutMotion(element);
+
+    return true;
+}
+
+function scheduleHashReveal(delayMs = 0) {
+    if (!window.location.hash) {
+        return;
+    }
+
+    if (delayMs <= 0) {
+        revealHashTarget(true);
+
+        return;
+    }
+
+    window.setTimeout(() => {
+        revealHashTarget(true);
+    }, delayMs);
 }
 
 function randomOffset(min: number, max: number) {
@@ -314,8 +375,10 @@ function collectRevealElements(root: Element | Document) {
 }
 
 function prepareAll(container: Element | Document = document) {
+    const skipCardMotion = shouldSkipCardMotion();
+
     collectRevealElements(container).forEach((element) => {
-        if (isSticky(element)) {
+        if (isSticky(element) || maybeShowCardWithoutMotion(element, skipCardMotion)) {
             return;
         }
 
@@ -483,8 +546,12 @@ function waitForViewTransitions() {
 }
 
 // fallow-ignore-next-line complexity -- page-bind reset + eager-in-view + observe
-function bindRevealElement(el: HTMLElement) {
+function bindRevealElement(el: HTMLElement, skipCardMotion = false) {
     if (isSticky(el) && el.classList.contains('is-revealed')) {
+        return;
+    }
+
+    if (maybeShowCardWithoutMotion(el, skipCardMotion)) {
         return;
     }
 
@@ -510,22 +577,20 @@ function init(container: Element | Document = document) {
     const path = window.location.pathname;
 
     if (activePath === path) {
-        if (window.location.hash) {
-            revealHashTarget(true);
-        }
+        scheduleHashReveal();
 
         return;
     }
 
+    const skipCardMotion = shouldSkipCardMotion();
+
     activePath = path;
 
-    collectRevealElements(container).forEach(bindRevealElement);
+    collectRevealElements(container).forEach((el) => {
+        bindRevealElement(el, skipCardMotion);
+    });
 
-    if (window.location.hash) {
-        window.setTimeout(() => {
-            revealHashTarget(true);
-        }, 40);
-    }
+    scheduleHashReveal(40);
 }
 
 async function startAfterTransitions(container: Element | Document = document) {
@@ -545,8 +610,10 @@ function veil(container: Element | Document = document) {
         return;
     }
 
+    const skipCardMotion = shouldSkipCardMotion();
+
     collectRevealElements(container).forEach((el) => {
-        if (isSticky(el)) {
+        if (isSticky(el) || maybeShowCardWithoutMotion(el, skipCardMotion)) {
             return;
         }
 

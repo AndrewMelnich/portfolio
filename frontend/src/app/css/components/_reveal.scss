@@ -1,7 +1,7 @@
 @use 'app/css/base/variables' as *;
 
-html.js [data-reveal]:not([data-reveal^='scatter']),
-html[data-astro-transition] [data-reveal]:not([data-reveal^='scatter']) {
+html.js [data-reveal]:not([data-reveal^='scatter'], [data-reveal='card']),
+html[data-astro-transition] [data-reveal]:not([data-reveal^='scatter'], [data-reveal='card']) {
     opacity: 0.001;
     transform: translate3d(0, 16px, 0);
     transition:
@@ -16,6 +16,26 @@ html[data-astro-transition] [data-reveal]:not([data-reveal^='scatter']) {
     &.is-exploding {
         transform: translate3d(0, -28px, 0);
         transition-duration: 0.45s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+html.js [data-reveal='card'],
+html[data-astro-transition] [data-reveal='card'] {
+    opacity: 0.001;
+    transform: translate3d(0, 0, 0) scale(0.96);
+    transition:
+        opacity 0.7s $app-default-easing 0.05s,
+        transform 0.7s $app-default-easing 0.05s;
+
+    &.is-revealed {
+        opacity: 1;
+        transform: none;
     }
 
     @media (prefers-reduced-motion: reduce) {

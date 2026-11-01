@@ -2,6 +2,7 @@
 import type { HTMLAttributes } from 'astro/types';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import type { AppLocale } from '@/shared/config';
+import { SOCIALS } from '@/shared/config';
 import { tp } from '@/shared/lib/formatting';
 import Image from '@/shared/ui/Image';
 import type { RawProps } from './types';
@@ -13,7 +14,7 @@ const locale = Astro.currentLocale as AppLocale;
 
 const title = item.title[locale];
 const casesHref = getRelativeLocaleUrl(locale, 'cases');
-const contactHref = `${getRelativeLocaleUrl(locale, '')}#contact`;
+const telegramHref = SOCIALS.find((social) => social.id === 'telegram')?.href ?? 'https://t.me/andrew_melnich';
 const backLabel = locale === 'en' ? 'All cases' : 'Все кейсы';
 const roleLabel =
     item.role === 'built' ? (locale === 'en' ? 'From scratch' : 'С нуля') : locale === 'en' ? 'Support' : 'Поддержка';
@@ -66,9 +67,11 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
         </div>
 
         {item.tags.length > 0 && (
-            <ul class="case-view__tags list-unstyled" data-reveal>
-                {item.tags.map((tag) => (
-                    <li class="case-view__tag label-m">{tp(tag, locale)}</li>
+            <ul class="case-view__tags list-unstyled">
+                {item.tags.map((tag, index) => (
+                    <li class="case-view__tag text-tag" data-reveal data-reveal-delay={index * 0.04}>
+                        {tp(tag, locale)}
+                    </li>
                 ))}
             </ul>
         )}
@@ -87,7 +90,12 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
         )}
 
         <p class="case-view__cta-wrap" data-reveal>
-            <a class="case-view__cta text-m link link--underlined" href={contactHref}>
+            <a
+                class="case-view__cta text-m link link--underlined"
+                href={telegramHref}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
                 {tp(ctaLabel, locale)}
             </a>
         </p>
