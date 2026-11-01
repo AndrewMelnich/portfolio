@@ -4,7 +4,6 @@ import { getRelativeLocaleUrl } from 'astro:i18n';
 import type { AppLocale } from '@/shared/config';
 import { SOCIALS } from '@/shared/config';
 import { tp } from '@/shared/lib/formatting';
-import Image from '@/shared/ui/Image';
 import type { RawProps } from './types';
 
 type Props = HTMLAttributes<'article'> & RawProps;
@@ -15,7 +14,7 @@ const locale = Astro.currentLocale as AppLocale;
 const title = item.title[locale];
 const casesHref = getRelativeLocaleUrl(locale, 'cases');
 const telegramHref = SOCIALS.find((social) => social.id === 'telegram')?.href ?? 'https://t.me/andrew_melnich';
-const backLabel = locale === 'en' ? 'All cases' : 'Все кейсы';
+const backLabel = locale === 'en' ? '← Back' : '← Назад';
 const roleLabel =
     item.role === 'built' ? (locale === 'en' ? 'From scratch' : 'С нуля') : locale === 'en' ? 'Support' : 'Поддержка';
 const liveLabel = locale === 'en' ? 'Visit site' : 'Смотреть сайт';
@@ -38,16 +37,16 @@ const keyVisualShape = item.liveUrl ? `/nextapi/site-icon/?src=${encodeURICompon
 
         {item.image && (
             <div class="case-view__media js-key-visual-anchor">
-                <Image
+                <img
                     class="case-view__image"
                     src={item.image.src}
                     alt={item.image.alt ?? title}
                     width={item.image.width ?? 1440}
                     height={item.image.height ?? 900}
                     title={item.image.title}
-                    sizes="(max-width: 767px) 100vw, 50vw"
-                    quality={90}
-                    priority
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
                     transition:name={imageTransition}
                 />
             </div>
